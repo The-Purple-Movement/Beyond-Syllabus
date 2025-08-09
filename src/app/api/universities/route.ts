@@ -24,8 +24,18 @@ async function readSyllabusData() {
              return { error: 'University data directory not found. Please ensure the `universities` folder exists at the root of your project.' };
         }
         
-        // Pre-compile regex for better performance
-        const moduleRegex = /^#+\s*\*{0,2}\s*Module\s*(?:[-–—]?\s*)?((?:\d+)|(?:I{1,4}V?|V(?:I{1,3})?|IX|X))(?:\s*[-–—:()]\s*(.*?))?\s*\*{0,2}$/i;
+    // Pre-compile regex for better performance
+    // Supports patterns like:
+    //  - ### Module 1: Title
+    //  - **Module 2**: Title
+    //  - Module III - Title
+    //  - **Weeks 1-2**: Logic and Proofs
+    //  - Weeks 3-4 – Probability
+    // Capture groups:
+    //  1: Type label (Module|Week|Weeks)
+    //  2: Module number OR week number/range (e.g., 1 or 1-2 or Roman numerals)
+    //  3: Optional trailing title text
+    const moduleRegex = /^#{0,6}\s*\*{0,2}\s*(Module|Weeks?|MODULE|WEEKS?)\s*(?:[-–—]?\s*)?((?:\d+(?:\s*-\s*\d+)?)|(?:I{1,4}V?|V(?:I{1,3})?|IX|X))\s*\*{0,2}\s*(?:[-–—:()]\s*(.*?))?\s*\*{0,2}$/i;
         
         const universities = await fs.promises.readdir(universitiesDir);
 
@@ -79,9 +89,10 @@ async function readSyllabusData() {
                                             });
                                         }
                                         
-                                        // Extract module number and title from the regex groups
-                                        const moduleNumber = moduleMatch[1];
-                                        let titleText = moduleMatch[2] || '';
+                                        // Extract type (Module/Week/Weeks), number/range and title from the regex groups
+                                        const typeLabelRaw = moduleMatch[1];
+                                        const numberOrRange = moduleMatch[2];
+                                        let titleText = moduleMatch[3] || '';
                                         
                                         // Clean up the title more carefully
                                         if (titleText) {
@@ -123,8 +134,10 @@ async function readSyllabusData() {
                                             titleText = titleText.trim();
                                         }
                                         
+                                        // Normalize type label to singular 'Module' or 'Weeks'
+                                        const normalizedType = /^week/i.test(typeLabelRaw) ? (/-/.test(numberOrRange) ? 'Weeks' : 'Week') : 'Module';
                                         // Use default title if empty
-                                        const finalTitle = titleText || `Module ${moduleNumber}`;
+                                        const finalTitle = titleText || `${normalizedType} ${numberOrRange}`;
                                         
                                         currentModule = {
                                             title: finalTitle,

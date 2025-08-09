@@ -46,3 +46,4 @@ firestore-debug.log
 debug-regex.js
 fix-regex-test.js
 test-module-regex.js
+test-regex-fix.js
