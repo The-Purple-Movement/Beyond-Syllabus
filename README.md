@@ -81,6 +81,48 @@ The Purple Movement blends the **passion & curiosity of youth** (Red) with the *
 
 ---
 
+## ⚙️ Setup & Configuration
+
+### Prerequisites
+- Node.js 18+ and npm
+- Google Generative AI API key (for AI features)
+
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/The-Purple-Movement/Beyond-Syllabus.git
+   cd Beyond-Syllabus
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up environment variables:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+4. Configure your Google Generative AI API key:
+   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey) to get your API key
+   - Add it to `.env.local`:
+     ```
+     GOOGLE_GENAI_API_KEY=your_actual_api_key_here
+     ```
+
+5. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+6. Open [http://localhost:9002](http://localhost:9002) in your browser
+
+### Note on AI Features
+The AI-powered syllabus summarization and chat features require a valid Google Generative AI API key. Without it, you'll see helpful error messages guiding you to set up the API key.
+
+---
+
 ## 🤝 How to Contribute
 
 This is **not just an app** — it’s a **movement**. You can:  

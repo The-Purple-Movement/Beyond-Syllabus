@@ -59,14 +59,25 @@ const suggestResourcesFlow = ai.defineFlow(
   },
   async input => {
     try {
+      // Check if GOOGLE_GENAI_API_KEY is configured
+      if (!process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_GENAI_API_KEY === 'test-key') {
+        return { resources: [] };
+      }
+
       const {output} = await prompt(input);
       if (!output || !output.resources || output.resources.length === 0) {
         // If the model returns no output, return an empty list of resources.
         return { resources: [] };
       }
       return output;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in suggestResourcesFlow:', error);
+      
+      // Handle specific API key related errors
+      if (error?.message?.includes('API key') || error?.message?.includes('401') || error?.message?.includes('authentication')) {
+        return { resources: [] };
+      }
+      
       // In case of an error, return an empty list of resources to prevent crashing.
       return { resources: [] };
     }

@@ -43,7 +43,42 @@ const summarizeSyllabusFlow = ai.defineFlow(
     outputSchema: SummarizeSyllabusOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    try {
+      // Check if GOOGLE_GENAI_API_KEY is configured
+      if (!process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_GENAI_API_KEY === 'test-key') {
+        return {
+          summary: "AI summarization is currently unavailable. Please configure a valid Google Generative AI API key to enable this feature. Visit https://makersuite.google.com/app/apikey to get your API key and set it as the GOOGLE_GENAI_API_KEY environment variable."
+        };
+      }
+
+      const {output} = await prompt(input);
+      if (!output) {
+        return {
+          summary: "Unable to generate summary at this time. Please try again later."
+        };
+      }
+      return output;
+    } catch (error: any) {
+      console.error("Error in summarizeSyllabusFlow:", error);
+      
+      // Handle specific API key related errors
+      if (error?.message?.includes('API key') || error?.message?.includes('401') || error?.message?.includes('authentication')) {
+        return {
+          summary: "AI summarization requires a valid Google Generative AI API key. Please configure the GOOGLE_GENAI_API_KEY environment variable with a valid API key from https://makersuite.google.com/app/apikey"
+        };
+      }
+      
+      // Handle rate limiting
+      if (error?.message?.includes('429') || error?.message?.includes('quota')) {
+        return {
+          summary: "AI service is temporarily unavailable due to rate limiting. Please try again in a few minutes."
+        };
+      }
+      
+      // Generic error fallback
+      return {
+        summary: "Unable to generate AI summary at this time. Please check your internet connection and try again later."
+      };
+    }
   }
 );

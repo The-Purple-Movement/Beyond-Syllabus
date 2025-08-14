@@ -66,13 +66,38 @@ const generateModuleTasksFlow = ai.defineFlow(
   },
   async (input) => {
     try {
+        // Check if GOOGLE_GENAI_API_KEY is configured
+        if (!process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_GENAI_API_KEY === 'test-key') {
+          return { 
+              introductoryMessage: "AI-powered task generation is currently unavailable. Please configure a valid Google Generative AI API key to enable this feature.",
+              suggestions: [
+                  `What are the key topics in "${input.moduleTitle}"?`,
+                  "Can you give me an overview?",
+                  "What should I focus on studying?",
+              ]
+          };
+        }
+
         const { output } = await prompt(input);
         if (!output) {
           throw new Error("AI did not return any output.");
         }
         return output;
-    } catch (e) {
-        console.error("Error generating tasks:", e);
+    } catch (error: any) {
+        console.error("Error generating tasks:", error);
+        
+        // Handle specific API key related errors
+        if (error?.message?.includes('API key') || error?.message?.includes('401') || error?.message?.includes('authentication')) {
+          return { 
+              introductoryMessage: "AI task generation requires a valid Google Generative AI API key. Please configure the GOOGLE_GENAI_API_KEY environment variable.",
+              suggestions: [
+                  `What are the key topics in "${input.moduleTitle}"?`,
+                  "How do I set up the API key?",
+                  "What manual study methods can I use?",
+              ]
+          };
+        }
+        
         // Providing a fallback in case of parsing or generation failure
         return { 
             introductoryMessage: "Hello! I had a little trouble generating the introduction. Please paste the syllabus content again or ask me a question to get started!",
