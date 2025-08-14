@@ -26,10 +26,18 @@ export function SyllabusSummary({ fullSyllabus }: SyllabusSummaryProps) {
       setError(null);
       try {
         const result = await summarizeSyllabus({ syllabusText: fullSyllabus });
-        setSummary(result.summary);
+        
+        // Check if the response contains configuration error messages
+        if (result.summary.includes("API key") || result.summary.includes("unavailable")) {
+          setError(result.summary);
+          setSummary(null);
+        } else {
+          setSummary(result.summary);
+          setError(null);
+        }
       } catch (e: any) {
         console.error("Error summarizing syllabus:", e);
-        setError("Failed to generate summary.");
+        setError("Failed to generate summary. Please try again later.");
         setSummary(null);
       } finally {
         setLoading(false);
@@ -62,14 +70,17 @@ export function SyllabusSummary({ fullSyllabus }: SyllabusSummaryProps) {
         )}
 
         {error && (
-          <motion.p
+          <motion.div
             key="error"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-destructive text-center py-4"
+            className="text-destructive py-4"
           >
-            {error}
-          </motion.p>
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+              <p className="font-medium text-sm">Unable to Generate Summary</p>
+              <p className="text-sm mt-1 opacity-90">{error}</p>
+            </div>
+          </motion.div>
         )}
 
         {summary && !loading && !error && (

@@ -83,13 +83,38 @@ const chatWithSyllabusFlow = ai.defineFlow(
   },
   async (input) => {
     try {
+      // Check if GOOGLE_GENAI_API_KEY is configured
+      if (!process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_GENAI_API_KEY === 'test-key') {
+        return { 
+          response: "AI chat is currently unavailable. Please configure a valid Google Generative AI API key to enable this feature. Visit https://makersuite.google.com/app/apikey to get your API key and set it as the GOOGLE_GENAI_API_KEY environment variable.",
+          suggestions: ["Configure API key", "Check documentation", "Try again later"]
+        };
+      }
+
       const { output } = await prompt(input);
       if (!output) {
         return { response: "I'm sorry, I couldn't generate a response. Please try again." };
       }
       return output;
-    } catch(e) {
-      console.error("Error in chat flow:", e);
+    } catch(error: any) {
+      console.error("Error in chat flow:", error);
+      
+      // Handle specific API key related errors
+      if (error?.message?.includes('API key') || error?.message?.includes('401') || error?.message?.includes('authentication')) {
+        return { 
+          response: "AI chat requires a valid Google Generative AI API key. Please configure the GOOGLE_GENAI_API_KEY environment variable with a valid API key from https://makersuite.google.com/app/apikey",
+          suggestions: ["Configure API key", "Check documentation", "Contact support"]
+        };
+      }
+      
+      // Handle rate limiting
+      if (error?.message?.includes('429') || error?.message?.includes('quota')) {
+        return { 
+          response: "AI service is temporarily unavailable due to rate limiting. Please try again in a few minutes.",
+          suggestions: ["Try again later", "Check API quota", "Use manual study methods"]
+        };
+      }
+      
       return { response: "I'm having trouble with that request. Could you try rephrasing it?" };
     }
   }
