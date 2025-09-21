@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "sync": "bunx rimraf ./universities && bunx degit The-Purple-Movement/WikiSyllabus/universities universities/ --force",
-    "build": "tsc",
-    "build:prod": "bun run build && bun sync && bun run generate",
+    "build": "tsdown",
+    "build:prod": "tsdown && bun sync && bun run generate",
     "generate": "bun run ./src/routes/syllabus/generated/generate.ts",
     "check-types": "tsc -b",
     "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile api",
