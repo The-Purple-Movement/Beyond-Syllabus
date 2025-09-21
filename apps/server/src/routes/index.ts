@@ -2,7 +2,6 @@ import { publicProcedure } from "../lib/orpc";
 import type { RouterClient } from "@orpc/server";
 import path from "node:path";
 import { file } from "bun";
-import { shareRoutes } from "./share";
 
 
 export const appRouter = {
@@ -15,7 +14,6 @@ export const appRouter = {
     ).json();
     return data;
   }),
-  share: shareRoutes,
 };
 export type AppRouter = typeof appRouter;
 export type AppRouterClient = RouterClient<typeof appRouter>;
