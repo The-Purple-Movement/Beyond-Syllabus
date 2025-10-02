@@ -13,7 +13,7 @@
   ],
   "tasks": {
     "build": {
-      "dependsOn": ["prisma:generate", "^build"],
+      "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**", ".next/**"]
     },
@@ -26,10 +26,6 @@
     "dev": {
       "cache": false,
       "persistent": true
-    },
-    "prisma:generate": {
-      "inputs": ["apps/server/prisma/schema.prisma", "apps/server/prisma/migrations/**"],
-      "outputs": ["packages/db/client"] 
     }
   }
 }

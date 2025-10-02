@@ -10,8 +10,7 @@
     "check-types": "tsc -b",
     "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile api",
     "dev": "bun run --hot src/index.ts",
-    "start": "bun run src/index.ts",
-    "prisma:generate": "prisma generate --schema=./prisma/schema.prisma"
+    "start": "bun run src/index.ts"
   },
   "dependencies": {
     "@chneau/elysia-logger": "^1.0.10",
