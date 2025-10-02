@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
-import { createAuthCookie, signStudentJwt } from "@/lib/auth";
-import { compare } from "bcryptjs";
-import { prisma } from "@/lib/db";
+import { createAuthCookie } from "@/lib/auth";
+import { orpc } from "@/lib/orpc";
 
 // body of the login request
 type LoginBody = {
@@ -26,51 +25,30 @@ function getEnvUsers(): EnvUser[] | null {
   }
 }
 
-// validate credentials
+// validate credentials via server
 async function validateCredentials(email: string, password: string) {
   if (!email || !password) return null;
-
-  // Prefer DB when available
   try {
-    const dbUser = await prisma.student.findUnique({ where: { email: email.toLowerCase() } });
-    if (dbUser) {
-      const ok = await compare(password, dbUser.passwordHash);
-      if (!ok) return null;
-      return { id: dbUser.id, email: dbUser.email, name: dbUser.name } as const;
-    }
-  } catch {}
-
-  // Fallback to env users for legacy/non-DB setups
-  const envUsers = getEnvUsers();
-  if (!envUsers) return null;
-  const user = envUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
-  if (!user) return null;
-  const ok = await compare(password, user.passwordHash);
-  if (!ok) return null;
-  return { id: user.id ?? user.email.toLowerCase(), email: user.email.toLowerCase(), name: user.name ?? user.email.split("@")[0] } as const;
+    const { token } = await orpc.auth.login.call({ email, password });
+    return token as unknown as string;
+  } catch {
+    return null;
+  }
 }
 
 // login route
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as LoginBody;
-    const user = await validateCredentials(body.email, body.password);
-    if (!user) {
+    const token = await validateCredentials(body.email, body.password);
+    if (!token) {
       return new Response(JSON.stringify({ error: "Invalid credentials" }), {
         status: 401,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    // sign token
-    const token = await signStudentJwt({
-      sub: user.id,
-      email: user.email,
-      name: user.name,
-      role: "student",
-    });
-
-    // create cookie
+    // set cookie with server-issued token
     const setCookie = createAuthCookie(token);
 
     return new Response(JSON.stringify({ ok: true }), {

@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/db";
-import { hashSync } from "bcryptjs";
+import { orpc } from "@/lib/orpc";
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,18 +11,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const existing = await prisma.student.findUnique({ where: { email: email.toLowerCase() } });
-    if (existing) {
-      return new Response(JSON.stringify({ error: "Email already in use" }), {
-        status: 409,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    const passwordHash = hashSync(password, 12);
-    await prisma.student.create({
-      data: { name, email: email.toLowerCase(), passwordHash },
-    });
+    await orpc.auth.register.call({ name, email, password });
 
     return new Response(null, { status: 201 });
   } catch (e) {
