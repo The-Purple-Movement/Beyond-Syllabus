@@ -315,15 +315,21 @@ const MobileChatPanels: FC<MobileChatPanelsProps> = ({
             {features.map((feature, i) => (
               <div
                 key={i}
-                onClick={() => handleClick(i)}
-                className="relative bg-black/10 hover:bg-accent transition-all duration-300 ease border backdrop-blur-md rounded-xl shadow-lg flex flex-col items-center justify-center h-[100px] p-3 cursor-pointer"
+                className="relative bg-black/10 border backdrop-blur-md rounded-xl shadow-lg flex flex-col items-center justify-center h-[100px] p-3 pointer-events-none opacity-80"
+                aria-disabled="true"
               >
+                {/* Lock Ribbon */}
+                <div className="absolute right-2 top-2 rounded-full bg-yellow-500 px-2 py-0.5 text-[10px] font-semibold text-white">
+                  Coming Soon
+                </div>
+                {/* Dim Overlay */}
+                <div className="absolute inset-0 rounded-xl bg-background/40" />
                 {/* Icon */}
-                <div className="mb-2">{feature.icon}</div>
+                <div className="mb-2 z-10">{feature.icon}</div>
 
                 {/* Text */}
-                <p className="text-sm font-semibold text-center text-foreground">
-                  {clicked[i] ? "Coming Soon" : feature.name}
+                <p className="text-sm font-semibold text-center text-foreground z-10">
+                  {feature.name}
                 </p>
               </div>
             ))}
