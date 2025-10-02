@@ -4,12 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack -p 3001",
-    "build": "bun prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "postinstall": "patch-package",
-    "prisma:generate": "bun prisma generate"
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
