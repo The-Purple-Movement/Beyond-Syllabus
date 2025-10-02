@@ -7,7 +7,9 @@
     "UPSTASH_REDIS_URL",
     "UPSTASH_REDIS_TOKEN",
     "NEXT_PUBLIC_SERVER_URL",
-    "CORS_ORIGIN"
+    "CORS_ORIGIN",
+    "JWT_SECRET",
+    "DATABASE_URL"
   ],
   "tasks": {
     "build": {
