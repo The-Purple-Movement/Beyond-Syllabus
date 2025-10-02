@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { createAuthCookie, signStudentJwt } from "@/lib/auth";
 import { compare } from "bcryptjs";
+import { prisma } from "@/lib/db";
 
 // body of the login request
 type LoginBody = {
@@ -29,33 +30,24 @@ function getEnvUsers(): EnvUser[] | null {
 async function validateCredentials(email: string, password: string) {
   if (!email || !password) return null;
 
-  const envUsers = getEnvUsers();
-  if (!envUsers) {
-    if (process.env.NODE_ENV === "production") {
-      return null;
+  // Prefer DB when available
+  try {
+    const dbUser = await prisma.student.findUnique({ where: { email: email.toLowerCase() } });
+    if (dbUser) {
+      const ok = await compare(password, dbUser.passwordHash);
+      if (!ok) return null;
+      return { id: dbUser.id, email: dbUser.email, name: dbUser.name } as const;
     }
-    // dev fallback: accept any non-empty credentials for development
-    return {
-      id: email.toLowerCase(),
-      email: email.toLowerCase(),
-      name: email.split("@")[0],
-    } as const;
-  }
+  } catch {}
 
-  // find user
-  const user = envUsers.find(
-    (u) => u.email.toLowerCase() === email.toLowerCase()
-  );
+  // Fallback to env users for legacy/non-DB setups
+  const envUsers = getEnvUsers();
+  if (!envUsers) return null;
+  const user = envUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
   if (!user) return null;
-
-  // validate password
   const ok = await compare(password, user.passwordHash);
   if (!ok) return null;
-  return {
-    id: user.id ?? user.email.toLowerCase(),
-    email: user.email.toLowerCase(),
-    name: user.name ?? user.email.split("@")[0],
-  } as const;
+  return { id: user.id ?? user.email.toLowerCase(), email: user.email.toLowerCase(), name: user.name ?? user.email.split("@")[0] } as const;
 }
 
 // login route
