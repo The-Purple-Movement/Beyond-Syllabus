@@ -27,5 +27,9 @@
       "cache": false,
       "persistent": true
     }
+  },
+  "scripts": {
+  "prisma:generate": "bun prisma generate",
+  "build": "bun prisma generate && next build"
   }
 }
