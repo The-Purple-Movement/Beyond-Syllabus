@@ -3,6 +3,7 @@ import type { RouterClient } from "@orpc/server";
 import path from "node:path";
 import { file } from "bun";
 import { shareRoutes } from "./share";
+import { authRoutes } from "./auth";
 
 
 export const appRouter = {
@@ -16,6 +17,7 @@ export const appRouter = {
     return data;
   }),
   share: shareRoutes,
+  auth: authRoutes,
 };
 export type AppRouter = typeof appRouter;
 export type AppRouterClient = RouterClient<typeof appRouter>;

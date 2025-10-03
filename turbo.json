@@ -7,7 +7,10 @@
     "UPSTASH_REDIS_URL",
     "UPSTASH_REDIS_TOKEN",
     "NEXT_PUBLIC_SERVER_URL",
-    "CORS_ORIGIN"
+    "CORS_ORIGIN",
+    "JWT_SECRET",
+    "SUPABASE_URL",
+    "SUPABASE_SERVICE_ROLE_KEY"
   ],
   "tasks": {
     "build": {
