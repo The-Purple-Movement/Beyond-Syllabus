@@ -9,7 +9,8 @@
     "NEXT_PUBLIC_SERVER_URL",
     "CORS_ORIGIN",
     "JWT_SECRET",
-    "DATABASE_URL"
+    "SUPABASE_URL",
+    "SUPABASE_SERVICE_ROLE_KEY"
   ],
   "tasks": {
     "build": {
