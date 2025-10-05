@@ -7,6 +7,13 @@ import DesktopChatLayout from "./DesktopChatLayout";
 import DesktopChat from "./DesktopChat/DesktopChat";
 import MobileChatPanels from "./mobileChatPanels";
 import styles from './page.module.css';
+import {
+  ChatSession,
+  createNewChatSession,
+  saveChatSession,
+  getChatSessionsList,
+  getChatSession,
+} from "@/lib/chat-history";
 
 export default function ChatComponent() {
   // Client-only state for module title/content
@@ -29,6 +36,21 @@ export default function ChatComponent() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<"ai" | "quick" | "history">("ai");
   const [historyViewing, setHistoryViewing] = useState<boolean>(false);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [loadedFromSession, setLoadedFromSession] = useState<boolean>(false);
+  const [restoreAttempted, setRestoreAttempted] = useState<boolean>(false);
+
+  const normalizeTitle = (title: string) => title.trim().toLowerCase();
+  const hash = (s: string) => {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) {
+      h = (h << 5) - h + s.charCodeAt(i);
+      h |= 0;
+    }
+    return h.toString(36);
+  };
+  const getStorageKey = (title: string, content: string) =>
+    `bs_chat_${encodeURIComponent(normalizeTitle(title))}_${hash(content.slice(0, 500))}`;
 
   const quickQuestions = [
     "Why do I need to study this?",
@@ -57,9 +79,44 @@ export default function ChatComponent() {
     console.log(messages)
   }, [messages])
 
+  // Load last saved session for this module (if any)
+  useEffect(() => {
+    if (!moduleTitle || moduleTitle === "Loading title...") return;
+    try {
+      // Strong fallback: try per-module storage first
+      const perModule = localStorage.getItem(getStorageKey(moduleTitle, moduleContent));
+      if (perModule) {
+        const parsed = JSON.parse(perModule) as { messages?: Message[]; suggestions?: string[] };
+        if (parsed?.messages && parsed.messages.length > 0) {
+          setMessages(parsed.messages);
+          setSuggestions(parsed.suggestions || []);
+          setLoadedFromSession(true);
+          setRestoreAttempted(true);
+          return;
+        }
+      }
+
+      const sessions = getChatSessionsList();
+      const matching = sessions.find((s) => s.title && normalizeTitle(s.title).startsWith(normalizeTitle(moduleTitle)));
+      if (matching) {
+        setCurrentSessionId(matching.id);
+        setMessages(matching.messages || []);
+        setSuggestions(matching.suggestions || []);
+        setLoadedFromSession(true);
+        setRestoreAttempted(true);
+      } else {
+        setLoadedFromSession(false);
+        setRestoreAttempted(true);
+      }
+    } catch (_) {
+      // ignore
+      setRestoreAttempted(true);
+    }
+  }, [moduleTitle, moduleContent]);
+
   // Generate initial tasks
   useEffect(() => {
-    if (!moduleContent || moduleTitle === "Loading title...") return;
+    if (!moduleContent || moduleTitle === "Loading title..." || !restoreAttempted || loadedFromSession) return;
 
     const systemMessage: Message = {
       role: "system",
@@ -77,12 +134,75 @@ export default function ChatComponent() {
           { role: "assistant", content: result.introductoryMessage },
         ]);
         setSuggestions(result.suggestions);
+
+        // Initialize and save a new session with the intro
+        const initialSession: ChatSession = {
+          ...createNewChatSession(),
+          title: moduleTitle,
+          messages: [
+            systemMessage,
+            { role: "assistant", content: result.introductoryMessage },
+          ],
+          suggestions: result.suggestions || [],
+        };
+        saveChatSession(initialSession);
+        setCurrentSessionId(initialSession.id);
       })
       .catch(() =>
         setError("Failed to generate initial tasks and applications.")
       )
       .finally(() => setLoading(false));
-  }, [moduleContent, moduleTitle]);
+  }, [moduleContent, moduleTitle, loadedFromSession, restoreAttempted]);
+
+  const persistSession = (updatedMessages: Message[], nextSuggestions: string[] = []) => {
+    try {
+      let session: ChatSession | null = null;
+      if (currentSessionId) {
+        session = getChatSession(currentSessionId);
+      }
+      if (!session) {
+        session = {
+          ...createNewChatSession(),
+          title: (() => {
+            const firstUser = updatedMessages.find((m) => m.role === "user");
+            return firstUser ? `${moduleTitle} - ${firstUser.content.slice(0, 50)}` : moduleTitle;
+          })(),
+          messages: updatedMessages,
+          suggestions: nextSuggestions,
+        };
+      } else {
+        session = {
+          ...session,
+          title: session.title || moduleTitle,
+          messages: updatedMessages,
+          suggestions: nextSuggestions,
+        };
+      }
+      saveChatSession(session);
+      if (!currentSessionId) setCurrentSessionId(session.id);
+
+      // Also persist under a per-module key so refreshes are robust
+      localStorage.setItem(
+        getStorageKey(moduleTitle, moduleContent),
+        JSON.stringify({ messages: updatedMessages, suggestions: nextSuggestions })
+      );
+    } catch (_) {
+      // ignore persistence errors
+    }
+  };
+
+  // Save on every message/suggestions change as additional safety
+  useEffect(() => {
+    if (!moduleTitle || messages.length === 0) return;
+    try {
+      localStorage.setItem(
+        getStorageKey(moduleTitle, moduleContent),
+        JSON.stringify({ messages, suggestions })
+      );
+    } catch (_) {
+      // ignore
+    }
+  }, [moduleTitle, moduleContent, messages, suggestions]);
 
   const copyToClipboard = async (text: string, messageIndex: number) => {
     try {
@@ -112,6 +232,8 @@ export default function ChatComponent() {
     const userMessage: Message = { role: "user", content: input };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
+    // Persist immediately with the user message
+    persistSession(updatedMessages, suggestions);
     setInput("");
     setSuggestions([]);
     setLoading(true);
@@ -136,6 +258,8 @@ export default function ChatComponent() {
 
       setMessages((msgs) => [...msgs, assistantMessage]);
       setSuggestions(result.suggestions || []);
+      // Persist with assistant response and new suggestions
+      persistSession([...updatedMessages, assistantMessage], result.suggestions || []);
     } catch (err) {
       console.error("Error getting AI response:", err);
       setError("Sorry, something went wrong. Please try again.");
@@ -166,6 +290,8 @@ export default function ChatComponent() {
           messages: messages.filter((m) => m.role !== "system"),
         },
       ]);
+      // Persist current session before starting a new one
+      persistSession(messages, suggestions);
     }
     const systemMessage: Message = {
       role: "system",
@@ -177,6 +303,8 @@ export default function ChatComponent() {
     setSuggestions([]);
     setError(null);
     setActiveTab("ai");
+    // Reset session so next send creates a new one for the new topic
+    setCurrentSessionId(null);
   };
 
   return (
