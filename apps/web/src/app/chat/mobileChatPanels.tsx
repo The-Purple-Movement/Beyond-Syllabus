@@ -38,7 +38,7 @@ interface MobileChatPanelsProps {
   error: string | null;
   suggestions: string[];
   copiedMessageIndex: number | null;
-  chatHistory: { id?: string; title: string; messages: Message[] }[];
+  chatHistory: { id: string; title: string; messages: Message[] }[];
   quickQuestions: string[];
   activeTab: "ai" | "quick" | "history";
   setActiveTab: (tab: "ai" | "quick" | "history") => void;
