@@ -25,6 +25,8 @@ interface Props {
     historyViewing: boolean;
     setHistoryViewing: React.Dispatch<React.SetStateAction<boolean>>;
     error?: string;
+    onSelectChat: (id: string) => void;
+    onRenameChat: (id: string, title: string) => void;
 
 }
 
@@ -48,6 +50,8 @@ const DesktopChat: React.FC<Props> = ({
     historyViewing,
     setHistoryViewing,
     error,
+    onSelectChat,
+    onRenameChat,
 }) => {
 
     return (
@@ -76,6 +80,8 @@ const DesktopChat: React.FC<Props> = ({
                 setMessages={setMessages}
                 historyViewing={historyViewing}
                 setHistoryViewing={setHistoryViewing}
+                onSelectChat={onSelectChat}
+                onRenameChat={onRenameChat}
             />
         </div>
     );
