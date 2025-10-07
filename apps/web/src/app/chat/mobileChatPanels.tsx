@@ -38,7 +38,7 @@ interface MobileChatPanelsProps {
   error: string | null;
   suggestions: string[];
   copiedMessageIndex: number | null;
-  chatHistory: { id: string; title: string; messages: Message[] }[];
+  chatHistory: { id?: string; title: string; messages: Message[] }[];
   quickQuestions: string[];
   activeTab: "ai" | "quick" | "history";
   setActiveTab: (tab: "ai" | "quick" | "history") => void;
@@ -48,8 +48,8 @@ interface MobileChatPanelsProps {
   handleSuggestionClick: (text: string) => void;
   handleSend: () => void;
   handleNewTopic: () => void;
-  onSelectChat: (id: string) => void;
-  onRenameChat: (id: string, title: string) => void;
+  onSelectChat?: (id: string) => void;
+  onRenameChat?: (id: string, title: string) => void;
 }
 
 const MobileChatPanels: FC<MobileChatPanelsProps> = ({
@@ -370,7 +370,9 @@ const MobileChatPanels: FC<MobileChatPanelsProps> = ({
                       onChange={(e) => setEditingTitle(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                          onRenameChat(chat.id, editingTitle.trim() || chat.title);
+                          if (onRenameChat && chat.id) {
+                            onRenameChat(chat.id, editingTitle.trim() || chat.title);
+                          }
                           setEditingId(null);
                         }
                       }}
@@ -379,7 +381,9 @@ const MobileChatPanels: FC<MobileChatPanelsProps> = ({
                       variant="ghost"
                       size="icon"
                       onClick={() => {
-                        onRenameChat(chat.id, editingTitle.trim() || chat.title);
+                        if (onRenameChat && chat.id) {
+                          onRenameChat(chat.id, editingTitle.trim() || chat.title);
+                        }
                         setEditingId(null);
                       }}
                       aria-label="Save title"
@@ -392,7 +396,11 @@ const MobileChatPanels: FC<MobileChatPanelsProps> = ({
                     variant="ghost"
                     className="truncate text-left flex-1"
                     onClick={() => {
-                      onSelectChat(chat.id);
+                      if (onSelectChat && chat.id) {
+                        onSelectChat(chat.id);
+                      } else {
+                        setMessages(chat.messages);
+                      }
                       setActiveTab("ai");
                     }}
                   >

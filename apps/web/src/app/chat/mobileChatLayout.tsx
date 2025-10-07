@@ -25,7 +25,7 @@ export default function MobileChatLayout() {
     null
   );
   const [chatHistory, setChatHistory] = useState<
-    { title: string; messages: Message[] }[]
+    { id?: string; title: string; messages: Message[] }[]
   >([]);
   const [activeTab, setActiveTab] = useState<"ai" | "quick" | "history">("ai");
 
