@@ -29,6 +29,38 @@
     justify-content: space-between;
 }
 
+.historyButton {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: transparent;
+    border: none;
+    padding: .25rem 0;
+    cursor: pointer;
+}
+
+.historyButton:hover .historyName {
+    color: #8b5cf6; /* purple-500 */
+}
+
+.historyName {
+    font-size: .9rem;
+}
+
+.historyEditRow {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+}
+
+.historyEditInput {
+    background: transparent;
+    border: 1px solid rgba(110,110,110,.5);
+    border-radius: .375rem;
+    padding: .2rem .4rem;
+    color: inherit;
+}
+
 .closedContainer {
     display: flex;
     flex-direction: column;
@@ -44,4 +76,12 @@
 
 .deleteIcon:hover{
     color: red;
+}
+
+.editIcon {
+    cursor: pointer;
+}
+
+.editIcon:hover {
+    color: #8b5cf6;
 }

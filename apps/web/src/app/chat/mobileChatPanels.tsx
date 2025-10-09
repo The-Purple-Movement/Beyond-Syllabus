@@ -22,12 +22,13 @@ import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import "katex/dist/katex.min.css";
 import ModelSelector from "@/components/common/ModelSelector/ModelSelector";
+import { Pencil } from "lucide-react";
 
 interface MobileChatPanelsProps {
   setMessages: (messages: Message[]) => void;
-  setChatHistory: (
-    history: { id?: string; title: string; messages: Message[] }[]
-  ) => void;
+  setChatHistory: React.Dispatch<
+    React.SetStateAction<{ id: string; title: string; messages: Message[] }[]>
+  >;
 
   messages: Message[];
   input: string;
@@ -37,7 +38,7 @@ interface MobileChatPanelsProps {
   error: string | null;
   suggestions: string[];
   copiedMessageIndex: number | null;
-  chatHistory: { id?: string; title: string; messages: Message[] }[];
+  chatHistory: { id: string; title: string; messages: Message[] }[];
   quickQuestions: string[];
   activeTab: "ai" | "quick" | "history";
   setActiveTab: (tab: "ai" | "quick" | "history") => void;
@@ -47,6 +48,8 @@ interface MobileChatPanelsProps {
   handleSuggestionClick: (text: string) => void;
   handleSend: () => void;
   handleNewTopic: () => void;
+  onSelectChat?: (id: string) => void;
+  onRenameChat?: (id: string, title: string) => void;
 }
 
 const MobileChatPanels: FC<MobileChatPanelsProps> = ({
@@ -70,6 +73,8 @@ const MobileChatPanels: FC<MobileChatPanelsProps> = ({
   handleSuggestionClick,
   handleSend,
   handleNewTopic,
+  onSelectChat,
+  onRenameChat,
 }) => {
   const features = [
     {
@@ -87,6 +92,9 @@ const MobileChatPanels: FC<MobileChatPanelsProps> = ({
   const [clicked, setClicked] = useState<boolean[]>(
     Array(features.length).fill(false)
   );
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState<string>("");
 
   const handleClick = (index: number) => {
     const newClicked = [...clicked];
@@ -360,16 +368,51 @@ const MobileChatPanels: FC<MobileChatPanelsProps> = ({
                 key={chat.id ?? `mobile-history-${Date.now()}-${idx}`}
                 className="flex justify-between items-center border rounded p-2 shadow-sm"
               >
-                <Button
-                  variant="ghost"
-                  className="truncate text-left flex-1"
-                  onClick={() => {
-                    setMessages(chat.messages);
-                    setActiveTab("ai");
-                  }}
-                >
-                  {chat.title}
-                </Button>
+                {editingId === chat.id ? (
+                  <div className="flex items-center gap-2 flex-1">
+                    <input
+                      className="flex-1 bg-transparent border rounded px-2 py-1 text-sm"
+                      value={editingTitle}
+                      onChange={(e) => setEditingTitle(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          if (onRenameChat && chat.id) {
+                            onRenameChat(chat.id, editingTitle.trim() || chat.title);
+                          }
+                          setEditingId(null);
+                        }
+                      }}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        if (onRenameChat && chat.id) {
+                          onRenameChat(chat.id, editingTitle.trim() || chat.title);
+                        }
+                        setEditingId(null);
+                      }}
+                      aria-label="Save title"
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    className="truncate text-left flex-1"
+                    onClick={() => {
+                      if (onSelectChat && chat.id) {
+                        onSelectChat(chat.id);
+                      } else {
+                        setMessages(chat.messages);
+                      }
+                      setActiveTab("ai");
+                    }}
+                  >
+                    {chat.title}
+                  </Button>
+                )}
                 <Button
                   variant="ghost"
                   size="icon"
@@ -383,6 +426,19 @@ const MobileChatPanels: FC<MobileChatPanelsProps> = ({
                 >
                   <Trash className="h-4 w-4" />
                 </Button>
+                {editingId !== chat.id && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setEditingId(chat.id);
+                      setEditingTitle(chat.title);
+                    }}
+                    aria-label={`Rename chat titled ${chat.title}`}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             ))}
           </div>

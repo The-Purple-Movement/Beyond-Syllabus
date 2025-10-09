@@ -7,6 +7,18 @@ import DesktopChatLayout from "./DesktopChatLayout";
 import DesktopChat from "./DesktopChat/DesktopChat";
 import MobileChatPanels from "./mobileChatPanels";
 import styles from './page.module.css';
+import {
+  StoredChat,
+  StoredChatMessage,
+  createNewChat,
+  deleteChatById,
+  getActiveChatId,
+  getOrCreateUserId,
+  loadChats,
+  saveChats,
+  setActiveChatId,
+  upsertChat,
+} from "@/lib/chatStorage";
 
 export default function ChatComponent() {
   // Client-only state for module title/content
@@ -24,8 +36,10 @@ export default function ChatComponent() {
   const [selectedModel, setSelectedModel] = useState("llama3-8b-8192"); // default model
 
   const [chatHistory, setChatHistory] = useState<
-    { title: string; messages: Message[] }[]
+    { id: string; title: string; messages: Message[]; createdAt?: string; updatedAt?: string }[]
   >([]);
+  const [activeChatId, setActiveChat] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<"ai" | "quick" | "history">("ai");
   const [historyViewing, setHistoryViewing] = useState<boolean>(false);
@@ -57,6 +71,30 @@ export default function ChatComponent() {
     console.log(messages)
   }, [messages])
 
+  // Load persisted chats on mount
+  useEffect(() => {
+    const id = getOrCreateUserId();
+    setUserId(id);
+    const existing = loadChats(id);
+    const mapped: { id: string; title: string; messages: Message[]; createdAt?: string; updatedAt?: string }[] = existing.map((c) => ({
+      id: c.id,
+      title: c.title,
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+      messages: c.messages.map((m): Message => ({
+        role: m.sender === "user" ? "user" : "assistant",
+        content: m.text,
+      })),
+    }));
+    setChatHistory(mapped);
+    const active = getActiveChatId(id);
+    if (active) {
+      setActiveChat(active);
+      const found = mapped.find((c) => c.id === active);
+      if (found) setMessages([{ role: "system", content: `You are an expert assistant for the course module: ${moduleTitle}.\nModule Content:\n${moduleContent}` }, ...found.messages]);
+    }
+  }, []);
+
   // Generate initial tasks
   useEffect(() => {
     if (!moduleContent || moduleTitle === "Loading title...") return;
@@ -65,8 +103,9 @@ export default function ChatComponent() {
       role: "system",
       content: `You are an expert assistant for the course module: ${moduleTitle}.\nModule Content:\n${moduleContent}`,
     };
-
-    setMessages([systemMessage]);
+    if (!activeChatId) {
+      setMessages([systemMessage]);
+    }
     setLoading(true);
     setError(null);
 
@@ -103,7 +142,19 @@ export default function ChatComponent() {
   };
 
   const handleDeleteTopic = (idx: number) => {
-    setChatHistory((prev) => prev.filter((_, i) => i !== idx));
+    setChatHistory((prev) => {
+      const toDelete = prev[idx]?.id;
+      const next = prev.filter((_, i) => i !== idx);
+      if (userId && toDelete) {
+        const persisted = loadChats(userId);
+        saveChats(userId, deleteChatById(persisted, toDelete));
+        if (activeChatId === toDelete) {
+          setActiveChat(null);
+          setActiveChatId(userId, "");
+        }
+      }
+      return next;
+    });
   };
 
   const handleSend = async () => {
@@ -134,7 +185,64 @@ export default function ChatComponent() {
         content: result.response,
       };
 
-      setMessages((msgs) => [...msgs, assistantMessage]);
+      setMessages((msgs) => {
+        const nextMsgs = [...msgs, assistantMessage];
+        // persist to localStorage as current chat
+        if (userId) {
+          const now = new Date().toISOString();
+          let currentId = activeChatId;
+          if (!currentId) {
+            const newChat = createNewChat(moduleTitle);
+            currentId = newChat.id;
+            setActiveChat(currentId);
+            setActiveChatId(userId, currentId);
+            const stored = loadChats(userId);
+            saveChats(userId, upsertChat(stored, newChat));
+            setChatHistory((prev) => [{ id: newChat.id, title: newChat.title, messages: [], createdAt: newChat.createdAt, updatedAt: newChat.updatedAt }, ...prev]);
+          }
+
+          const persisted = loadChats(userId);
+          const withoutSystem = nextMsgs.filter((m) => m.role !== "system");
+          const storedMsgs: StoredChatMessage[] = withoutSystem.map((m) => ({
+            sender: m.role === "user" ? "user" : "bot",
+            text: m.content,
+            timestamp: now,
+          }));
+          const existing = persisted.find((c) => c.id === currentId);
+          const firstUserSnippet = withoutSystem[0]?.content?.slice(0, 40);
+          const derivedTitle = firstUserSnippet || `${moduleTitle} - New Chat`;
+          const chatToSave: StoredChat = existing
+            ? {
+                ...existing,
+                messages: storedMsgs,
+                updatedAt: now,
+                // auto-title only if this is the first user message (previously empty)
+                title:
+                  (existing.messages?.length ?? 0) === 0 && firstUserSnippet
+                    ? firstUserSnippet
+                    : existing.title || derivedTitle,
+              }
+            : {
+                id: currentId!,
+                title: derivedTitle,
+                messages: storedMsgs,
+                createdAt: now,
+                updatedAt: now,
+                moduleTitle,
+              };
+          saveChats(userId, upsertChat(persisted, chatToSave));
+          setChatHistory((prev) => {
+            const index = prev.findIndex((c) => c.id === chatToSave.id);
+            const mapped = { id: chatToSave.id, title: chatToSave.title, messages: withoutSystem };
+            if (index === -1) return [mapped, ...prev];
+            const copy = [...prev];
+            copy[index] = mapped;
+            return copy;
+          });
+        }
+
+        return nextMsgs;
+      });
       setSuggestions(result.suggestions || []);
     } catch (err) {
       console.error("Error getting AI response:", err);
@@ -145,38 +253,51 @@ export default function ChatComponent() {
   };
 
   const handleNewTopic = () => {
-    const firstUserMessage =
-      messages.find((m) => m.role === "user")?.content || "";
-
-    if (historyViewing) {
-      // Just exit history mode + clear messages
-      setHistoryViewing(false);
-      setMessages([]);
-      return; // stop here, don’t archive old chat
-    }
-
-    // Normal behavior (not in history view)
-    if (messages.length > 1) {
-      setChatHistory((prev) => [
-        ...prev,
-        {
-          title: firstUserMessage
-            ? `Untitled - ${firstUserMessage.slice(0, 20)}`
-            : `${moduleTitle} - New Topic`,
-          messages: messages.filter((m) => m.role !== "system"),
-        },
-      ]);
-    }
+    // start a fresh conversation and set as active
     const systemMessage: Message = {
       role: "system",
       content: `You are an expert assistant for the course module: ${moduleTitle}.\nModule Content:\n${moduleContent}`,
     };
-
     setMessages([systemMessage]);
     setInput("");
     setSuggestions([]);
     setError(null);
     setActiveTab("ai");
+    if (userId) {
+      const newChat = createNewChat(moduleTitle);
+      const stored = loadChats(userId);
+      saveChats(userId, upsertChat(stored, newChat));
+      setActiveChat(newChat.id);
+      setActiveChatId(userId, newChat.id);
+      setChatHistory((prev) => [{ id: newChat.id, title: newChat.title, messages: [] }, ...prev]);
+    } else {
+      setActiveChat(null);
+    }
+  };
+
+  const handleSelectChat = (id: string) => {
+    setActiveChat(id);
+    if (userId) setActiveChatId(userId, id);
+    const found = chatHistory.find((c) => c.id === id);
+    if (found) {
+      const systemMessage: Message = {
+        role: "system",
+        content: `You are an expert assistant for the course module: ${moduleTitle}.\nModule Content:\n${moduleContent}`,
+      };
+      setMessages([systemMessage, ...found.messages]);
+    }
+  };
+
+  const handleRenameChat = (id: string, newTitle: string) => {
+    setChatHistory((prev) => {
+      const next = prev.map((c) => (c.id === id ? { ...c, title: newTitle } : c));
+      if (userId) {
+        const persisted = loadChats(userId);
+        const updated = persisted.map((c) => (c.id === id ? { ...c, title: newTitle, updatedAt: new Date().toISOString() } : c));
+        saveChats(userId, updated);
+      }
+      return next;
+    });
   };
 
   return (
@@ -222,6 +343,8 @@ export default function ChatComponent() {
           setActiveTab={setActiveTab}
           historyViewing={historyViewing}
           setHistoryViewing={setHistoryViewing}
+          onSelectChat={handleSelectChat}
+          onRenameChat={handleRenameChat}
         />
 
 
@@ -249,6 +372,8 @@ export default function ChatComponent() {
           handleSuggestionClick={handleSuggestionClick}
           handleSend={handleSend}
           handleNewTopic={handleNewTopic}
+          onSelectChat={handleSelectChat}
+          onRenameChat={handleRenameChat}
         />
       </div>
     </div>

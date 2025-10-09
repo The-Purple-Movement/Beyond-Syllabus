@@ -6,6 +6,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import { TbLayoutSidebarRightExpand } from "react-icons/tb";
 import { TbLayoutSidebarLeftExpand } from "react-icons/tb";
+import { FiEdit2, FiCheck } from "react-icons/fi";
 
 interface Props {
     chatHistory: { title: string; messages: Message[] }[];
@@ -15,6 +16,8 @@ interface Props {
     setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
     historyViewing: boolean;
     setHistoryViewing: React.Dispatch<React.SetStateAction<boolean>>;
+    onSelectChat: (id: string) => void;
+    onRenameChat: (id: string, title: string) => void;
 }
 
 
@@ -25,10 +28,14 @@ const ChatHistory: React.FC<Props> = ({
     setActiveTab,
     setMessages,
     historyViewing,
-    setHistoryViewing
+    setHistoryViewing,
+    onSelectChat,
+    onRenameChat
 }) => {
 
     const [visible, setVisible] = useState(true);
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editingTitle, setEditingTitle] = useState<string>("");
     const expandFunction = () => {
         setVisible(!visible);
     }
@@ -62,15 +69,39 @@ const ChatHistory: React.FC<Props> = ({
                                     key={idx}
                                     className={styles.historyItem}
                                 >
-                                    <span
-                                        className={styles.historyName}
-                                        onClick={() => {
-                                            setHistoryViewing(true);
-                                            setMessages(topic.messages);
-                                            setActiveTab("ai");
-                                        }}>
-                                        {topic.title}
-                                    </span>
+                                    {editingId === (topic as any).id ? (
+                                        <div className={styles.historyEditRow}>
+                                            <input
+                                                className={styles.historyEditInput}
+                                                value={editingTitle}
+                                                onChange={(e) => setEditingTitle(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        onRenameChat((topic as any).id, editingTitle.trim() || topic.title);
+                                                        setEditingId(null);
+                                                    }
+                                                }}
+                                            />
+                                            <FiCheck
+                                                className={styles.editIcon}
+                                                onClick={() => {
+                                                    onRenameChat((topic as any).id, editingTitle.trim() || topic.title);
+                                                    setEditingId(null);
+                                                }}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <button
+                                            className={styles.historyButton}
+                                            onClick={() => {
+                                                setHistoryViewing(true);
+                                                onSelectChat((topic as any).id);
+                                                setActiveTab("ai");
+                                            }}
+                                        >
+                                            <span className={styles.historyName}>{topic.title}</span>
+                                        </button>
+                                    )}
                                     <RiDeleteBin6Line
                                         onClick={(e) => {
                                             e.stopPropagation();
@@ -78,6 +109,15 @@ const ChatHistory: React.FC<Props> = ({
                                         }}
                                         className={styles.deleteIcon}
                                     />
+                                    {editingId !== (topic as any).id && (
+                                        <FiEdit2
+                                            className={styles.editIcon}
+                                            onClick={() => {
+                                                setEditingId((topic as any).id);
+                                                setEditingTitle(topic.title);
+                                            }}
+                                        />
+                                    )}
 
 
                                 </div>
