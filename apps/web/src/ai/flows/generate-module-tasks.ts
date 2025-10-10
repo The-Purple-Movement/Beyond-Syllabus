@@ -1,6 +1,8 @@
 "use server";
 
 import { ai } from "@/ai/ai";
+import { createStandardizedPrompt, validateStandardizedFormat } from "@/ai/utils/prompt-builder";
+import { PersonaTemplates, TaskTemplates, FormatTemplates, type WikiSyllabusAIFormat } from "@/ai/types/standardized-format";
 
 /**
  * @fileOverview An AI agent that generates learning tasks and real-world applications for a given module content.
@@ -17,43 +19,112 @@ export interface GenerateModuleTasksOutput {
   suggestions: string[];
 }
 
-// ---------------------- Flow Logic ----------------------
+// Flow Logic 
 const generateModuleTasksFlow = async (
   input: GenerateModuleTasksInput
 ): Promise<GenerateModuleTasksOutput> => {
-  const promptText = `
-You are an expert curriculum assistant. Your task is to generate a welcoming introductory message for a syllabus module, adhering strictly to the output structure below.
+  // Create standardized AI interaction format
+  const aiFormat: WikiSyllabusAIFormat = {
+    persona: {
+      ...PersonaTemplates.TUTOR,
+      role: "You are an expert curriculum assistant specializing in generating engaging learning activities and real-world applications for educational modules",
+      expertise: ["Curriculum design", "Learning activity development", "Real-world application mapping", "Educational engagement strategies"]
+    },
+    task: {
+      action: "Generate a welcoming introductory message for a syllabus module with structured learning components",
+      objectives: [
+        "Create a friendly, welcoming introduction",
+        "Generate curriculum-specific learning tasks",
+        "Identify relevant real-world applications",
+        "Develop follow-up discussion questions",
+        "Provide additional teaching tips and extension activities"
+      ],
+      deliverables: [
+        "Introductory message with three subsections (Learning Tasks, Real-World Applications, Follow-Up Questions)",
+        "2-3 unique teaching tips or extension activities as suggestions"
+      ],
+      successCriteria: [
+        "All fields are present and correctly formatted",
+        "Markdown lists are properly structured within strings",
+        "Suggestions are unique and non-overlapping with main content",
+        "Content is engaging and educationally valuable"
+      ]
+    },
+    format: {
+      structure: "json",
+      requirements: [
+        "Return valid JSON object with introductoryMessage and suggestions fields",
+        "Use markdown formatting within strings for lists",
+        "Ensure suggestions is a string array of 2-3 items",
+        "Include all required subsections in introductoryMessage"
+      ],
+      specialFormatting: {
+        useCodeBlocks: false,
+        includeHeaders: false,
+        useEmphasis: true
+      }
+    },
+    context: {
+      academic: {
+        module: input.moduleTitle
+      },
+      subject: {
+        area: "Module-based Learning",
+        level: "Higher Education"
+      },
+      student: {
+        priorKnowledge: "Basic understanding of the subject area",
+        learningStyle: "Interactive and practical learning",
+        goals: ["Understand module concepts", "Apply knowledge practically", "Engage in meaningful discussions"]
+      }
+    },
+    references: {
+      includeReferences: false,
+      citationStyle: "simple"
+    }
+  };
 
-Begin with a concise checklist (3-7 bullets) of the steps you will follow; keep these conceptual (e.g., draft intro, generate tasks, validate structure).
+  // Validate the format
+  const validation = validateStandardizedFormat(aiFormat);
+  if (!validation.isValid) {
+    console.warn('Standardized format validation failed:', validation.errors);
+  }
 
-For your main response, provide the following fields:
+  try {
+    // Create standardized prompts
+    const standardizedPrompt = createStandardizedPrompt({
+      format: aiFormat,
+      userMessage: `Generate learning activities and real-world applications for the following module:
 
-- **introductoryMessage**: This field must contain:
-  1. A friendly, welcoming introduction.
-  2. Three explicit, clearly-labeled subsections, each presented as a markdown list within a single string:
-     - **Learning Tasks:** List 2–4 curriculum-specific tasks as markdown bullet points.
-     - **Real-World Applications:** Give 2–3 relevant applications as markdown bullet points.
-     - **Follow-Up Questions:** Offer 3–4 discussion or reflection questions using markdown bullet points.
-  All items in these lists must be plain strings (no formatting except markdown bullets). If providing the minimum required items for any subsection is not possible, include as many as possible and add a brief note at the beginning of 'introductoryMessage' specifying which section(s) have fewer items than required.
+**Module Title:** "${input.moduleTitle}"
+**Module Content:** "${input.moduleContent}"
 
-- **suggestions**: Provide 2–3 additional, unique teaching tips or extension activities that do not overlap with the items listed in 'Learning Tasks' or other sections. Suggestions must be supplied as a string array.
-
-Before finalizing your output, confirm that all fields are present, all markdown lists are correctly formatted within the string, and that 'suggestions' is a JSON string array of 2–3 non-duplicated items. If not, self-correct and rebuild the output to match the specification.
-
-# Output Format
 Return a JSON object structured as follows:
 {
   "introductoryMessage": "<Intro text>\n\n**Learning Tasks:**\n- ...\n- ...\n\n**Real-World Applications:**\n- ...\n- ...\n\n**Follow-Up Questions:**\n- ...\n- ...\n...",
   "suggestions": ["<Teaching tip 1>", "<Teaching tip 2>", ...]
 }
-Each markdown list in 'introductoryMessage' must be a string. Each 'suggestions' entry must be unique and not present in the markdown lists. If any section is missing items, append a note at the start of 'introductoryMessage' indicating which one(s) are below the minimum.
-Module Title: "${input.moduleTitle}"
-Module Content: "${input.moduleContent}"
-`;
 
-  try {
+The introductoryMessage should include:
+1. A friendly, welcoming introduction
+2. **Learning Tasks:** 2-4 curriculum-specific tasks as markdown bullet points
+3. **Real-World Applications:** 2-3 relevant applications as markdown bullet points
+4. **Follow-Up Questions:** 3-4 discussion or reflection questions as markdown bullet points
+
+The suggestions should be 2-3 additional, unique teaching tips or extension activities that do not overlap with the items in the main sections.`
+    });
+
     const chatCompletion = await ai.chat.completions.create({
-      messages: [{ role: "user", content: promptText }],
+      messages: [
+        {
+          role: "system",
+          content: standardizedPrompt.systemPrompt
+        },
+        {
+          role: "user",
+          content: standardizedPrompt.userPrompt
+        }
+      ],
       model: input.model || "openai/gpt-oss-20b",
       temperature: 0.5,
       max_completion_tokens: 2048,
@@ -62,7 +133,7 @@ Module Content: "${input.moduleContent}"
 
     let outputText = chatCompletion.choices?.[0]?.message?.content || "";
 
-    // === Sanitize AI output: remove ```json or ``` wrappers ===
+    // clean the AI output: remove ```json or ``` wrappers
     outputText = outputText
       .trim()
       .replace(/^```json\s*/, "")

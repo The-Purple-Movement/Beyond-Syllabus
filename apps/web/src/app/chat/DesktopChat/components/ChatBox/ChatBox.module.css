@@ -83,11 +83,15 @@
 .messageContainer {
     position: relative;
     max-width: 28rem;
+    min-width: 0;
+    overflow: hidden;
 }
 
 @media (min-width: 768px) {
     .messageContainer {
         max-width: 32rem;
+        min-width: 0;
+        overflow: hidden;
     }
 }
 
@@ -121,6 +125,9 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     background: rgba(0, 0, 0, 0.1);
     color: inherit;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .message h1,
@@ -145,6 +152,44 @@
 .message li {
     margin-top: 0.125rem;
     margin-bottom: 0.125rem;
+}
+
+/* Code block styling to prevent overflow */
+.message pre {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-width: 100%;
+    font-size: 0.875rem;
+    border: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.message code {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    word-break: break-all;
+    white-space: pre-wrap;
+}
+
+/* Inline code should not break as aggressively */
+.message p code {
+    word-break: break-word;
+    white-space: normal;
+}
+
+/* Code blocks inside pre should have proper wrapping */
+.message pre code {
+    background: transparent;
+    padding: 0;
+    word-break: break-word;
+    white-space: pre-wrap;
+    display: block;
 }
 
 .message.user {
