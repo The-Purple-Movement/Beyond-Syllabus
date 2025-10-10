@@ -1,6 +1,8 @@
 "use server";
 
 import { ai } from "@/ai/ai";
+import { createStandardizedPrompt, validateStandardizedFormat } from "@/ai/utils/prompt-builder";
+import { type WikiSyllabusAIFormat } from "@/ai/types/standardized-format";
 
 export interface Message {
   role: "user" | "assistant" | "system";
@@ -54,59 +56,150 @@ const chatWithSyllabusFlow = async (
     .map((msg) => `${msg.role}: ${msg.content}`)
     .join("\n");
 
-  const promptText = `You are an expert educational AI assistant with a conversational, ChatGPT-like communication style. Your goal is to provide comprehensive, flowing explanations that feel natural and engaging while maintaining educational focus.
+  // Analyze user request to determine appropriate response style
+  const analyzeUserRequest = (message: string) => {
+    const messageLower = message.toLowerCase();
+    
+    // Detect if user wants detailed explanation
+    const detailKeywords = ['detailed', 'comprehensive', 'thorough', 'in-depth', 'elaborate', 'explain thoroughly', 'break down', 'step by step'];
+    const wantsDetailed = detailKeywords.some(keyword => messageLower.includes(keyword));
+    
+    // Detect if user wants simple explanation
+    const simpleKeywords = ['simple', 'basic', 'easy', 'beginner', 'eli5', 'explain like', 'quick', 'briefly'];
+    const wantsSimple = simpleKeywords.some(keyword => messageLower.includes(keyword));
+    
+    // Detect if user wants examples
+    const exampleKeywords = ['example', 'examples', 'show me', 'demonstrate', 'instance', 'case study'];
+    const wantsExamples = exampleKeywords.some(keyword => messageLower.includes(keyword));
+    
+    // Detect if user wants practical/real-world focus
+    const practicalKeywords = ['practical', 'real-world', 'application', 'use case', 'how to use', 'implementation'];
+    const wantsPractical = practicalKeywords.some(keyword => messageLower.includes(keyword));
+    
+    return { wantsDetailed, wantsSimple, wantsExamples, wantsPractical };
+  };
+  
+  const requestAnalysis = analyzeUserRequest(input.message);
+  
+  // Create dynamic standardized AI interaction format
+  const aiFormat: WikiSyllabusAIFormat = {
+    persona: {
+      role: requestAnalysis.wantsSimple 
+        ? "You are a friendly educational AI assistant who excels at breaking down complex topics into simple, easy-to-understand explanations"
+        : requestAnalysis.wantsDetailed
+        ? "You are an expert educational AI assistant who provides comprehensive, thorough explanations with deep insights"
+        : "You are a conversational educational AI assistant with a natural ChatGPT-like style, adapting your explanations to the user's needs",
+      expertise: [
+        "Adapting explanations to user's knowledge level",
+        "Natural conversational communication",
+        "Making complex concepts accessible",
+        "Providing relevant examples and analogies"
+      ],
+      tone: requestAnalysis.wantsSimple ? "casual" : requestAnalysis.wantsDetailed ? "professor" : "mentor",
+      audienceLevel: requestAnalysis.wantsSimple ? "beginner" : requestAnalysis.wantsDetailed ? "advanced" : "mixed"
+    },
+    task: {
+      action: requestAnalysis.wantsSimple
+        ? "Explain the concept in the simplest possible terms, like ChatGPT would for a beginner"
+        : requestAnalysis.wantsDetailed
+        ? "Provide a comprehensive, detailed explanation with thorough coverage of the topic"
+        : "Provide a natural, conversational explanation that feels engaging and informative",
+      objectives: [
+        ...(requestAnalysis.wantsSimple ? ["Use everyday language and simple terms", "Avoid jargon and complex terminology"] : []),
+        ...(requestAnalysis.wantsDetailed ? ["Provide thorough coverage with multiple perspectives", "Include technical details and nuanced explanations"] : []),
+        ...(requestAnalysis.wantsExamples ? ["Include multiple relevant examples", "Use concrete illustrations"] : ["Include at least one relevant example"]),
+        ...(requestAnalysis.wantsPractical ? ["Focus on real-world applications", "Show practical implementation"] : []),
+        "Maintain natural conversation flow",
+        "Integrate syllabus context appropriately"
+      ],
+      deliverables: [
+        requestAnalysis.wantsSimple ? "Simple, clear explanation in everyday language" : "Comprehensive educational response",
+        ...(requestAnalysis.wantsExamples ? ["Multiple concrete examples"] : ["Relevant examples"]),
+        "Natural, engaging communication style"
+      ]
+    },
+    format: {
+      structure: "paragraph",
+      requirements: [
+        "Write in natural, conversational style like ChatGPT",
+        "Use flowing paragraphs with smooth transitions",
+        requestAnalysis.wantsSimple ? "Use simple language and short sentences" : "Use appropriate complexity for the topic",
+        "Sound natural and engaging, not robotic or overly structured"
+      ],
+      length: {
+        min: requestAnalysis.wantsSimple ? 80 : requestAnalysis.wantsDetailed ? 200 : 120,
+        max: requestAnalysis.wantsSimple ? 150 : requestAnalysis.wantsDetailed ? 400 : 280,
+        target: requestAnalysis.wantsSimple ? 120 : requestAnalysis.wantsDetailed ? 300 : 200,
+        unit: "words"
+      },
+      specialFormatting: {
+        useCodeBlocks: false,
+        includeHeaders: false,
+        useEmphasis: true
+      }
+    },
+    context: {
+      academic: {
+        syllabus: input.syllabusContext || "Educational content"
+      },
+      subject: {
+        area: input.subjectArea || "Academic topics",
+        level: requestAnalysis.wantsSimple ? "Beginner-friendly" : "Higher Education"
+      },
+      student: {
+        priorKnowledge: requestAnalysis.wantsSimple ? "Minimal - explain from basics" : requestAnalysis.wantsDetailed ? "Good foundation - can handle complexity" : "Variable",
+        learningStyle: requestAnalysis.wantsExamples ? "Visual and example-driven" : "Conversational",
+        goals: [
+          requestAnalysis.wantsSimple ? "Understand basic concepts clearly" : "Understand concepts thoroughly",
+          ...(requestAnalysis.wantsPractical ? ["Apply knowledge in real situations"] : []),
+          "Feel confident about the topic"
+        ]
+      }
+    },
+    references: {
+      includeReferences: false,
+      citationStyle: "simple"
+    }
+  };
 
-**YOUR EXPERTISE & APPROACH:**
-You are a knowledgeable academic tutor who excels at explaining complex concepts in an accessible, conversational manner. You provide detailed explanations using natural language flow, similar to how ChatGPT responds, rather than structured bullet points or rigid formatting.
-
-**SYLLABUS CONTEXT (Primary Focus):**
-${input.syllabusContext || "General educational content - provide comprehensive explanations for any academic topic"}
-
-**SUBJECT AREA:**
-${input.subjectArea || "Multi-disciplinary academic support"}
-
-**RESPONSE STYLE GUIDELINES:**
-
-1. **Natural Conversation Flow**: Write in natural, flowing paragraphs like ChatGPT. Avoid bullet points, numbered lists, or rigid structures unless specifically requested.
-
-2. **Comprehensive Explanations**: Provide thorough, detailed explanations that build understanding progressively. Start with fundamentals and build to more complex ideas.
-
-3. **Syllabus Integration**: When syllabus context is available, weave references to the course material naturally throughout your explanation. Connect the student's question to specific syllabus topics, learning objectives, or course concepts.
-
-4. **Conversational Tone**: Use a warm, engaging tone that feels like talking to a knowledgeable friend or mentor. Use phrases like "Let me explain...", "What's interesting here is...", "You might find it helpful to think about..."
-
-5. **Practical Examples**: Include relevant examples and analogies that make abstract concepts concrete. Draw from both the syllabus context and real-world applications.
-
-6. **Progressive Building**: Structure your explanation to build understanding step by step, but do so through natural prose rather than numbered steps.
-
-7. **Encouraging Language**: Use supportive, encouraging language that builds confidence. Acknowledge when topics are challenging and provide reassurance.
-
-**CONVERSATION HISTORY:**
-${conversationHistory}
-
-**STUDENT QUESTION:** "${input.message}"
-
-**SPECIFIC INSTRUCTIONS:**
-- Write in natural, conversational paragraphs (100-250 words)
-- Avoid bullet points, numbered lists, or structured formatting
-- Integrate syllabus context naturally throughout your explanation when available
-- Use transitional phrases to create smooth flow between ideas
-- Include specific examples and applications
-- Write as if you're having a friendly, educational conversation
-- End with a natural closing that invites further exploration rather than formal questions
-
-Generate a comprehensive, ChatGPT-style educational response:`;
+  // Validate the format
+  const validation = validateStandardizedFormat(aiFormat);
+  if (!validation.isValid) {
+    console.warn('Standardized format validation failed:', validation.errors);
+  }
 
   try {
+    // Create standardized prompts with dynamic messaging
+    let dynamicUserMessage = `**CONVERSATION HISTORY:**\n${conversationHistory}\n\n**STUDENT QUESTION:** "${input.message}"\n\n`;
+    
+    if (requestAnalysis.wantsSimple) {
+      dynamicUserMessage += `The student is asking for a simple explanation. Please respond in a friendly, easy-to-understand way like ChatGPT would. Use everyday language, avoid jargon, and break things down into basic concepts that anyone can understand.`;
+    } else if (requestAnalysis.wantsDetailed) {
+      dynamicUserMessage += `The student wants a detailed, comprehensive explanation. Please provide thorough coverage with depth, multiple perspectives, and technical details as appropriate.`;
+    } else if (requestAnalysis.wantsExamples) {
+      dynamicUserMessage += `The student is specifically asking for examples. Please focus on providing multiple concrete, relevant examples to illustrate the concepts clearly.`;
+    } else if (requestAnalysis.wantsPractical) {
+      dynamicUserMessage += `The student wants to understand practical applications. Please focus on real-world uses, implementations, and how this knowledge applies in practice.`;
+    } else {
+      dynamicUserMessage += `Please provide a natural, conversational response like ChatGPT would - engaging, informative, and adapted to what the student is asking for.`;
+    }
+    
+    dynamicUserMessage += `\n\nRemember to:\n- Sound natural and conversational, not robotic\n- Integrate any relevant syllabus context naturally\n- Use encouraging, supportive language\n- Make the explanation feel like a helpful conversation with a knowledgeable friend`;
+    
+    const standardizedPrompt = createStandardizedPrompt({
+      format: aiFormat,
+      userMessage: dynamicUserMessage
+    });
+
     const chatCompletion = await ai.chat.completions.create({
       messages: [
         {
           role: "system",
-          content: "You are an expert educational AI assistant who communicates in a natural, conversational style similar to ChatGPT. You provide comprehensive explanations using flowing prose rather than bullet points or structured lists. Your responses should feel like engaging educational conversations that build understanding progressively through natural language flow."
+          content: standardizedPrompt.systemPrompt
         },
         {
           role: "user", 
-          content: promptText
+          content: standardizedPrompt.userPrompt
         }
       ],
       model: input.model || "llama-3.1-8b-instant",
