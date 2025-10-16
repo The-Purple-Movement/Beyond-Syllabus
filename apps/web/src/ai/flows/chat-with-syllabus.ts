@@ -26,16 +26,19 @@ const chatWithSyllabusFlow = async (
   input: ChatWithSyllabusInput
 ): Promise<ChatWithSyllabusOutput> => {
   
-  // Very minimal filtering - only block obvious entertainment content
+  // Expanded filtering for entertainment, pop culture, and other non-educational content
   const isEntertainmentQuery = (message: string): boolean => {
-    const pureEntertainmentKeywords = [
+    const nonEducationalKeywords = [
       'celebrity gossip', 'movie review', 'tv show recap', 'entertainment news',
       'social media drama', 'fashion trends', 'lifestyle blog', 'dating advice',
-      'party planning', 'vacation photos', 'restaurant review', 'music album review'
+      'party planning', 'vacation photos', 'restaurant review', 'music album review',
+      'sports scores', 'game recap', 'player stats', 'celebrity news', 'artist gossip',
+      'ronaldo', 'messi', 'beyonce', 'kardashian', // Example celebrity names
+      'horoscope', 'astrology', 'daily horoscope'
     ];
 
     const messageLower = message.toLowerCase();
-    return pureEntertainmentKeywords.some(keyword => 
+    return nonEducationalKeywords.some(keyword => 
       messageLower.includes(keyword)
     );
   };
@@ -93,7 +96,8 @@ const chatWithSyllabusFlow = async (
         "Adapting explanations to user's knowledge level",
         "Natural conversational communication",
         "Making complex concepts accessible",
-        "Providing relevant examples and analogies"
+        "Providing relevant examples and analogies",
+        "Strictly avoiding non-educational topics"
       ],
       tone: requestAnalysis.wantsSimple ? "casual" : requestAnalysis.wantsDetailed ? "professor" : "mentor",
       audienceLevel: requestAnalysis.wantsSimple ? "beginner" : requestAnalysis.wantsDetailed ? "advanced" : "mixed"
@@ -210,9 +214,8 @@ const chatWithSyllabusFlow = async (
 
     const outputText = chatCompletion.choices?.[0]?.message?.content || "";
 
-    // Only check for obvious entertainment content in responses
-    const entertainmentResponseCheck = /\b(celebrity gossip|entertainment news|fashion trends|social media drama)\b/i;
-    if (entertainmentResponseCheck.test(outputText)) {
+    // Use the same robust check for the AI's output
+    if (isEntertainmentQuery(outputText)) {
       return {
         response: "I'm here to provide detailed explanations on educational and academic topics. What concept or topic from your coursework would you like me to explore with you? I'm ready to break down complex ideas and help you understand them through clear, comprehensive explanations.",
         suggestions: [
