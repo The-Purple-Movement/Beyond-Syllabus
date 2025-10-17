@@ -33,7 +33,7 @@ const chatWithSyllabusFlow = async (
       'social media drama', 'fashion trends', 'lifestyle blog', 'dating advice',
       'party planning', 'vacation photos', 'restaurant review', 'music album review',
       'sports scores', 'game recap', 'player stats', 'celebrity news', 'artist gossip',
-      'ronaldo', 'messi', 'beyonce', 'kardashian',
+      'ronaldo', 'cristiano ronaldo', 'messi', 'lionel messi', 'virat kohli', 'kohli', 'beyonce', 'kardashian', 'taylor swift', 'selena gomez', 'srk', 'shahrukh khan', 'salman khan', 'priyanka chopra', 'alia bhatt', 'ranveer singh',
       'horoscope', 'astrology', 'daily horoscope',
       // broader pop/entertainment distractions
       'k-pop', 'bollywood', 'hollywood', 'netflix', 'hbo', 'disney+',
@@ -313,7 +313,7 @@ If you violate any of these constraints, you are failing in your primary respons
       : `\n\n**TOPIC COHERENCE GUIDELINES:**
 1. **STAY ON TRACK**: Ensure your response directly addresses the educational question asked
 2. **NO UNSOLICITED TANGENTS**: Don't introduce unrelated topics even if they contain similar keywords
-3. **VERIFY RELEVANCE**: If the question seems to shift topics, acknowledge the shift and ask if they want to explore the new topic or continue with the current one
+3. **VERIFY RELEVANCE**: If the question seems to shift topics or asks about entertainment/celebrity/controversy, refuse briefly and ask them to provide an educational topic instead
 4. **FACTUAL ACCURACY**: Only state facts you're confident about. If uncertain, say "I'm not completely certain about this" rather than guessing
 5. **EXAMPLE RELEVANCE**: All examples must directly relate to the concept being explained - no tangential stories`;
 
@@ -413,17 +413,17 @@ If you violate any of these constraints, you are failing in your primary respons
       console.warn(`Filtered response: ${outputText.substring(0, 200)}...`);
       
       return {
-        response: input.subjectArea
+        response: hasSpecificContext
           ? `This is outside our current topic. I cannot discuss that and will not switch topics. Let's stay focused on ${input.subjectArea}. Please ask about concepts covered in the syllabus.`
-          : "This is outside the current syllabus topic. I cannot discuss that and will not switch topics. Please ask about the module's content.",
-        suggestions: input.subjectArea ? [
+          : "I cannot discuss entertainment, celebrity, or unrelated topics. Please ask about an educational concept or coursework topic.",
+        suggestions: hasSpecificContext ? [
           `Explain a key concept from ${input.subjectArea}`,
           "Summarize a section from the syllabus",
           "Ask for an example related to the module"
         ] : [
-          "Ask about a concept from the module",
-          "Request a summary of a syllabus section",
-          "Ask for a practical example from the topic"
+          "Ask about a specific educational concept",
+          "Request an explanation of a technical or academic topic",
+          "Ask for a practical example from a subject area"
         ]
       };
     }
