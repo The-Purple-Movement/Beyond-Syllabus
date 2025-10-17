@@ -85,36 +85,38 @@ const chatWithSyllabusFlow = async (
   const requestAnalysis = analyzeUserRequest(input.message);
   
   // Create dynamic standardized AI interaction format
+  const hasSpecificContext = !!input.subjectArea || (!!input.syllabusContext && input.syllabusContext !== "Educational content");
+
   const aiFormat: WikiSyllabusAIFormat = {
     persona: {
       role: requestAnalysis.wantsSimple 
         ? "You are a friendly educational AI assistant who excels at breaking down complex topics into simple, easy-to-understand explanations"
         : requestAnalysis.wantsDetailed
         ? "You are an expert educational AI assistant who provides comprehensive, thorough explanations with deep insights"
-        : "You are a conversational educational AI assistant with a natural ChatGPT-like style, adapting your explanations to the user's needs",
+        : "You are a conversational educational AI assistant who acts as a focused academic tutor",
       expertise: [
+        "Strictly adhering to the established academic topic.",
+        "Identifying and redirecting off-topic or out-of-scope questions.",
         "Adapting explanations to user's knowledge level",
-        "Natural conversational communication",
         "Making complex concepts accessible",
-        "Providing relevant examples and analogies",
-        "Strictly avoiding non-educational topics"
+        "Providing relevant examples and analogies"
       ],
       tone: requestAnalysis.wantsSimple ? "casual" : requestAnalysis.wantsDetailed ? "professor" : "mentor",
       audienceLevel: requestAnalysis.wantsSimple ? "beginner" : requestAnalysis.wantsDetailed ? "advanced" : "mixed"
     },
     task: {
-      action: requestAnalysis.wantsSimple
-        ? "Explain the concept in the simplest possible terms, like ChatGPT would for a beginner"
-        : requestAnalysis.wantsDetailed
-        ? "Provide a comprehensive, detailed explanation with thorough coverage of the topic"
-        : "Provide a natural, conversational explanation that feels engaging and informative",
+      action: hasSpecificContext
+        ? `Your primary goal is to keep the user focused on the established topic: **${input.subjectArea || 'the syllabus material'}**. First, evaluate if the user's question is directly related to this topic or the ongoing conversation. If it is, answer it. If it is NOT, you MUST NOT answer the question. Instead, you must politely redirect the user back to the topic by saying something like: "That's an interesting question, but it seems a bit different from our current focus on ${input.subjectArea || 'the topic'}. Shall we continue our discussion here?"`
+        : "Provide a natural, conversational explanation that feels engaging and informative, adapting to the user's needs.",
       objectives: [
         ...(requestAnalysis.wantsSimple ? ["Use everyday language and simple terms", "Avoid jargon and complex terminology"] : []),
         ...(requestAnalysis.wantsDetailed ? ["Provide thorough coverage with multiple perspectives", "Include technical details and nuanced explanations"] : []),
         ...(requestAnalysis.wantsExamples ? ["Include multiple relevant examples", "Use concrete illustrations"] : ["Include at least one relevant example"]),
         ...(requestAnalysis.wantsPractical ? ["Focus on real-world applications", "Show practical implementation"] : []),
         "Maintain natural conversation flow",
-        "Integrate syllabus context appropriately"
+        ...(hasSpecificContext 
+            ? ["Strictly enforce topic boundaries. Do not answer unrelated questions.", "Politely guide the user back if they go off-topic."] 
+            : ["Integrate syllabus context appropriately"])
       ],
       deliverables: [
         requestAnalysis.wantsSimple ? "Simple, clear explanation in everyday language" : "Comprehensive educational response",
