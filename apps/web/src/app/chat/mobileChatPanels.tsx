@@ -174,7 +174,7 @@ const MobileChatPanels: FC<MobileChatPanelsProps> = ({
                     {msg.content ? (
                       <div className="relative group  max-w-full">
                         <div
-                          className={`rounded-2xl h-fit px-4 py-1 text-[12px] shadow-md prose prose-sm dark:prose-invert prose-headings:font-semibold space-y-5 prose-p:my-2 prose-ul:my-2 prose-li:my-0.5 ${
+                          className={`rounded-2xl h-fit px-4 py-1 text-[12px] shadow-md prose prose-sm dark:prose-invert prose-headings:font-semibold space-y-5 prose-p:my-2 prose-ul:my-2 prose-li:my-0.5 prose-pre:overflow-x-auto prose-pre:whitespace-pre-wrap prose-code:break-all prose-code:whitespace-pre-wrap ${
                             msg.role === "user"
                               ? "bg-primary text-primary-foreground rounded-br-none"
                               : "text-card-foreground rounded-bl-none border"

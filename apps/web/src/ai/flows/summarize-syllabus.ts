@@ -1,6 +1,8 @@
 "use server";
 
 import { ai } from "@/ai/ai";
+import { createStandardizedPrompt, validateStandardizedFormat } from "@/ai/utils/prompt-builder";
+import { PersonaTemplates, TaskTemplates, FormatTemplates, type WikiSyllabusAIFormat } from "@/ai/types/standardized-format";
 
 export interface SummarizeSyllabusInput {
   syllabusText: string;
@@ -60,59 +62,91 @@ const summarizeSyllabusFlow = async (
     };
   }
 
+  // Create standardized AI interaction format
+  const aiFormat: WikiSyllabusAIFormat = {
+    persona: {
+      ...PersonaTemplates.PROFESSOR,
+      role: "You are an expert academic curriculum analyst specializing in educational content summarization",
+      expertise: ["Identifying core learning objectives", "Skill development outcomes", "Knowledge domains across various academic disciplines"]
+    },
+    task: {
+      action: "Analyze the following syllabus and create a comprehensive summary",
+      objectives: [
+        "Identify the subject area and academic level",
+        "Extract core learning objectives and outcomes",
+        "Categorize knowledge domains and skill areas",
+        "Highlight practical applications and assessments"
+      ],
+      deliverables: [
+        "Course overview with subject area and level",
+        "4-6 primary learning goals focusing on student outcomes",
+        "Main topics and concepts with theoretical foundations",
+        "Skills development areas and assessment methods"
+      ],
+      successCriteria: [
+        "Summary captures the essence of what students will learn",
+        "Uses clear, concise language suitable for students",
+        "Prioritizes actionable learning outcomes",
+        "Maintains academic tone while being accessible"
+      ]
+    },
+    format: {
+      structure: "markdown",
+      requirements: [
+        "Use clear, concise language suitable for students",
+        "Use bullet points and headers for readability",
+        "Maintain academic tone while being accessible"
+      ],
+      length: {
+        min: 300,
+        max: 400,
+        target: 350,
+        unit: "words"
+      },
+      specialFormatting: {
+        includeHeaders: true,
+        useEmphasis: true
+      }
+    },
+    context: {
+      subject: {
+        area: "Academic Curriculum Analysis",
+        level: "Higher Education"
+      },
+      student: {
+        priorKnowledge: "Basic understanding of educational concepts",
+        learningStyle: "Visual and structured learning",
+        goals: ["Understand course structure", "Identify learning outcomes", "Prepare for coursework"]
+      }
+    },
+    references: {
+      includeReferences: false,
+      citationStyle: "simple"
+    }
+  };
+
+  // Validate the format
+  const validation = validateStandardizedFormat(aiFormat);
+  if (!validation.isValid) {
+    console.warn('Standardized format validation failed:', validation.errors);
+  }
+
   try {
+    // Create standardized prompts
+    const standardizedPrompt = createStandardizedPrompt({
+      format: aiFormat,
+      userMessage: `Please analyze the following syllabus text and create a comprehensive summary:\n\n**SYLLABUS TEXT:**\n${input.syllabusText}\n\nCreate a well-structured summary that includes:\n\n## Course Overview\n- Subject area and level\n- Duration and credit information (if available)\n\n## Key Learning Objectives\n- List 4-6 primary learning goals\n- Focus on what students will be able to DO after completion\n\n## Core Knowledge Areas\n- Main topics and concepts covered\n- Theoretical foundations\n- Practical applications\n\n## Skills Development\n- Technical skills gained\n- Analytical and critical thinking abilities\n- Professional competencies\n\n## Assessment Methods\n- Types of evaluations mentioned\n- Projects and practical work\n\nGenerate the summary now, ensuring it captures the essence of what students will learn and achieve in this course.`
+    });
+
     const chatCompletion = await ai.chat.completions.create({
       messages: [
         {
           role: "system",
-          content: "You are an expert academic curriculum analyst specializing in educational content summarization. Your expertise includes identifying core learning objectives, skill development outcomes, and knowledge domains across various academic disciplines."
+          content: standardizedPrompt.systemPrompt
         },
         {
           role: "user",
-          content: `Please analyze the following syllabus and create a comprehensive summary following this structure:
-
-**ANALYSIS FRAMEWORK:**
-1. First, identify the subject area and academic level
-2. Extract core learning objectives and outcomes
-3. Categorize knowledge domains and skill areas
-4. Highlight practical applications and assessments
-
-**OUTPUT FORMAT:**
-Create a well-structured summary that includes:
-
-## Course Overview
-- Subject area and level
-- Duration and credit information (if available)
-
-## Key Learning Objectives
-- List 4-6 primary learning goals
-- Focus on what students will be able to DO after completion
-
-## Core Knowledge Areas
-- Main topics and concepts covered
-- Theoretical foundations
-- Practical applications
-
-## Skills Development
-- Technical skills gained
-- Analytical and critical thinking abilities
-- Professional competencies
-
-## Assessment Methods
-- Types of evaluations mentioned
-- Projects and practical work
-
-**REQUIREMENTS:**
-- Use clear, concise language suitable for students
-- Prioritize actionable learning outcomes
-- Maintain academic tone while being accessible
-- Limit summary to 300-400 words
-- Use bullet points and headers for readability
-
-**SYLLABUS TEXT:**
-${input.syllabusText}
-
-Generate the summary now, ensuring it captures the essence of what students will learn and achieve in this course.`
+          content: standardizedPrompt.userPrompt
         }
       ],
       model: "llama-3.1-8b-instant",
