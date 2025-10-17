@@ -33,8 +33,11 @@ const chatWithSyllabusFlow = async (
       'social media drama', 'fashion trends', 'lifestyle blog', 'dating advice',
       'party planning', 'vacation photos', 'restaurant review', 'music album review',
       'sports scores', 'game recap', 'player stats', 'celebrity news', 'artist gossip',
-      'ronaldo', 'messi', 'beyonce', 'kardashian', // Example celebrity names
-      'horoscope', 'astrology', 'daily horoscope'
+      'ronaldo', 'messi', 'beyonce', 'kardashian',
+      'horoscope', 'astrology', 'daily horoscope',
+      // broader pop/entertainment distractions
+      'k-pop', 'bollywood', 'hollywood', 'netflix', 'hbo', 'disney+',
+      'tiktok', 'instagram', 'youtube drama', 'memes', 'gossip', 'celebrity'
     ];
 
     const messageLower = message.toLowerCase();
@@ -43,14 +46,94 @@ const chatWithSyllabusFlow = async (
     );
   };
 
+  // Strict on-topic pre-gate using syllabus/subject keywords and off-topic tech/pop-culture
+  const isOffTopicForSyllabus = (
+    message: string,
+    syllabusContext?: string,
+    subjectArea?: string
+  ): boolean => {
+    const text = (syllabusContext || '') + ' ' + (subjectArea || '');
+    const normalizedContext = text.toLowerCase();
+    const messageLower = message.toLowerCase();
+
+    // quick allow if explicit context keywords appear in message
+    const contextTokens = normalizedContext
+      .split(/[^a-z0-9+.#-]+/)
+      .filter(w => w && w.length > 2);
+
+    const messageTokens = messageLower
+      .split(/[^a-z0-9+.#-]+/)
+      .filter(w => w && w.length > 2);
+
+    const contextSet = new Set(contextTokens);
+    const overlap = messageTokens.filter(w => contextSet.has(w));
+
+    // Off-topic tech/pop-culture markers that often indicate topic shift
+    const offTopicTech = [
+      // web frameworks and stacks
+      'next.js', 'nextjs', 'next js', 'react', 'react.js', 'react js',
+      'vue', 'vue.js', 'vue js', 'svelte', 'angular', 'tailwind', 'bootstrap',
+      'redux', 'webpack', 'vite', 'astro', 'nuxt', 'sveltekit', 'graphql',
+      // platforms, infra
+      'firebase', 'supabase', 'docker', 'kubernetes', 'aws', 'gcp', 'azure',
+      // tooling
+      'linux distro', 'arch linux', 'neovim', 'vimrc', 'emacs', 'eslint', 'prettier',
+    ];
+
+    // If syllabus/subject contains any of these, treat them as in-scope
+    const allowedFromContext = offTopicTech.filter(k => normalizedContext.includes(k));
+    const messageHasOffTopicTech = offTopicTech.some(k => messageLower.includes(k));
+    const offTopicTechButNotAllowed = messageHasOffTopicTech && !allowedFromContext.some(k => messageLower.includes(k));
+
+    // Heuristics:
+    // - If we have specific context and there's no token overlap and message triggers off-topic tech/pop, it's off-topic
+    // - If we have specific context and there is zero overlap at all, treat as off-topic
+    if ((subjectArea || syllabusContext) && (overlap.length === 0)) {
+      return true;
+    }
+
+    // Always block off-topic tech even if no context is provided
+    if (offTopicTechButNotAllowed) {
+      return true;
+    }
+
+    return false;
+  };
+
   // Only block obvious entertainment queries
   if (isEntertainmentQuery(input.message)) {
+    const refusal = input.subjectArea
+      ? `This is outside our current topic. I cannot discuss that and will not switch topics. Let's stay focused on ${input.subjectArea}. Please ask about concepts covered in the syllabus.`
+      : "This is outside the current syllabus topic. I cannot discuss that and will not switch topics. Please ask about the module's content.";
+
     return {
-      response: "I'm here to help with educational topics and academic discussions. Whether you have questions about your coursework, want to explore concepts from your syllabus, or need clarification on academic topics, I'm ready to provide detailed explanations and support your learning journey.",
-      suggestions: [
-        "Ask about a concept from your syllabus",
-        "Explore a technical or academic topic",
-        "Get help with course material"
+      response: refusal,
+      suggestions: input.subjectArea ? [
+        `Explain a key concept from ${input.subjectArea}`,
+        "Summarize a section from the syllabus",
+        "Ask for an example related to the module"
+      ] : [
+        "Ask about a concept from the module",
+        "Request a summary of a syllabus section",
+        "Ask for a practical example from the topic"
+      ]
+    };
+  }
+
+  // Hard on-topic gate before invoking the model
+  if (isOffTopicForSyllabus(input.message, input.syllabusContext, input.subjectArea)) {
+    return {
+      response: input.subjectArea
+        ? `This is outside our current topic. I cannot discuss that and will not switch topics. Let's stay focused on ${input.subjectArea}. Please ask about concepts covered in the syllabus.`
+        : "This is outside the current syllabus topic. I cannot discuss that and will not switch topics. Please ask about the module's content.",
+      suggestions: input.subjectArea ? [
+        `Explain a key concept from ${input.subjectArea}`,
+        "Summarize a section from the syllabus",
+        "Ask for an example related to the module"
+      ] : [
+        "Ask about a concept from the module",
+        "Request a summary of a syllabus section",
+        "Ask for a practical example from the topic"
       ]
     };
   }
@@ -63,19 +146,15 @@ const chatWithSyllabusFlow = async (
   const analyzeUserRequest = (message: string) => {
     const messageLower = message.toLowerCase();
     
-    // Detect if user wants detailed explanation
     const detailKeywords = ['detailed', 'comprehensive', 'thorough', 'in-depth', 'elaborate', 'explain thoroughly', 'break down', 'step by step'];
     const wantsDetailed = detailKeywords.some(keyword => messageLower.includes(keyword));
     
-    // Detect if user wants simple explanation
     const simpleKeywords = ['simple', 'basic', 'easy', 'beginner', 'eli5', 'explain like', 'quick', 'briefly'];
     const wantsSimple = simpleKeywords.some(keyword => messageLower.includes(keyword));
     
-    // Detect if user wants examples
     const exampleKeywords = ['example', 'examples', 'show me', 'demonstrate', 'instance', 'case study'];
     const wantsExamples = exampleKeywords.some(keyword => messageLower.includes(keyword));
     
-    // Detect if user wants practical/real-world focus
     const practicalKeywords = ['practical', 'real-world', 'application', 'use case', 'how to use', 'implementation'];
     const wantsPractical = practicalKeywords.some(keyword => messageLower.includes(keyword));
     
@@ -90,7 +169,7 @@ const chatWithSyllabusFlow = async (
   const aiFormat: WikiSyllabusAIFormat = {
     persona: {
       role: requestAnalysis.wantsSimple 
-        ? "You are a friendly educational AI assistant who excels at breaking down complex topics into simple, easy-to-understand explanations"
+        ? "You are a friendly educational AI assistant who excels at breaking down complex topics into simple, easy-to-understand explanations and you act as a focused academic tutor"
         : requestAnalysis.wantsDetailed
         ? "You are an expert educational AI assistant who provides comprehensive, thorough explanations with deep insights"
         : "You are a conversational educational AI assistant who acts as a focused academic tutor",
@@ -106,17 +185,20 @@ const chatWithSyllabusFlow = async (
     },
     task: {
       action: hasSpecificContext
-        ? `Your primary goal is to keep the user focused on the established topic: **${input.subjectArea || 'the syllabus material'}**. First, evaluate if the user's question is directly related to this topic or the ongoing conversation. If it is, answer it. If it is NOT, you MUST NOT answer the question. Instead, you must politely redirect the user back to the topic by saying something like: "That's an interesting question, but it seems a bit different from our current focus on ${input.subjectArea || 'the topic'}. Shall we continue our discussion here?"`
+        ? `You are a Retrieval-Augmented Generation (RAG) assistant. Your knowledge is strictly limited to the provided context. Your task is to answer the user's question **only using the information from the 'CONTEXT' section below**.
+1. First, analyze the user's question: "${input.message}".
+2. Next, review the provided context: **Subject: ${input.subjectArea}** and **Syllabus: ${input.syllabusContext}**.
+3. If the question can be answered directly using this context, provide a helpful and comprehensive answer based *only* on that information.
+4. If the question is outside the scope of the provided context, you **MUST NOT** answer it. Instead, you must state that the question is outside the current topic and politely guide the user back. For example: "That's an interesting question, but it falls outside our current focus on ${input.subjectArea || 'the topic'}. I can only provide information based on the established subject matter. Shall we continue our discussion?"`
         : "Provide a natural, conversational explanation that feels engaging and informative, adapting to the user's needs.",
       objectives: [
         ...(requestAnalysis.wantsSimple ? ["Use everyday language and simple terms", "Avoid jargon and complex terminology"] : []),
         ...(requestAnalysis.wantsDetailed ? ["Provide thorough coverage with multiple perspectives", "Include technical details and nuanced explanations"] : []),
         ...(requestAnalysis.wantsExamples ? ["Include multiple relevant examples", "Use concrete illustrations"] : ["Include at least one relevant example"]),
         ...(requestAnalysis.wantsPractical ? ["Focus on real-world applications", "Show practical implementation"] : []),
-        "Maintain natural conversation flow",
         ...(hasSpecificContext 
-            ? ["Strictly enforce topic boundaries. Do not answer unrelated questions.", "Politely guide the user back if they go off-topic."] 
-            : ["Integrate syllabus context appropriately"])
+            ? ["Base your answer *exclusively* on the provided context.", "Do not use general knowledge to answer questions.", "If the user's question is off-topic, state that you cannot answer and redirect them."] 
+            : ["Maintain natural conversation flow", "Integrate syllabus context appropriately"])
       ],
       deliverables: [
         requestAnalysis.wantsSimple ? "Simple, clear explanation in everyday language" : "Comprehensive educational response",
@@ -192,6 +274,51 @@ const chatWithSyllabusFlow = async (
     
     dynamicUserMessage += `\n\nRemember to:\n- Sound natural and conversational, not robotic\n- Integrate any relevant syllabus context naturally\n- Use encouraging, supportive language\n- Make the explanation feel like a helpful conversation with a knowledgeable friend`;
     
+    // Add strict anti-hallucination and topic-drift constraints
+    const topicConstraints = hasSpecificContext 
+      ? `\n\n**CRITICAL CONSTRAINTS - YOU MUST FOLLOW THESE RULES:**
+1. **TOPIC BOUNDARY ENFORCEMENT**: You are ONLY allowed to discuss ${input.subjectArea || 'the established academic topic'}. If the student's question mentions ANY topic outside this scope, you MUST:
+   - Acknowledge their question briefly
+   - State clearly that it falls outside the current subject area
+   - Redirect them back to ${input.subjectArea || 'the course material'}
+   - Do NOT attempt to answer the off-topic question, even partially
+
+2. **SYLLABUS ADHERENCE**: Your responses must be derived EXCLUSIVELY from: "${input.syllabusContext}"
+   - If information is NOT in the syllabus context, say "This specific detail isn't covered in our course material"
+   - Never supplement with external knowledge that isn't in the provided context
+   - If asked about related but out-of-scope topics, redirect to what IS covered
+
+3. **ANTI-HALLUCINATION PROTOCOLS**:
+   - NEVER make up examples, dates, names, statistics, or technical details that aren't in the provided context
+   - If you're uncertain about ANY detail, explicitly state "I'm not certain about this specific detail from the course material"
+   - Do NOT infer or extrapolate beyond what's explicitly stated in the syllabus context
+   - If a concept isn't adequately covered in the context, say so rather than fabricating information
+
+4. **KEYWORD-TRIGGERED TOPIC SHIFT PREVENTION**:
+   - Even if the student's question contains keywords that could lead to tangential topics, ALWAYS verify the question relates to ${input.subjectArea || 'the subject area'}
+   - Example: If discussing "Python programming" and student mentions "snake," recognize they likely mean the programming language, not the animal
+   - If genuinely ambiguous, ask for clarification: "Are you asking about [Topic A in our subject] or something else?"
+
+5. **SCOPE VERIFICATION CHECK**: Before answering ANY question, mentally verify:
+   - Is this question about ${input.subjectArea || 'the subject area'}? 
+   - Is the answer found in "${input.syllabusContext}"?
+   - If NO to either, politely decline and redirect
+
+**EXAMPLE REDIRECTS**:
+- "That's an interesting question about [off-topic], but it falls outside our focus on ${input.subjectArea}. Let's stay focused on [relevant topic]. Would you like to explore [related in-scope topic] instead?"
+- "I notice your question touches on [tangent topic], which isn't covered in our current material on ${input.subjectArea}. What I can tell you about [related in-scope concept] is..."
+- "That specific detail about [X] isn't covered in our syllabus. However, what we do cover about [related topic] is..."
+
+If you violate any of these constraints, you are failing in your primary responsibility as an educational assistant.`
+      : `\n\n**TOPIC COHERENCE GUIDELINES:**
+1. **STAY ON TRACK**: Ensure your response directly addresses the educational question asked
+2. **NO UNSOLICITED TANGENTS**: Don't introduce unrelated topics even if they contain similar keywords
+3. **VERIFY RELEVANCE**: If the question seems to shift topics, acknowledge the shift and ask if they want to explore the new topic or continue with the current one
+4. **FACTUAL ACCURACY**: Only state facts you're confident about. If uncertain, say "I'm not completely certain about this" rather than guessing
+5. **EXAMPLE RELEVANCE**: All examples must directly relate to the concept being explained - no tangential stories`;
+
+    dynamicUserMessage += topicConstraints;
+    
     const standardizedPrompt = createStandardizedPrompt({
       format: aiFormat,
       userMessage: dynamicUserMessage
@@ -209,21 +336,94 @@ const chatWithSyllabusFlow = async (
         }
       ],
       model: input.model || "llama-3.1-8b-instant",
-      temperature: 0.5, // Higher for more natural, conversational responses
-      max_completion_tokens: 1536, // Increased for comprehensive responses
-      top_p: 0.9,
+      temperature: hasSpecificContext ? 0.2 : 0.5,
+      max_completion_tokens: 1536,
+      top_p: hasSpecificContext ? 0.6 : 0.9,
     });
 
     const outputText = chatCompletion.choices?.[0]?.message?.content || "";
 
-    // Use the same robust check for the AI's output
-    if (isEntertainmentQuery(outputText)) {
+    // Post-processing: Validate AI response for topic adherence
+    const validateResponseRelevance = (response: string): { isValid: boolean; reason?: string } => {
+      const responseLower = response.toLowerCase();
+      
+      // Check if AI is refusing/redirecting (which is good)
+      const refusalPatterns = [
+        'falls outside', 'not covered', 'outside the scope', 
+        'outside our focus', 'redirect', 'isn\'t in our syllabus',
+        'beyond the scope', 'outside this topic', 'not part of'
+      ];
+      const isRefusingOffTopic = refusalPatterns.some(pattern => responseLower.includes(pattern));
+      if (isRefusingOffTopic) {
+        return { isValid: true }; // AI correctly refused off-topic
+      }
+
+      // If we have specific context, verify response relates to it
+      if (hasSpecificContext && input.subjectArea) {
+        const subjectKeywords = input.subjectArea.toLowerCase().split(' ');
+        const syllabusKeywords = input.syllabusContext?.toLowerCase().split(' ').filter(w => w.length > 3) || [];
+        const relevantKeywords = [...subjectKeywords, ...syllabusKeywords];
+        
+        // Check if response contains subject-related keywords
+        const hasRelevantKeywords = relevantKeywords.some(keyword => 
+          responseLower.includes(keyword)
+        );
+        
+        // Check for common hallucination patterns
+        const hallucinationPatterns = [
+          /as (?:a|an) .{3,30}(?:expert|professor|specialist)/i,
+          /in my (?:experience|opinion|view)/i,
+          /(?:studies show|research indicates|scientists have found)/i, // Unless specifically in syllabus
+          /according to (?:recent|latest)/i,
+        ];
+        const containsHallucinationMarkers = hallucinationPatterns.some(pattern => 
+          pattern.test(response)
+        );
+
+        if (!hasRelevantKeywords && response.length > 100) {
+          return { 
+            isValid: false, 
+            reason: 'Response appears to drift from the specified subject area' 
+          };
+        }
+
+        if (containsHallucinationMarkers && !input.syllabusContext?.toLowerCase().includes('research')) {
+          return { 
+            isValid: false, 
+            reason: 'Response contains potential hallucination markers' 
+          };
+        }
+      }
+
+      // Check for entertainment content slipping through
+      if (isEntertainmentQuery(response)) {
+        return { 
+          isValid: false, 
+          reason: 'Response contains non-educational content' 
+        };
+      }
+
+      return { isValid: true };
+    };
+
+    const responseValidation = validateResponseRelevance(outputText);
+    
+    if (!responseValidation.isValid) {
+      console.warn(`AI response validation failed: ${responseValidation.reason}`);
+      console.warn(`Filtered response: ${outputText.substring(0, 200)}...`);
+      
       return {
-        response: "I'm here to provide detailed explanations on educational and academic topics. What concept or topic from your coursework would you like me to explore with you? I'm ready to break down complex ideas and help you understand them through clear, comprehensive explanations.",
-        suggestions: [
-          "Ask about a specific concept from your syllabus",
-          "Explore a technical or theoretical topic",
-          "Get detailed explanations of course material"
+        response: input.subjectArea
+          ? `This is outside our current topic. I cannot discuss that and will not switch topics. Let's stay focused on ${input.subjectArea}. Please ask about concepts covered in the syllabus.`
+          : "This is outside the current syllabus topic. I cannot discuss that and will not switch topics. Please ask about the module's content.",
+        suggestions: input.subjectArea ? [
+          `Explain a key concept from ${input.subjectArea}`,
+          "Summarize a section from the syllabus",
+          "Ask for an example related to the module"
+        ] : [
+          "Ask about a concept from the module",
+          "Request a summary of a syllabus section",
+          "Ask for a practical example from the topic"
         ]
       };
     }
