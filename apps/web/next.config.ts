@@ -12,18 +12,6 @@ const nextConfig: NextConfig = {
     ],
   },
   compress: true,
-  webpack: (config) => {
-    // Prevent Next from trying to bundle server-only optional deps like 'canvas'
-    config.resolve = config.resolve || {};
-    config.resolve.fallback = {
-      ...(config.resolve.fallback || {}),
-      canvas: false,
-      fs: false,
-      path: false,
-      crypto: false,
-    };
-    return config;
-  },
 };
 
 export default nextConfig;
