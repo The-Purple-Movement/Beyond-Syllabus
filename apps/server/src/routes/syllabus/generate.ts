@@ -163,11 +163,7 @@ async function readSyllabusData() {
 
     const outputPath = path.join(
       process.cwd(),
-<<<<<<< HEAD:apps/server/src/routes/syllabus/generate.ts
       "src/routes/syllabus/syllabus.json"
-=======
-      "src/routes/syllabus/generated/university.json"
->>>>>>> parent of 55eb3fb (feat: delete all universities folder and remove json from gitignore):apps/server/src/routes/syllabus/generated/generate.ts
     );
 
     await Bun.write(outputPath, JSON.stringify(data, null, 2));
