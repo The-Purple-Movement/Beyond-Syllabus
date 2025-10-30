@@ -163,7 +163,7 @@ async function readSyllabusData() {
 
     const outputPath = path.join(
       process.cwd(),
-      "src/routes/syllabus/university.json"
+      "src/routes/syllabus/syllabus.json"
     );
 
     await Bun.write(outputPath, JSON.stringify(data, null, 2));
