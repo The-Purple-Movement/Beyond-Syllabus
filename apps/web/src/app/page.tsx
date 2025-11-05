@@ -1,16 +1,29 @@
-import Link from "next/link";
+"use client";
+
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import {
   GraduationCap,
   BookOpenCheck,
   BarChart3,
   ChevronRight,
   Sparkles,
-} from "lucide-react";
+} from "lucide-react";  
 import { AuroraText } from "@/components/ui/aurora-text";
 
 export default function Home() {
+  const router = useRouter();
+  const [loadingRoute, setLoadingRoute] = useState<string | null>(null);
+
+  const navigateWithDelay = async (path: string, delay: number) => {
+    setLoadingRoute(path);
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    router.push(path);
+  };
+
   return (
     <div className="flex flex-col min-h-screen transition-colors duration-300">
       <main className="flex-grow relative">
@@ -42,26 +55,42 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col md:flex-row justify-center gap-4 mt-8">
-              <Link href="/chat">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full md:w-auto flex items-center justify-center gap-2 h-[44px]"
-                >
-                  <Sparkles className="h-5 w-5 text-amber-400" />
-                  AI Chat
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full md:w-auto flex items-center justify-center gap-2 h-[44px]"
+                onClick={() => navigateWithDelay("/chat", 600)}
+                disabled={loadingRoute === "/chat"}
+              >
+                {loadingRoute === "/chat" ? (
+                  <>
+                    <Spinner className="h-4 w-4" /> Loading AI Chat...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-5 w-5 text-amber-400" />
+                    AI Chat
+                  </>
+                )}
+              </Button>
 
-              <Link href="/select">
-                <Button
-                  size="lg"
-                  className="w-full md:w-auto flex items-center justify-center gap-2 h-[44px] bg-[#8800ff] text-white"
-                >
-                  Explore Your Syllabus
-                  <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                className="w-full md:w-auto flex items-center justify-center gap-2 h-[44px] bg-[#8800ff] text-white"
+                onClick={() => navigateWithDelay("/select", 800)}
+                disabled={loadingRoute === "/select"}
+              >
+                {loadingRoute === "/select" ? (
+                  <>
+                    <Spinner className="h-4 w-4" /> Loading Syllabus...
+                  </>
+                ) : (
+                  <>
+                    Explore Your Syllabus
+                    <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </section>
