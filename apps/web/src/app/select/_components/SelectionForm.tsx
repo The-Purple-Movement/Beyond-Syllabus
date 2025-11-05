@@ -30,7 +30,6 @@ import {
 import { Info, BookOpen, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useData } from "@/contexts/dataContext";
-import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
 
 import ErrorDisplay from "@/components/common/ErrorDisplay";
@@ -146,7 +145,6 @@ export function SelectionForm() {
   if (!directoryStructure || Object.keys(directoryStructure).length === 0) {
     return (
       <>
-        <Header />
         <main className="container mx-auto px-4 py-12 md:py-20 flex justify-center items-center flex-1">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-3xl font-bold mb-4">No Syllabus Data Found</h1>

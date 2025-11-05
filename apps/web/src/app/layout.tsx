@@ -15,9 +15,9 @@ const poppins = Poppins({
   display: "swap",
 });
 
-const monteserrat = Montserrat({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-monteserrat",
+  variable: "--font-montserrat",
   display: "swap",
 });
 
@@ -25,8 +25,23 @@ const monteserrat = Montserrat({
 export const metadata: Metadata = {
   title: "BeyondSyllabus",
   description:
-    "Explore your university subjects, syllabus, and study resources in a click.",
+    "Your modern, AI-powered guide to the university curriculum. Explore subjects, understand modules, and unlock your potential.",
+  authors: [{ name: "µLearn" }],
+  openGraph: {
+    title: "BeyondSyllabus",
+    description:
+      "Your modern, AI-powered guide to the university curriculum. Explore subjects, understand modules, and unlock your potential. Our platform is designed to streamline your learning process, from understanding complex topics to finding the best study materials.",
+    siteName: "BeyondSyllabus",
+    url: "https://beyondsyllabus.in/",
+    type: "website",
+    images: ["/favicon.ico"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
+  metadataBase: new URL("https://beyondsyllabus.in/"),
 };
+
 
 export default function RootLayout({
   children,
@@ -36,7 +51,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`font-sans antialiased ${monteserrat.variable} ${poppins.variable} dark:bg-[#030013] bg-white`}
+        className={`font-sans antialiased ${montserrat.variable} ${poppins.variable} dark:bg-[#030013] bg-white`}
       >
         <ThemeProvider
           attribute="class"
@@ -57,7 +72,7 @@ export default function RootLayout({
               </Suspense>
             </DataProvider>
           </QueryProvider>
-          <Toaster closeButton richColors/>
+          <Toaster closeButton richColors />
         </ThemeProvider>
       </body>
     </html>

@@ -1,10 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer base {
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
   :root {
-    --background: 240 10% 97%; /* Light gray */
+    --background: 240 10% 97%;
+    /* Light gray */
     --foreground: 224 71.4% 4.1%;
 
     --card: 240 10% 100%;
@@ -13,8 +15,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
 
-    --primary: 262.1 83.3% 57.8%; /* Soft Purple */
-    --primary-dark: 262.1 83.3% 45%; /* Darker Purple for hover */
+    --primary: 262.1 83.3% 57.8%;
+    /* Soft Purple */
+    --primary-dark: 262.1 83.3% 45%;
+    /* Darker Purple for hover */
     --primary-foreground: 0 0% 98%;
 
     --secondary: 220 13% 91%;
@@ -23,7 +27,7 @@
     --muted: 220 13% 91%;
     --muted-foreground: 220 8.9% 43.1%;
 
-    --accent: 262.1 83.3% 75%; /* Mint Green */
+    --accent: 262.1 83.3% 75%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
@@ -33,14 +37,12 @@
     --input: 220 13% 91%;
     --ring: 262.1 83.3% 57.8%;
 
-    /* Optional neon purple glow */
     --glow-purple: 262.1 83.3% 70%;
-
     --radius: 1rem;
   }
 
   .dark {
-    --background: 240 15% 5%; /* Almost black purple tone */
+    --background: 240 15% 5%;
     --foreground: 0 0% 98%;
 
     --card: 262.1 30% 12%;
@@ -49,8 +51,8 @@
     --popover: 262.1 30% 8%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 262.1 83.3% 67.8%; /* Brighter Purple */
-    --primary-dark: 262.1 83.3% 55%; /* Darker hover version for dark mode */
+    --primary: 262.1 83.3% 67.8%;
+    --primary-dark: 262.1 83.3% 55%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 262.1 30% 15%;
@@ -59,7 +61,7 @@
     --muted: 262.1 30% 10%;
     --muted-foreground: 262.1 15% 75%;
 
-    --accent: 262.1 83.3% 75%; /* Light purple accent */
+    --accent: 262.1 83.3% 75%;
     --accent-foreground: 0 0% 10%;
 
     --destructive: 0 62.8% 50.6%;
@@ -68,57 +70,109 @@
     --border: 262.1 30% 20%;
     --input: 262.1 30% 20%;
     --ring: 262.1 83.3% 67.8%;
-
     --glow-purple: 262.1 83.3% 80%;
   }
-  .theme {
-    --animate-aurora: aurora 8s ease-in-out infinite alternate;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: var(--font-montserrat);
   }
-}
 
-h1,
-h2,
-h3,
-h4,
-h5 {
-  font-family: var(--font-montserrat);
-}
+  * {
+    box-sizing: border-box;
+    outline: none;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-* {
-  box-sizing: border-box;
-  outline: none;
-  -ms-overflow-style: none;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  -webkit-tap-highlight-color: transparent;
-}
+  ::-webkit-scrollbar {
+    display: none;
+  }
 
-::-webkit-scrollbar {
-  display: none;
-}
-
-@layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
-}
 
-/* Purple Glow Animation (optional) */
+
 @keyframes purpleGlow {
+
   0%,
   100% {
     box-shadow: 0 0 8px hsl(var(--glow-purple));
   }
+
   50% {
     box-shadow: 0 0 20px hsl(var(--glow-purple));
   }
 }
 
 @theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-border: hsl(var(--border));
+  --color-ring: hsl(var(--ring));
+
+  --animate-aurora: aurora 8s ease-in-out infinite alternate;
+
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
   @keyframes aurora {
   0% {
     background-position: 0% 50%;
@@ -140,5 +194,14 @@ h5 {
     background-position: 0% 50%;
     transform: rotate(-5deg) scale(0.9);
     }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
