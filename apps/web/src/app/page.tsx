@@ -13,6 +13,8 @@ import {
   Sparkles,
 } from "lucide-react";  
 import { AuroraText } from "@/components/ui/aurora-text";
+import { Header } from "@/components/common/Header";
+import { Footer } from "@/components/common/Footer";
 
 export default function Home() {
   const router = useRouter();
@@ -26,6 +28,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen transition-colors duration-300">
+      <Header />
       <main className="flex-grow relative">
         <section
           className={`w-full h-screen flex flex-col justify-center items-center px-4 text-center relative z-10`}
@@ -131,7 +134,7 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="relative w-full h-[400px] md:h-[600px] mt-16 md:mt-0">
+        <section className="relative w-full h-[400px] md:h-[600px] mt-16 md:mt-0">
           <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
             <div
               className="w-full h-full bg-no-repeat bg-contain bg-bottom rotate-180"
@@ -141,8 +144,9 @@ export default function Home() {
               }}
             />
           </div>
-        </footer>
+        </section>
       </main>
+      <Footer />
     </div>
   );
 }

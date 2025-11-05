@@ -24,7 +24,8 @@ import {
 } from "lucide-react";
 import ErrorDisplay from "@/components/common/ErrorDisplay";
 import { AnimatedDiv } from "@/components/common/AnimatedDiv";
-// import { useGetDirectoryStructure } from "@/hooks/query";
+import { Header } from "@/components/common/Header";
+import { Footer } from "@/components/common/Footer";
 import { useData } from "@/contexts";
 
 interface SubjectsPageProps {
@@ -159,7 +160,6 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
 
   const { university, program, scheme, semester } = dataPath;
 
-  // Build proper breadcrumb items with href for navigation
   const breadcrumbItems = [
     { label: "Home", href: "/" },
     { label: "Select", href: "/select" },
@@ -180,6 +180,7 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
 
   return (
     <div className="flex flex-col min-h-screen mt-[10vh]">
+      <Header />
       <main className="flex-1 container mx-auto px-4 py-8 md:py-12">
         <AnimatedDiv>
           <div className="max-w-6xl mx-auto">
@@ -258,6 +259,7 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
           </div>
         </AnimatedDiv>
       </main>
+      <Footer />
     </div>
   );
 }

@@ -39,6 +39,7 @@ import {
   extractTitleFromMarkdown,
   deleteChatSession,
 } from "@/lib/chat-history";
+import { Header } from "@/components/common/Header";
 
 export default function ChatWithFilePage() {
   const [markdown, setMarkdown] = useState("");
@@ -492,6 +493,7 @@ export default function ChatWithFilePage() {
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-[#181824] dark:to-[#232946] overflow-hidden">
+      <Header />
       <div className="flex flex-1 overflow-hidden relative pt-20">
         {/* Desktop Sidebar */}
         <div className="hidden md:block">
@@ -513,6 +515,7 @@ export default function ChatWithFilePage() {
             <div className="md:hidden fixed inset-0 z-50 flex">
               {/* Backdrop */}
               <motion.div
+                // Build proper breadcrumb items with href for navigation
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

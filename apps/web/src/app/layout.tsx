@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Montserrat, Poppins } from "next/font/google";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 import "./globals.css";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
 import { QueryProvider } from "@/lib/rQuery";
 import { DataProvider } from "@/contexts";
 import { GridLoader } from "react-spinners"
-import { Header } from "@/components/common/Header";
-import { Footer } from "@/components/common/Footer";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -48,7 +46,6 @@ export default function RootLayout({
         >
           <QueryProvider>
             <DataProvider>
-              <Header />
               <Suspense
                 fallback={
                   <div className="flex items-center justify-center w-screen h-screen">
@@ -58,10 +55,9 @@ export default function RootLayout({
               >
                 {children}
               </Suspense>
-              <Footer />
             </DataProvider>
           </QueryProvider>
-          <Toaster />
+          <Toaster closeButton richColors/>
         </ThemeProvider>
       </body>
     </html>
