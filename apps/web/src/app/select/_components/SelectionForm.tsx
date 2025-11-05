@@ -30,8 +30,7 @@ import {
 import { Info, GraduationCap, BookOpen, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useData } from "@/contexts/dataContext";
-import { Footer } from "@/components/common/Footer";
-import { Header } from "@/components/common/Header";
+
 import ErrorDisplay from "@/components/common/ErrorDisplay";
 
 function capitalizeWords(str: string | undefined): string {
@@ -47,7 +46,7 @@ function formatSemesterName(semesterId: string): string {
 // Function to extract numeric value from semester ID for sorting
 function getSemesterNumber(semesterId: string): number {
   // Remove all non-numeric characters and convert to number
-  const numericPart = semesterId.replace(/[^0-9]/g, '');
+  const numericPart = semesterId.replace(/[^0-9]/g, "");
   const num = Number.parseInt(numericPart, 10);
   return Number.isNaN(num) ? 999 : num; // Put invalid entries at the end
 }
@@ -63,10 +62,16 @@ const MotionDiv = motion.div;
 export function SelectionForm() {
   const router = useRouter();
   const { data: directoryStructure, isFetching, isError, error } = useData();
-  const [selectedUniversityId, setSelectedUniversityId] = useState<string | null>(null);
-  const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
+  const [selectedUniversityId, setSelectedUniversityId] = useState<
+    string | null
+  >(null);
+  const [selectedProgramId, setSelectedProgramId] = useState<string | null>(
+    null
+  );
   const [selectedSchemeId, setSelectedSchemeId] = useState<string | null>(null);
-  const [selectedSemesterId, setSelectedSemesterId] = useState<string | null>(null);
+  const [selectedSemesterId, setSelectedSemesterId] = useState<string | null>(
+    null
+  );
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -139,7 +144,6 @@ export function SelectionForm() {
   if (!directoryStructure || Object.keys(directoryStructure).length === 0) {
     return (
       <>
-        <Header />
         <main className="container mx-auto px-4 py-12 md:py-20 flex justify-center items-center flex-1">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-3xl font-bold mb-4">No Syllabus Data Found</h1>
@@ -149,7 +153,6 @@ export function SelectionForm() {
             </p>
           </div>
         </main>
-        <Footer />
       </>
     );
   }
@@ -237,8 +240,8 @@ export function SelectionForm() {
               >
                 <div className="relative">
                   <div className="w-16 h-16 mx-auto mb-4 relative">
-                    <div className="absolute inset-0 rounded-full border-4 border-primary/20 animate-pulse"/>
-                    <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin"/>
+                    <div className="absolute inset-0 rounded-full border-4 border-primary/20 animate-pulse" />
+                    <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin" />
                     <Loader2 className="w-6 h-6 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
                   </div>
                   <motion.div
@@ -285,7 +288,11 @@ export function SelectionForm() {
                           className="w-[280px] rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg z-50 max-h-[200px] overflow-y-auto"
                         >
                           {Object.keys(directoryStructure)
-                            .sort((a, b) => capitalizeWords(a).localeCompare(capitalizeWords(b)))
+                            .sort((a, b) =>
+                              capitalizeWords(a).localeCompare(
+                                capitalizeWords(b)
+                              )
+                            )
                             .map((universityId) => (
                               <SelectItem
                                 key={universityId}
@@ -332,7 +339,11 @@ export function SelectionForm() {
                           className="w-[280px] rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg z-50 max-h-[200px] overflow-y-auto"
                         >
                           {Object.keys(selectedUniversityData)
-                            .sort((a, b) => capitalizeWords(a).localeCompare(capitalizeWords(b)))
+                            .sort((a, b) =>
+                              capitalizeWords(a).localeCompare(
+                                capitalizeWords(b)
+                              )
+                            )
                             .map((programId) => (
                               <SelectItem
                                 key={programId}
@@ -359,7 +370,10 @@ export function SelectionForm() {
                   >
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 justify-center">
-                        <Label htmlFor="scheme" className="text-base font-semibold">
+                        <Label
+                          htmlFor="scheme"
+                          className="text-base font-semibold"
+                        >
                           3. Select Your Scheme
                         </Label>
                         <TooltipProvider>
@@ -374,7 +388,10 @@ export function SelectionForm() {
                               </button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p className="text-xs">Your syllabus depends on the academic scheme you follow.</p>
+                              <p className="text-xs">
+                                Your syllabus depends on the academic scheme you
+                                follow.
+                              </p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -397,13 +414,16 @@ export function SelectionForm() {
                                 )}
                                 onClick={() => handleSchemeSelect(schemeId)}
                                 onKeyDown={(e) => {
-                                  if (e.key === 'Enter' || e.key === ' ') {
+                                  if (e.key === "Enter" || e.key === " ") {
                                     e.preventDefault();
                                     handleSchemeSelect(schemeId);
                                   }
                                 }}
                                 aria-pressed={selectedSchemeId === schemeId}
-                                aria-label={`Select ${schemeId.replace(/-/g, " ")} scheme`}
+                                aria-label={`Select ${schemeId.replace(
+                                  /-/g,
+                                  " "
+                                )} scheme`}
                               >
                                 <BookOpen className="h-8 w-8 text-primary mx-auto mb-2" />
                                 <p className="font-semibold capitalize text-sm">
@@ -435,15 +455,22 @@ export function SelectionForm() {
                         className="grid grid-cols-2 gap-3 sm:grid-cols-4"
                       >
                         {Object.keys(selectedSchemeData)
-                          .sort((a, b) => getSemesterNumber(a) - getSemesterNumber(b))
+                          .sort(
+                            (a, b) =>
+                              getSemesterNumber(a) - getSemesterNumber(b)
+                          )
                           .map((semesterId) => {
                             const handleSemesterClick = () => {
                               handleSemesterSelect(semesterId);
-                              handleSubmit(new Event("submit") as unknown as React.FormEvent);
+                              handleSubmit(
+                                new Event(
+                                  "submit"
+                                ) as unknown as React.FormEvent
+                              );
                             };
 
                             const handleKeyDown = (e: React.KeyboardEvent) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
+                              if (e.key === "Enter" || e.key === " ") {
                                 e.preventDefault();
                                 handleSemesterClick();
                               }
@@ -461,7 +488,9 @@ export function SelectionForm() {
                                 onClick={handleSemesterClick}
                                 onKeyDown={handleKeyDown}
                                 aria-pressed={selectedSemesterId === semesterId}
-                                aria-label={`Select ${formatSemesterName(semesterId)}`}
+                                aria-label={`Select ${formatSemesterName(
+                                  semesterId
+                                )}`}
                               >
                                 <RadioGroupItem
                                   value={semesterId}

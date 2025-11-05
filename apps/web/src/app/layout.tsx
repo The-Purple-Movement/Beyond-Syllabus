@@ -1,12 +1,28 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Suspense } from "react";
+import { Montserrat, Poppins } from "next/font/google";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
 import { QueryProvider } from "@/lib/rQuery";
 import { DataProvider } from "@/contexts";
+import { GridLoader } from "react-spinners"
+import { Header } from "@/components/common/Header";
+import { Footer } from "@/components/common/Footer";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const monteserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-monteserrat",
+  display: "swap",
+});
+
 
 export const metadata: Metadata = {
   title: "BeyondSyllabus",
@@ -21,7 +37,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans antialiased ${inter.variable}`}>
+      <body
+        className={`font-sans antialiased ${monteserrat.variable} ${poppins.variable} dark:bg-[#030013] bg-white`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -29,7 +47,19 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProvider>
-            <DataProvider>{children}</DataProvider>
+            <DataProvider>
+              <Header />
+              <Suspense
+                fallback={
+                  <div className="flex items-center justify-center w-screen h-screen">
+                    <GridLoader color="#D900FF" size={100} />
+                  </div>
+                }
+              >
+                {children}
+              </Suspense>
+              <Footer />
+            </DataProvider>
           </QueryProvider>
           <Toaster />
         </ThemeProvider>

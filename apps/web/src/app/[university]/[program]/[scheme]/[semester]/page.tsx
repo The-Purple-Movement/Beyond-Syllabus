@@ -3,7 +3,7 @@
 import { notFound } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState, use } from "react";
-import { Header } from "@/components/common/Header";
+
 import { Breadcrumbs } from "@/components/common/Breadcrumbs";
 import {
   Card,
@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import ErrorDisplay from "@/components/common/ErrorDisplay";
 import { AnimatedDiv } from "@/components/common/AnimatedDiv";
-import { Footer } from "@/components/common/Footer";
 // import { useGetDirectoryStructure } from "@/hooks/query";
 import { useData } from "@/contexts";
 
@@ -124,7 +123,6 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
   if (isFetching) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-mint-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800">
-        <Header />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
@@ -165,24 +163,23 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
   const breadcrumbItems = [
     { label: "Home", href: "/" },
     { label: "Select", href: "/select" },
-    { 
-      label: university.name, 
-      href: `/select?step=2&university=${resolvedParams.university}` 
+    {
+      label: university.name,
+      href: `/select?step=2&university=${resolvedParams.university}`,
     },
-    { 
-      label: program.name, 
-      href: `/select?step=3&university=${resolvedParams.university}&program=${resolvedParams.program}` 
+    {
+      label: program.name,
+      href: `/select?step=3&university=${resolvedParams.university}&program=${resolvedParams.program}`,
     },
-    { 
-      label: scheme.name, 
-      href: `/select?step=4&university=${resolvedParams.university}&program=${resolvedParams.program}&scheme=${resolvedParams.scheme}` 
+    {
+      label: scheme.name,
+      href: `/select?step=4&university=${resolvedParams.university}&program=${resolvedParams.program}&scheme=${resolvedParams.scheme}`,
     },
     { label: semester.name }, // Current page - no href
   ];
 
   return (
     <div className="flex flex-col min-h-screen mt-[10vh]">
-      <Header />
       <main className="flex-1 container mx-auto px-4 py-8 md:py-12">
         <AnimatedDiv>
           <div className="max-w-6xl mx-auto">
@@ -261,7 +258,6 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
           </div>
         </AnimatedDiv>
       </main>
-      <Footer />
     </div>
   );
 }

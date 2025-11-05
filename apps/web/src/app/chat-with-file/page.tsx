@@ -23,7 +23,7 @@ import {
   GenerateModuleTasksOutput,
 } from "@/ai/flows/generate-module-tasks";
 import { chatWithSyllabus, Message } from "@/ai/flows/chat-with-syllabus";
-import { Header } from "@/components/common/Header";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -492,7 +492,6 @@ export default function ChatWithFilePage() {
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-[#181824] dark:to-[#232946] overflow-hidden">
-      <Header />
       <div className="flex flex-1 overflow-hidden relative pt-20">
         {/* Desktop Sidebar */}
         <div className="hidden md:block">
