@@ -35,7 +35,7 @@ export default function ChatArea() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const title = params.get("title") || "Untitled Module";
+    const title = params.get("title") || "AI Chat";
     const content = params.get("content") || "";
     setModuleTitle(title);
     setModuleContent(content);
