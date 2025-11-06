@@ -6,7 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
 import { QueryProvider } from "@/lib/rQuery";
 import { DataProvider } from "@/contexts";
-import { GridLoader } from "react-spinners"
+import { ScaleLoader } from "react-spinners"
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -64,7 +64,7 @@ export default function RootLayout({
               <Suspense
                 fallback={
                   <div className="flex items-center justify-center w-screen h-screen">
-                    <GridLoader color="#D900FF" />
+                    <ScaleLoader color="#D900FF" />
                   </div>
                 }
               >
