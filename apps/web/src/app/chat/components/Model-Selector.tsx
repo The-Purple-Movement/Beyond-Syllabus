@@ -56,7 +56,10 @@ export default function ModelSelector({ onChange }: ModelSelectorProps) {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-36 justify-between hover:text-white">
+        <Button
+          variant="outline"
+          className="w-36 justify-between hover:text-white bg-[#D9D9D9] ring-2 ring-[#B56DFC]"
+        >
           <span>{selectedName}</span>
           {isOpen ? (
             <ChevronUp className="w-4 h-4" />
@@ -65,7 +68,7 @@ export default function ModelSelector({ onChange }: ModelSelectorProps) {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-36">
+      <DropdownMenuContent className="w-36 bg-[#D9D9D9] dark:bg-[#181818]">
         {models.map((model) => (
           <DropdownMenuItem
             key={model.id}

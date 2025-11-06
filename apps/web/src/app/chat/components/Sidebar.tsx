@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { LogOut, MessageSquare, User, Search } from "lucide-react";
+import { LogOut, MessageSquare, Search, CircleUserRound } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,7 +19,11 @@ export default function Navbar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="offcanvas" {...props} className="dark:bg-[#1b1b1b]">
+    <Sidebar
+      collapsible="offcanvas"
+      {...props}
+      className="dark:bg-[#1b1b1b] bg-[#DEDEDF]"
+    >
       <SidebarHeader className="px-4 py-4">
         <SidebarMenu>
           <SidebarMenuItem>
@@ -45,7 +49,7 @@ export default function Navbar({
             <Input
               type="text"
               placeholder="Search chats..."
-              className="w-full pl-10 pr-3 py-2 rounded-lg dark:bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-3 py-2 rounded-lg dark:bg-[#181818] text-white placeholder-gray-400"
             />
           </div>
           <Button variant={"default"} className="w-full text-white rounded-lg">
@@ -53,7 +57,7 @@ export default function Navbar({
           </Button>
         </div>
 
-        <h2 className="pt-4 pb-2 text-xl font-semibold flex items-center gap-2 border-b border-gray-700">
+        <h2 className="pt-4 pb-2 text-xl font-semibold flex items-center gap-2">
           <MessageSquare className="w-5 h-5" /> Chat History
         </h2>
         <div className="p-4 text-center text-muted-foreground">
@@ -67,12 +71,10 @@ export default function Navbar({
         <SidebarGroup>
           <SidebarGroupContent className="flex items-center justify-between w-full px-4 py-3 rounded-xl transition-colors hover:bg-gray-700">
             <div className="flex items-center gap-2">
-              <User className="w-5 h-5" />
-              <span className="font-medium">User</span>
+              <CircleUserRound className="w-8 h-8" />
+              <span className="text-xl font-semibold text-[#B56DFC]">User</span>
             </div>
-            <Button variant="ghost" size="icon">
-              <LogOut className="w-5 h-5" />
-            </Button>
+              <LogOut className="w-6 h-6" />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarFooter>

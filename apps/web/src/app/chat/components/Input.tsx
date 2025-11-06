@@ -52,7 +52,7 @@ export function ChatInput({
   return (
     <div
       className={cn(
-        "relative border border-border rounded-2xl dark:bg-[#1b1b1b] shadow-sm",
+        "relative border border-border rounded-2xl dark:bg-[#1B1B1B] bg-[#DEDEDF] shadow-sm ring-2 ring-purple-700",
         "p-4 transition-all duration-200",
         className
       )}
@@ -86,7 +86,7 @@ export function ChatInput({
           onClick={handleSubmit}
           disabled={disabled || !message.trim()}
           className={cn(
-            "flex items-center justify-center w-9 h-9 mt-1 rounded-full border border-border",
+            "flex items-center justify-center w-9 h-9 mt-1 rounded-full border border-border bg-purple-500 text-white",
             "transition-colors",
             (disabled || !message.trim()) && "opacity-50 cursor-not-allowed"
           )}

@@ -2,7 +2,7 @@
 
 import "katex/dist/katex.min.css";
 import { Button } from "@/components/ui/button";
-import { Copy, Check, User } from "lucide-react";
+import { Copy, Check, Bot } from "lucide-react";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import ReactMarkdown from "react-markdown";
@@ -36,9 +36,12 @@ export default function ChatMessage({
   if (role === "user") {
     return (
       <div className="flex justify-end px-2 sm:px-4">
-        <div className="w-full max-w-[90%] sm:max-w-2xl bg-primary/15 text-foreground rounded-lg px-4 py-3 break-words text-sm sm:text-base">
+        <div
+          className="w-full max-w-[90%] sm:max-w-2xl bg-[#B56DFC] text-white rounded-lg rounded-br-none px-4 py-3 break-words text-sm sm:text-base"
+        >
           {content}
         </div>
+
       </div>
     );
   }
@@ -46,7 +49,7 @@ export default function ChatMessage({
   return (
     <div className="flex gap-2 sm:gap-4 px-2 sm:px-4">
       <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-foreground text-xs sm:text-sm font-semibold flex-shrink-0">
-        <User />
+        <Bot className="h-6 w-6 text-[#B56DFC]" />
       </div>
 
       <div className="flex-1 max-w-[90%] sm:max-w-3xl space-y-2 sm:space-y-3">
@@ -67,9 +70,15 @@ export default function ChatMessage({
             className="gap-2 h-7 sm:h-8 px-2"
           >
             {copied ? (
-              <Check className="w-4 h-4" />
+              <>
+                <Check className="w-4 h-4" />
+                <p>Copied</p>
+              </>
             ) : (
-              <Copy className="w-4 h-4" />
+              <>
+                <Copy className="w-4 h-4" />
+                <p>Copy</p>
+              </>
             )}
           </Button>
         </div>

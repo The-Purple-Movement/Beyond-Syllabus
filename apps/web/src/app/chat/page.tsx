@@ -8,6 +8,7 @@ import { ChatInput } from "@/app/chat/components/Input";
 import { chatWithSyllabus, Message } from "@/ai/flows/chat-with-syllabus";
 import { generateModuleTasks } from "@/ai/flows/generate-module-tasks";
 import Header from "@/app/chat/components/Header";
+import { ThemeToggle } from "@/components/common/ThemeToggle";
 
 export default function ChatArea() {
   const [moduleTitle, setModuleTitle] = useState("Loading title...");
@@ -118,15 +119,26 @@ export default function ChatArea() {
   const isInitial = messages.length === 0;
 
   return (
-    <div className="flex flex-col h-screen dark:bg-linear-to-b from-[#22283E] to-[#26387C]">
-      <div className="flex-none px-6 py-1">
-        <Header />
-      </div>
+    <div className="flex flex-col h-screen bg-[#F7F7F8] dark:bg-linear-to-b from-[#22283E] to-[#26387C]">
+        {!isInitial && (
+          <div className="sticky flex-none px-6 py-1">
+            <Header />
+          </div>
+        )}
 
       <div className="flex-1 overflow-y-auto px-6 py-4">
         {isInitial ? (
-          <div className="flex flex-col items-center justify-center text-center h-full">
-            <h2 className="text-3xl font-bold mb-6">BeyondSyllabus</h2>
+          <div className="relative flex flex-col items-center justify-center text-center h-full">
+            <div className="absolute top-4 right-4">
+              <ThemeToggle />
+            </div>
+
+            <h2
+              className="text-3xl font-bold mb-6 bg-[radial-gradient(50%_335.34%_at_50%_50%,#B56DFC_0%,#7B39FF_100%)] 
+                 bg-clip-text text-transparent"
+            >
+              BeyondSyllabus
+            </h2>
 
             <div className="w-full max-w-3xl mb-4">
               <ChatInput
@@ -144,13 +156,13 @@ export default function ChatArea() {
                 <Button
                   key={idx}
                   size="sm"
-                  variant="default"
+                  variant="outline"
                   onClick={() => handleSuggestionClick(s)}
                   disabled={loading}
                   className="rounded-full text-xs sm:text-sm px-3 py-1.5 
                  max-w-[90%] sm:max-w-[400px] 
                  whitespace-normal break-words text-center
-                 flex-1 sm:flex-none"
+                 flex-1 sm:flex-none hover:text-white ring-2 ring-[#B56DFC]"
                   style={{
                     minWidth: "fit-content",
                   }}
@@ -175,11 +187,11 @@ export default function ChatArea() {
                 {suggestions.map((s, idx) => (
                   <Button
                     key={idx}
-                    variant="default"
+                    variant="outline"
                     onClick={() => handleSuggestionClick(s)}
                     className="rounded-full text-xs sm:text-sm px-3 py-1.5
                    max-w-full sm:max-w-[400px]
-                   whitespace-normal break-words h-auto text-left"
+                   whitespace-normal break-words hover:text-white h-auto text-left ring-2 ring-[#B56DFC]"
                     disabled={loading}
                   >
                     {s}
