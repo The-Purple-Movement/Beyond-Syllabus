@@ -37,7 +37,7 @@ export default function ChatMessage({
     return (
       <div className="flex justify-end px-2 sm:px-4">
         <div
-          className="w-full max-w-[90%] sm:max-w-2xl bg-[#B56DFC] text-white rounded-lg rounded-br-none px-4 py-3 break-words text-sm sm:text-base"
+          className="w-auto max-w-[90%] sm:max-w-2xl bg-[#B56DFC] text-white rounded-lg rounded-br-none px-4 py-3 break-words text-sm sm:text-base"
         >
           {content}
         </div>

@@ -52,9 +52,11 @@ export default function Navbar({
               className="w-full pl-10 pr-3 py-2 rounded-lg dark:bg-[#181818] text-white placeholder-gray-400"
             />
           </div>
+          <Link href="/select">
           <Button variant={"default"} className="w-full text-white rounded-lg">
-            View Syllabus
-          </Button>
+            Select another Syllabus
+            </Button>
+          </Link>
         </div>
 
         <h2 className="pt-4 pb-2 text-xl font-semibold flex items-center gap-2">
