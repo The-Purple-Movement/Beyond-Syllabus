@@ -18,11 +18,6 @@ import { Input } from "@/components/ui/input";
 export default function Navbar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-  const chatHistory = [
-    { id: 1, title: "Math Chat" },
-    { id: 2, title: "Science Chat" },
-  ];
-
   return (
     <Sidebar collapsible="offcanvas" {...props} className="dark:bg-[#1b1b1b]">
       <SidebarHeader className="px-4 py-4">
@@ -63,15 +58,12 @@ export default function Navbar({
         </h2>
 
         <SidebarMenu className="flex flex-col gap-2 mt-2">
-          {chatHistory.map((chat) => (
-            <SidebarMenuItem key={chat.id}>
+            <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <p className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors">
-                  {chat.title}
                 </p>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          ))}
         </SidebarMenu>
       </SidebarContent>
 

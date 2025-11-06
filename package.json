@@ -20,6 +20,7 @@
     "start:server": "turbo -F server start"
   },
   "dependencies": {
+    "react-syntax-highlighter": "^16.1.0"
   },
   "devDependencies": {
     "oxlint": "^1.8.0",
