@@ -64,7 +64,7 @@ export default function RootLayout({
               <Suspense
                 fallback={
                   <div className="flex items-center justify-center w-screen h-screen">
-                    <GridLoader color="#D900FF" size={100} />
+                    <GridLoader color="#D900FF" />
                   </div>
                 }
               >
@@ -72,7 +72,7 @@ export default function RootLayout({
               </Suspense>
             </DataProvider>
           </QueryProvider>
-          <Toaster closeButton richColors />
+          <Toaster closeButton richColors position="top-center" />
         </ThemeProvider>
       </body>
     </html>

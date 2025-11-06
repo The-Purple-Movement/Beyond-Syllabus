@@ -1,256 +1,133 @@
 "use client";
-import "katex/dist/katex.min.css";
+
 import { useState, useEffect, useRef } from "react";
+import { toast } from "sonner";
+import ChatMessage from "@/app/chat/components/Message";
+import { Button } from "@/components/ui/button";
+import { ChatInput } from "@/app/chat/components/Input";
 import { chatWithSyllabus, Message } from "@/ai/flows/chat-with-syllabus";
-import { generateModuleTasks } from "@/ai/flows/generate-module-tasks";
-import DesktopChatLayout from "./DesktopChatLayout";
-import DesktopChat from "./DesktopChat/DesktopChat";
-import MobileChatPanels from "./mobileChatPanels";
-import styles from './page.module.css';
+import Header from "@/app/chat/components/Header";
 
-export default function ChatComponent() {
-  // Client-only state for module title/content
-  const [moduleTitle, setModuleTitle] = useState("Loading title...");
-  const [moduleContent, setModuleContent] = useState("");
-
+export default function ChatArea() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [copiedMessageIndex, setCopiedMessageIndex] = useState<number | null>(
-    null
-  );
-  const [selectedModel, setSelectedModel] = useState("llama3-8b-8192"); // default model
-
-  const [chatHistory, setChatHistory] = useState<
-    { title: string; messages: Message[] }[]
-  >([]);
+  const [selectedModel, setSelectedModel] = useState("openai/gpt-oss-120b");
   const chatEndRef = useRef<HTMLDivElement>(null);
-  const [activeTab, setActiveTab] = useState<"ai" | "quick" | "history">("ai");
-  const [historyViewing, setHistoryViewing] = useState<boolean>(false);
 
-  const quickQuestions = [
+  const suggestedPrompts = [
     "Why do I need to study this?",
     "What is the purpose of this module?",
     "How can I apply this in real life?",
   ];
 
-  // === CLIENT-ONLY: read search params ===
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const title = params.get("title") || "Untitled Module";
-    const content = params.get("content") || "";
-    setModuleTitle(title);
-    setModuleContent(content);
-  }, []);
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-  // Scroll to bottom
   useEffect(() => {
-    setTimeout(
-      () => chatEndRef.current?.scrollIntoView({ behavior: "smooth" }),
-      100
-    );
+    scrollToBottom();
   }, [messages, loading]);
 
-  useEffect(() => {
-    console.log(messages)
-  }, [messages])
+  const handleSend = async (message: string) => {
+    if (!message.trim()) return;
 
-  // Generate initial tasks
-  useEffect(() => {
-    if (!moduleContent || moduleTitle === "Loading title...") return;
-
-    const systemMessage: Message = {
-      role: "system",
-      content: `You are an expert assistant for the course module: ${moduleTitle}.\nModule Content:\n${moduleContent}`,
-    };
-
-    setMessages([systemMessage]);
+    const userMessage: Message = { role: "user", content: message };
+    setMessages((prev) => [...prev, userMessage]);
     setLoading(true);
-    setError(null);
-
-    generateModuleTasks({ moduleContent, moduleTitle })
-      .then((result) => {
-        setMessages([
-          systemMessage,
-          { role: "assistant", content: result.introductoryMessage },
-        ]);
-        setSuggestions(result.suggestions);
-      })
-      .catch(() =>
-        setError("Failed to generate initial tasks and applications.")
-      )
-      .finally(() => setLoading(false));
-  }, [moduleContent, moduleTitle]);
-
-  const copyToClipboard = async (text: string, messageIndex: number) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedMessageIndex(messageIndex);
-      setTimeout(() => setCopiedMessageIndex(null), 2000);
-    } catch (err) {
-      console.error("Failed to copy text: ", err);
-    }
-  };
-
-  const handleSuggestionClick = (text: string) => {
-    setInput(text);
-    setTimeout(
-      () => document.getElementById("chat-submit-button")?.click(),
-      50
-    );
-  };
-
-  const handleDeleteTopic = (idx: number) => {
-    setChatHistory((prev) => prev.filter((_, i) => i !== idx));
-  };
-
-  const handleSend = async () => {
-    if (!input.trim() || loading) return;
-
-    const userMessage: Message = { role: "user", content: input };
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
-    setInput("");
-    setSuggestions([]);
-    setLoading(true);
-    setError(null);
 
     try {
-      const chatHistoryForApi = updatedMessages.filter(
-        (m): m is { role: "user" | "assistant"; content: string } =>
-          m.role !== "system"
-      );
-
       const result = await chatWithSyllabus({
-        history: chatHistoryForApi,
-        message: input,
-        model: selectedModel, // ✅ Correct model usage
+        history: messages.filter((m) => m.role !== "system"),
+        message,
+        model: selectedModel,
       });
 
-      const assistantMessage: Message = {
+      const aiMessage: Message = {
         role: "assistant",
         content: result.response,
       };
 
-      setMessages((msgs) => [...msgs, assistantMessage]);
-      setSuggestions(result.suggestions || []);
+      setMessages((prev) => [...prev, aiMessage]);
     } catch (err) {
-      console.error("Error getting AI response:", err);
-      setError("Sorry, something went wrong. Please try again.");
+      console.error(err);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Sorry, something went wrong." },
+      ]);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleNewTopic = () => {
-    const firstUserMessage =
-      messages.find((m) => m.role === "user")?.content || "";
+  const handleModelChange = (model: string) => setSelectedModel(model);
 
-    if (historyViewing) {
-      // Just exit history mode + clear messages
-      setHistoryViewing(false);
-      setMessages([]);
-      return; // stop here, don’t archive old chat
-    }
-
-    // Normal behavior (not in history view)
-    if (messages.length > 1) {
-      setChatHistory((prev) => [
-        ...prev,
-        {
-          title: firstUserMessage
-            ? `Untitled - ${firstUserMessage.slice(0, 20)}`
-            : `${moduleTitle} - New Topic`,
-          messages: messages.filter((m) => m.role !== "system"),
-        },
-      ]);
-    }
-    const systemMessage: Message = {
-      role: "system",
-      content: `You are an expert assistant for the course module: ${moduleTitle}.\nModule Content:\n${moduleContent}`,
-    };
-
-    setMessages([systemMessage]);
-    setInput("");
-    setSuggestions([]);
-    setError(null);
-    setActiveTab("ai");
-  };
+  const isInitial = messages.length === 0;
 
   return (
-    <div className={styles.container}>
-
-
-      <div className={styles.desktopContainer}>
-        {/* <DesktopChatLayout
-          moduleTitle={moduleTitle}
-          moduleContent={moduleContent}
-          messages={messages}
-          chatHistory={chatHistory}
-          suggestions={suggestions}
-          quickQuestions={quickQuestions}
-          input={input}
-          setInput={setInput}
-          onDeleteTopic={handleDeleteTopic}
-          loading={loading}
-          onModelChange={setSelectedModel}
-          copiedMessageIndex={copiedMessageIndex}
-          handleSend={handleSend}
-          handleNewTopic={handleNewTopic}
-          handleSuggestionClick={handleSuggestionClick}
-          copyToClipboard={copyToClipboard}
-          setMessages={setMessages}
-        /> */}
-        <DesktopChat
-          chatHistory={chatHistory}
-          onDeleteTopic={handleDeleteTopic}
-          moduleTitle={moduleTitle}
-          messages={messages}
-          copiedMessageIndex={copiedMessageIndex}
-          copyToClipboard={copyToClipboard}
-          loading={loading}
-          suggestions={suggestions}
-          handleSend={handleSend}
-          handleSuggestionClick={handleSuggestionClick}
-          input={input}
-          setInput={setInput}
-          onModelChange={setSelectedModel}
-          handleNewTopic={handleNewTopic}
-          setMessages={setMessages}
-          setActiveTab={setActiveTab}
-          historyViewing={historyViewing}
-          setHistoryViewing={setHistoryViewing}
-        />
-
-
+    <div className="flex flex-col h-screen dark:bg-linear-to-b from-[#22283E] to-[#26387C]">
+      <div className="flex-none px-6 py-1">
+        <Header />
       </div>
 
-      <div className={styles.mobileContainer}>
-        <MobileChatPanels
-          messages={messages}
-          onModelChange={setSelectedModel}
-          setMessages={setMessages}
-          input={input}
-          setInput={setInput}
-          loading={loading}
-          error={error}
-          suggestions={suggestions}
-          copiedMessageIndex={copiedMessageIndex}
-          chatHistory={chatHistory}
-          setChatHistory={setChatHistory}
-          quickQuestions={quickQuestions}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          chatEndRef={chatEndRef}
-          moduleTitle={moduleTitle}
-          copyToClipboard={copyToClipboard}
-          handleSuggestionClick={handleSuggestionClick}
-          handleSend={handleSend}
-          handleNewTopic={handleNewTopic}
-        />
+      <div className="flex-1 overflow-y-auto px-6 py-4">
+        {isInitial ? (
+          <div className="flex flex-col items-center justify-center text-center h-full">
+            <h2 className="text-3xl font-bold mb-6">BeyondSyllabus</h2>
+
+            <div className="w-full max-w-3xl mb-4">
+              <ChatInput
+                onSend={handleSend}
+                onModelChange={handleModelChange}
+                placeholder="Ask anything..."
+                disabled={loading}
+                className="w-full"
+              />
+            </div>
+
+            <p className="text-sm mb-3 font-medium">Try these:</p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {suggestedPrompts.map((prompt, idx) => (
+                <Button
+                  key={idx}
+                  size="sm"
+                  variant={"outline"}
+                  onClick={() => handleSend(prompt)}
+                  disabled={loading}
+                  className="rounded-full text-xs px-3 py-1.5 border-border hover:text-white"
+                >
+                  {prompt}
+                </Button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col space-y-4">
+            {messages.map((msg, idx) => (
+              <ChatMessage
+                key={idx}
+                role={msg.role as "user" | "assistant"}
+                content={msg.content}
+                onCopy={() => {
+                  navigator.clipboard.writeText(msg.content);
+                  toast.success("Copied to clipboard!");
+                }}
+              />
+            ))}
+            <div ref={chatEndRef} />
+          </div>
+        )}
       </div>
+      {!isInitial && (
+        <div className="flex-none px-6 py-4 sticky bottom-0">
+          <ChatInput
+            onSend={handleSend}
+            onModelChange={handleModelChange}
+            placeholder="Ask anything..."
+            disabled={loading}
+            className="w-full"
+          />
+        </div>
+      )}
     </div>
   );
 }
