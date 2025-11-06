@@ -2,11 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  Loader2,
   Sparkles,
-  Wand2,
   Send,
   BrainCircuit,
   User,
@@ -40,6 +37,7 @@ import {
   deleteChatSession,
 } from "@/lib/chat-history";
 import { Header } from "@/components/common/Header";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function ChatWithFilePage() {
   const [markdown, setMarkdown] = useState("");
@@ -640,7 +638,7 @@ export default function ChatWithFilePage() {
                             size="sm"
                           >
                             {isAwaitingAi && loading ? (
-                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              <Spinner className="h-4 w-4 mr-2" />
                             ) : (
                               <Send className="h-4 w-4 mr-2" />
                             )}
@@ -870,7 +868,7 @@ export default function ChatWithFilePage() {
                                     ease: "easeInOut",
                                   }}
                                 >
-                                  <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin text-primary" />
+                                  <Spinner className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                                 </motion.div>
                                 <motion.span
                                   key={thinkingText}

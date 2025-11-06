@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sparkles, BrainCircuit, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Spinner } from "@/components/ui/spinner";
 
 interface Module {
   title: string;
@@ -107,7 +108,7 @@ export function CourseModules({ modules }: CourseModulesProps) {
                     }}
                   >
                     {loadingModuleIndex === index ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Spinner className="h-4 w-4" />
                     ) : (
                       <Sparkles className="h-4 w-4 text-amber-300 transition-transform group-hover:scale-125" />
                     )}

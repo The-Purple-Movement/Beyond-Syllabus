@@ -6,6 +6,7 @@ import { summarizeSyllabus } from "@/ai/flows/summarize-syllabus";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Spinner } from "@/components/ui/spinner";
 
 interface SyllabusSummaryProps {
   fullSyllabus: string;
@@ -58,7 +59,7 @@ export function SyllabusSummary({ fullSyllabus }: SyllabusSummaryProps) {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center justify-center space-x-2 text-muted-foreground py-4"
           >
-            <Loader2 className="h-5 w-5 animate-spin" />
+            <Spinner className="h-5 w-5" />
             <span>Generating summary...</span>
           </motion.div>
         )}

@@ -27,6 +27,7 @@ import { AnimatedDiv } from "@/components/common/AnimatedDiv";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
 import { useData } from "@/contexts";
+import { Spinner } from "@/components/ui/spinner";
 
 interface SubjectsPageProps {
   params: Promise<{
@@ -126,7 +127,7 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-mint-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800">
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <Spinner className="h-8 w-8 mx-auto mb-4" />
             <p className="text-muted-foreground">Loading syllabus data...</p>
           </div>
         </div>
@@ -234,7 +235,7 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
                         >
                           {isLoading ? (
                             <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              <Spinner className="mr-2 h-4 w-4" />
                               Loading...
                             </>
                           ) : (

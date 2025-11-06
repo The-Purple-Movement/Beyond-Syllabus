@@ -33,6 +33,7 @@ import { useData } from "@/contexts/dataContext";
 import { Footer } from "@/components/common/Footer";
 
 import ErrorDisplay from "@/components/common/ErrorDisplay";
+import { Spinner } from "@/components/ui/spinner";
 
 function capitalizeWords(str: string | undefined): string {
   if (!str) return "";
@@ -242,9 +243,9 @@ export function SelectionForm() {
               >
                 <div className="relative">
                   <div className="w-16 h-16 mx-auto mb-4 relative">
-                    <div className="absolute inset-0 rounded-full border-4 border-primary/20 animate-pulse" />
-                    <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin" />
-                    <Loader2 className="w-6 h-6 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+                    <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
+                    <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary" />
+                    <Spinner className="w-6 h-6 text-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
                   </div>
                   <motion.div
                     initial={{ opacity: 0 }}
