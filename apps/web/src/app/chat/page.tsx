@@ -144,6 +144,7 @@ export default function ChatArea() {
                     max-w-[90%] sm:max-w-[400px]
                     whitespace-normal break-words text-center
                     flex-1 sm:flex-none hover:text-white ring-2 ring-[#B56DFC]"
+                    style={{ minWidth: "fit-content" }}
                   >
                     {s}
                   </Button>
