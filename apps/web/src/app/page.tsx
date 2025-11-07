@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,10 +11,11 @@ import {
   BarChart3,
   ChevronRight,
   Sparkles,
-} from "lucide-react";  
+} from "lucide-react";
 import { AuroraText } from "@/components/ui/aurora-text";
-import { Header } from "@/components/common/Header";
-import { Footer } from "@/components/common/Footer";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { FeatureCardProps } from "@/types";
 
 export default function Home() {
   const router = useRouter();
@@ -149,12 +150,6 @@ export default function Home() {
       <Footer />
     </div>
   );
-}
-
-interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
 }
 
 function FeatureCard({ icon, title, description }: FeatureCardProps) {

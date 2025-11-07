@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState, use } from "react";
 
-import { Breadcrumbs } from "@/components/common/Breadcrumbs";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import {
   Card,
   CardDescription,
@@ -20,27 +20,15 @@ import {
   Code,
   FlaskConical,
   Sigma,
-  Loader2,
 } from "lucide-react";
-import ErrorDisplay from "@/components/common/ErrorDisplay";
-import { AnimatedDiv } from "@/components/common/AnimatedDiv";
-import { Header } from "@/components/common/Header";
-import { Footer } from "@/components/common/Footer";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import { AnimatedDiv } from "@/components/AnimatedDiv";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useData } from "@/contexts";
 import { Spinner } from "@/components/ui/spinner";
+import { DirectoryStructure, SubjectsPageProps } from "@/types";
 
-interface SubjectsPageProps {
-  params: Promise<{
-    university: string;
-    program: string;
-    scheme: string;
-    semester: string;
-  }>;
-}
-
-interface DirectoryStructure {
-  [key: string]: any;
-}
 
 function findSemesterData(
   directoryStructure: DirectoryStructure,
@@ -227,11 +215,10 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
                           }
                           disabled={isLoading}
                           variant="ghost"
-                          className={`flex items-center text-sm font-medium text-primary group p-0 h-auto w-full justify-start transition-all duration-200 hover:bg-transparent ${
-                            isLoading
+                          className={`flex items-center text-sm font-medium text-primary group p-0 h-auto w-full justify-start transition-all duration-200 hover:bg-transparent ${isLoading
                               ? "opacity-70 cursor-not-allowed animate-pulse"
                               : "hover:text-primary/80"
-                          }`}
+                            }`}
                         >
                           {isLoading ? (
                             <>

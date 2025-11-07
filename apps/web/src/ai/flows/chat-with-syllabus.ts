@@ -5,25 +5,8 @@ import {
   createStandardizedPrompt,
   validateStandardizedFormat,
 } from "@/ai/utils/prompt-builder";
-import { type WikiSyllabusAIFormat } from "@/ai/utils/standardized-format";
-
-export interface Message {
-  role: "user" | "assistant" | "system";
-  content: string;
-}
-
-export interface ChatWithSyllabusInput {
-  history: Message[];
-  message: string;
-  model?: string;
-  syllabusContext?: string;
-  subjectArea?: string;
-}
-
-export interface ChatWithSyllabusOutput {
-  response: string;
-  suggestions?: string[];
-}
+import { WikiSyllabusAIFormat } from "@/types";
+import { ChatWithSyllabusInput, ChatWithSyllabusOutput } from "@/types";
 
 const chatWithSyllabusFlow = async (
   input: ChatWithSyllabusInput

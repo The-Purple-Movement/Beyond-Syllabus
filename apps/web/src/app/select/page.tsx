@@ -1,6 +1,6 @@
-import { Header } from "@/components/common/Header";
+import { Header } from "@/components/Header";
 import { SelectionForm } from "./_components/SelectionForm";
-import { AnimatedDiv } from "@/components/common/AnimatedDiv";
+import { AnimatedDiv } from "@/components/AnimatedDiv";
 
 export default async function SelectPage() {
   return (

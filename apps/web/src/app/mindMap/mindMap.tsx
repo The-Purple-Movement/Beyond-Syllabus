@@ -1,23 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ReactFlow, {
-  Background,
-  Controls,
   Node,
   Edge,
   useNodesState,
   useEdgesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { MindMapProps } from "@/types";
 
-type Module = { title: string; content: string };
-
-interface MindMapProps {
-  subjectCode: string;
-  subjectName: string;
-  modules: Module[];
-}
 
 export function MindMap({ subjectCode, subjectName, modules }: MindMapProps) {
   const [allNodes, setAllNodes] = useState<Node[]>([]);

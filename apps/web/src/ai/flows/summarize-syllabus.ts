@@ -7,16 +7,8 @@ import {
 } from "@/ai/utils/prompt-builder";
 import {
   PersonaTemplates,
-  type WikiSyllabusAIFormat,
 } from "@/ai/utils/standardized-format";
-
-export interface SummarizeSyllabusInput {
-  syllabusText: string;
-}
-
-export interface SummarizeSyllabusOutput {
-  summary: string;
-}
+import { SummarizeSyllabusInput, SummarizeSyllabusOutput, WikiSyllabusAIFormat } from "@/types";
 
 export async function summarizeSyllabus(
   input: SummarizeSyllabusInput

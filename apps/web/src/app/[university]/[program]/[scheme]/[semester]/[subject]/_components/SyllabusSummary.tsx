@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, BookText } from "lucide-react";
+import { BookText } from "lucide-react";
 import { summarizeSyllabus } from "@/ai/flows/summarize-syllabus";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Spinner } from "@/components/ui/spinner";
-
-interface SyllabusSummaryProps {
-  fullSyllabus: string;
-}
+import { SyllabusSummaryProps } from "@/types";
 
 export function SyllabusSummary({ fullSyllabus }: SyllabusSummaryProps) {
   const [summary, setSummary] = useState<string | null>(null);

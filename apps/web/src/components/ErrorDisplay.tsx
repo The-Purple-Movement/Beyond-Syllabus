@@ -1,9 +1,5 @@
 import { Header } from "./Header";
-
-
-interface ErrorDisplayProps {
-  errorMessage: string;
-}
+import { ErrorDisplayProps } from "@/types";
 
 export default function ErrorDisplay({ errorMessage }: ErrorDisplayProps) {
   return (

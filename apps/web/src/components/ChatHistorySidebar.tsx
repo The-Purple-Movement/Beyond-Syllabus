@@ -22,7 +22,8 @@ import {
   Check,
   X,
 } from "lucide-react";
-import { ChatSession, deleteChatSession } from "@/lib/chat-history";
+import { deleteChatSession } from "@/lib/chat-history";
+import { ChatSession } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 interface ChatHistorySidebarProps {

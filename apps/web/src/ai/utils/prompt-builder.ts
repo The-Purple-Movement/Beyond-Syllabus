@@ -1,10 +1,3 @@
-/*
- WikiSyllabus Prompt Builder Utility
- 
- This utility builds standardized prompts based on the WikiSyllabus AI interaction format
- to ensure consistency, quality, and reusability across all AI-generated content.
- */
-
 import {
   WikiSyllabusAIFormat,
   CreateStandardizedPromptInput,
@@ -14,9 +7,8 @@ import {
   AIFormat,
   AIContext,
   AIReferences,
-} from "./standardized-format";
+} from "@/types";
 
-// Builds a standardized system prompt from the persona and format specifications
 
 function buildSystemPrompt(persona: AIPersona, format: AIFormat): string {
   const sections: string[] = [];

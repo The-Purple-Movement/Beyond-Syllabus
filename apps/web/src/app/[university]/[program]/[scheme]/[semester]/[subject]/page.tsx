@@ -1,31 +1,18 @@
 "use client";
 import { notFound } from "next/navigation";
 
-import { Breadcrumbs } from "@/components/common/Breadcrumbs";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SyllabusSummary } from "./_components/SyllabusSummary";
 import { CourseModules } from "./_components/CourseModules";
-import ErrorDisplay from "@/components/common/ErrorDisplay";
-import { AnimatedDiv } from "@/components/common/AnimatedDiv";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import { AnimatedDiv } from "@/components/AnimatedDiv";
 
 import { MindMap } from "@/app/mindMap/mindMap";
 import remarkGfm from "remark-gfm";
 import ReactMarkdown from "react-markdown";
 import { useData } from "@/contexts";
 import { use } from "react";
-
-interface SubjectPageProps {
-  params: Promise<{
-    university: string;
-    program: string;
-    scheme: string;
-    semester: string;
-    subject: string;
-  }>;
-}
-
-interface DirectoryStructure {
-  [key: string]: any;
-}
+import { SubjectPageProps, DirectoryStructure } from "@/types";
 
 function findDataPath(
   directoryStructure: DirectoryStructure,

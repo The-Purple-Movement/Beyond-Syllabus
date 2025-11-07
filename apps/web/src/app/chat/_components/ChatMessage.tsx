@@ -9,12 +9,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
 import { useState } from "react";
-
-interface ChatMessageProps {
-  role: "user" | "assistant";
-  content: string;
-  onCopy?: () => void;
-}
+import { ChatMessageProps } from "@/types";
 
 export default function ChatMessage({
   role,

@@ -5,14 +5,7 @@ import { Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import ModelSelector from "./Model-Selector";
-
-interface ChatInputProps {
-  placeholder?: string;
-  onSend?: (message: string) => void;
-  className?: string;
-  disabled?: boolean;
-  onModelChange?: (modelId: string) => void;
-}
+import { ChatInputProps } from "@/types";
 
 export function ChatInput({
   placeholder = "Send a message...",

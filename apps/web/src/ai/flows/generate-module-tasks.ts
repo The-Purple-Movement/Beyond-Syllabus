@@ -7,23 +7,8 @@ import {
 } from "@/ai/utils/prompt-builder";
 import {
   PersonaTemplates,
-  type WikiSyllabusAIFormat,
 } from "@/ai/utils/standardized-format";
-
-/**
- * @fileOverview An AI agent that generates learning tasks and real-world applications for a given module content.
- */
-
-export interface GenerateModuleTasksInput {
-  moduleContent: string;
-  moduleTitle: string;
-  model?: string;
-}
-
-export interface GenerateModuleTasksOutput {
-  introductoryMessage: string;
-  suggestions: string[];
-}
+import { GenerateModuleTasksInput, GenerateModuleTasksOutput, WikiSyllabusAIFormat } from "@/types";
 
 // Flow Logic
 const generateModuleTasksFlow = async (

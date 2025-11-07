@@ -9,11 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface Model {
-  id: string;
-  name: string;
-}
+import { Model, ModelSelectorProps } from "@/types";
 
 const models: Model[] = [
   { id: "openai/gpt-oss-120b", name: "GPT 5" },
@@ -21,10 +17,6 @@ const models: Model[] = [
   { id: "llama-3.1-8b-instant", name: "LLama 3" },
 ];
 
-interface ModelSelectorProps {
-  value?: string;
-  onChange: (modelId: string) => void;
-}
 
 export default function ModelSelector({ onChange }: ModelSelectorProps) {
   const [selected, setSelected] = useState("openai/gpt-oss-120b");

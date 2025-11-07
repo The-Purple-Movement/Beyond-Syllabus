@@ -2,13 +2,14 @@
 
 import "katex/dist/katex.min.css";
 import { useState, useEffect, useRef } from "react";
-import ChatMessage from "@/app/chat/_components/Message";
+import ChatMessage from "@/app/chat/_components/ChatMessage";
 import { Button } from "@/components/ui/button";
-import { ChatInput } from "@/app/chat/_components/Input";
-import { chatWithSyllabus, Message } from "@/ai/flows/chat-with-syllabus";
+import { ChatInput } from "@/app/chat/_components/ChatInput";
+import { chatWithSyllabus } from "@/ai/flows/chat-with-syllabus";
+import { Message } from "@/types";
 import { generateModuleTasks } from "@/ai/flows/generate-module-tasks";
-import Header from "@/app/chat/_components/Header";
-import { ThemeToggle } from "@/components/common/ThemeToggle";
+import Header from "@/app/chat/_components/ChatHeader";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function ChatArea() {

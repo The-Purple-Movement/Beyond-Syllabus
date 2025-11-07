@@ -1,35 +1,8 @@
 "use server";
 
 import { ai } from "@/ai/ai";
+import { MindMapInput, MindMapOutput } from "@/types";
 
-/**
- * @fileOverview AI agent that converts syllabus Markdown into a mind map structure
- * ready to be rendered with React Flow.
- */
-
-// ---------------------- Types ----------------------
-export interface MindMapInput {
-  syllabus: string;
-}
-
-export interface MindMapNode {
-  id: string;
-  label: string;
-  parentId?: string;
-}
-
-export interface MindMapEdge {
-  id: string;
-  source: string;
-  target: string;
-}
-
-export interface MindMapOutput {
-  nodes: MindMapNode[];
-  edges: MindMapEdge[];
-}
-
-// ---------------------- Flow Logic ----------------------
 const generateMindMapFlow = async (
   input: MindMapInput
 ): Promise<MindMapOutput> => {

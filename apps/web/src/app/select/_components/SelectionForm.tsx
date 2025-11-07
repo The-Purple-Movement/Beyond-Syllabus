@@ -30,9 +30,9 @@ import {
 import { Info, BookOpen, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useData } from "@/contexts/dataContext";
-import { Footer } from "@/components/common/Footer";
+import { Footer } from "@/components/Footer";
 
-import ErrorDisplay from "@/components/common/ErrorDisplay";
+import ErrorDisplay from "@/components/ErrorDisplay";
 import { Spinner } from "@/components/ui/spinner";
 
 function capitalizeWords(str: string | undefined): string {
@@ -206,8 +206,8 @@ export function SelectionForm() {
                   isActive
                     ? "bg-primary text-white"
                     : isCompleted
-                    ? "bg-primary/10 text-primary hover:bg-primary/20"
-                    : "bg-muted text-muted-foreground cursor-not-allowed"
+                      ? "bg-primary/10 text-primary hover:bg-primary/20"
+                      : "bg-muted text-muted-foreground cursor-not-allowed"
                 )}
               >
                 {label}
@@ -413,7 +413,7 @@ export function SelectionForm() {
                                 className={cn(
                                   "w-full cursor-pointer border-transparent bg-transparent border-2 border-purple-700 hover:border-purple-500 hover:shadow-md hover:shadow-purple-500/30 hover:bg-gradient-to-br hover:from-purple-900 hover:to-purple-700 dark:hover:from-purple-800 dark:hover:to-purple-600 transition-all rounded-lg p-4 text-center focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2",
                                   selectedSchemeId === schemeId &&
-                                    "border-primary bg-primary/10"
+                                  "border-primary bg-primary/10"
                                 )}
                                 onClick={() => handleSchemeSelect(schemeId)}
                                 onKeyDown={(e) => {
@@ -486,7 +486,7 @@ export function SelectionForm() {
                                 className={cn(
                                   "flex flex-col items-center justify-center hover:border-primary cursor-pointer border-2 border-purple-700 hover:border-purple-500 hover:shadow-md hover:shadow-purple-500/30 hover:bg-gradient-to-br hover:from-purple-900 hover:to-purple-700 dark:hover:from-purple-800 dark:hover:to-purple-600 transition-all rounded-lg p-4 text-center focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2",
                                   selectedSemesterId === semesterId &&
-                                    "border-primary bg-primary/10"
+                                  "border-primary bg-primary/10"
                                 )}
                                 onClick={handleSemesterClick}
                                 onKeyDown={handleKeyDown}

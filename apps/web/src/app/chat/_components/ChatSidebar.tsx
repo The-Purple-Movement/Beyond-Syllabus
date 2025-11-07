@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export default function Navbar({
+export default function ChatSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   return (

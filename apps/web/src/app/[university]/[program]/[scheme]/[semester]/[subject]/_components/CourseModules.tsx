@@ -9,19 +9,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Sparkles, BrainCircuit, Loader2 } from "lucide-react";
+import { Sparkles, BrainCircuit } from "lucide-react";
 import { motion } from "framer-motion";
 import { Spinner } from "@/components/ui/spinner";
-
-interface Module {
-  title: string;
-  content: string;
-}
-
-interface CourseModulesProps {
-  subjectId: string;
-  modules: Module[];
-}
+import { Module, CourseModulesProps } from "@/types";
 
 export function CourseModules({ modules }: CourseModulesProps) {
   const router = useRouter();

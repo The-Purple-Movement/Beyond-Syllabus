@@ -1,5 +1,5 @@
 import "../globals.css";
-import Navbar from "@/app/chat/_components/Sidebar";
+import ChatSidebar from "@/app/chat/_components/ChatSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function RootLayout({
@@ -10,7 +10,7 @@ export default function RootLayout({
   return (
     <section className="dashboard-layout">
       <SidebarProvider>
-        <Navbar variant="sidebar" />
+        <ChatSidebar variant="sidebar" />
         <SidebarInset>
           {children}
         </SidebarInset>
