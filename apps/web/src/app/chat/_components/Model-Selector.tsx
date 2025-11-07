@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Cpu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Model, ModelSelectorProps } from "@/types";
 
@@ -50,8 +50,9 @@ export default function ModelSelector({ onChange }: ModelSelectorProps) {
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
-          className="w-36 justify-between hover:text-white bg-[#D9D9D9] ring-2 ring-[#B56DFC]"
+          className="w-36 justify-between bg-transparent hover:text-white ring-1 ring-[#4d4c4c]"
         >
+          <Cpu className="w-4 h-4 text-[#B56DFC]" />
           <span>{selectedName}</span>
           {isOpen ? (
             <ChevronUp className="w-4 h-4" />
@@ -60,7 +61,7 @@ export default function ModelSelector({ onChange }: ModelSelectorProps) {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-36 bg-[#D9D9D9] dark:bg-[#181818]">
+      <DropdownMenuContent className="w-36 bg-[#DEDEDF] dark:bg-[#181818] gap-2 px-3 py-4">
         {models.map((model) => (
           <DropdownMenuItem
             key={model.id}

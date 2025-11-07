@@ -53,15 +53,15 @@ export default function ChatSidebar({
             />
           </div>
           <Link href="/select">
-          <Button variant={"default"} className="w-full text-white rounded-lg">
+          <Button variant={"default"} className="w-full text-white rounded-sm">
             Select another Syllabus
             </Button>
           </Link>
         </div>
 
-        <h2 className="pt-4 pb-2 text-xl font-semibold flex items-center gap-2">
-          <MessageSquare className="w-5 h-5" /> Chat History
-        </h2>
+        <p className="pt-4 pb-2 text-xs text-[#C1C1C1] flex items-center gap-2">
+           Chat History
+        </p>
         <div className="p-4 text-center text-muted-foreground">
           <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
           <p className="text-sm">No chat history yet</p>
@@ -71,10 +71,10 @@ export default function ChatSidebar({
 
       <SidebarFooter className="mt-auto mb-6 px-4">
         <SidebarGroup>
-          <SidebarGroupContent className="flex items-center justify-between w-full px-4 py-3 rounded-xl transition-colors hover:bg-gray-700">
+          <SidebarGroupContent className="flex items-center justify-between w-full py-3 rounded-xl transition-colors hover:bg-gray-700">
             <div className="flex items-center gap-2">
               <CircleUserRound className="w-8 h-8" />
-              <span className="text-xl font-semibold text-[#B56DFC]">User</span>
+              <span className="text-lg font-semibold text-[#B56DFC]">User</span>
             </div>
               <LogOut className="w-6 h-6" />
           </SidebarGroupContent>

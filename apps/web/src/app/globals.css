@@ -4,114 +4,123 @@
 
 @custom-variant dark (&:is(.dark *));
 
-  :root {
-    --background: 240 10% 97%;
-    /* Light gray */
-    --foreground: 224 71.4% 4.1%;
+:root {
+  --background: 240 10% 97%;
+  /* Light gray */
+  --foreground: 224 71.4% 4.1%;
 
-    --card: 240 10% 100%;
-    --card-foreground: 224 71.4% 4.1%;
+  --card: 240 10% 100%;
+  --card-foreground: 224 71.4% 4.1%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 224 71.4% 4.1%;
 
-    --primary: 262.1 83.3% 57.8%;
-    /* Soft Purple */
-    --primary-dark: 262.1 83.3% 45%;
-    /* Darker Purple for hover */
-    --primary-foreground: 0 0% 98%;
+  --primary: 262.1 83.3% 57.8%;
+  /* Soft Purple */
+  --primary-dark: 262.1 83.3% 45%;
+  /* Darker Purple for hover */
+  --primary-foreground: 0 0% 98%;
 
-    --secondary: 220 13% 91%;
-    --secondary-foreground: 220 14.3% 34.3%;
+  --secondary: 220 13% 91%;
+  --secondary-foreground: 220 14.3% 34.3%;
 
-    --muted: 220 13% 91%;
-    --muted-foreground: 220 8.9% 43.1%;
+  --muted: 220 13% 91%;
+  --muted-foreground: 220 8.9% 43.1%;
 
-    --accent: 262.1 83.3% 75%;
-    --accent-foreground: 0 0% 100%;
+  --accent: 262.1 83.3% 75%;
+  --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 88%;
-    --input: 220 13% 91%;
-    --ring: 262.1 83.3% 57.8%;
+  --border: 220 13% 88%;
+  --input: 220 13% 91%;
+  --ring: 262.1 83.3% 57.8%;
 
-    --glow-purple: 262.1 83.3% 70%;
-    --radius: 1rem;
-    --sidebar: hsl(0 0% 98%);
-    --sidebar-foreground: hsl(240 5.3% 26.1%);
-    --sidebar-primary: hsl(240 5.9% 10%);
-    --sidebar-primary-foreground: hsl(0 0% 98%);
-    --sidebar-accent: hsl(240 4.8% 95.9%);
-    --sidebar-accent-foreground: hsl(240 5.9% 10%);
-    --sidebar-border: hsl(220 13% 91%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
-  }
+  --glow-purple: 262.1 83.3% 70%;
+  --radius: 1rem;
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
 
-  .dark {
-    --background: 240 15% 5%;
-    --foreground: 0 0% 98%;
+.dark {
+  --background: 240 15% 5%;
+  --foreground: 0 0% 98%;
 
-    --card: 262.1 30% 12%;
-    --card-foreground: 0 0% 98%;
+  --card: 262.1 30% 12%;
+  --card-foreground: 0 0% 98%;
 
-    --popover: 262.1 30% 8%;
-    --popover-foreground: 0 0% 98%;
+  --popover: 262.1 30% 8%;
+  --popover-foreground: 0 0% 98%;
 
-    --primary: 262.1 83.3% 67.8%;
-    --primary-dark: 262.1 83.3% 55%;
-    --primary-foreground: 0 0% 98%;
+  --primary: 262.1 83.3% 67.8%;
+  --primary-dark: 262.1 83.3% 55%;
+  --primary-foreground: 0 0% 98%;
 
-    --secondary: 262.1 30% 15%;
-    --secondary-foreground: 0 0% 98%;
+  --secondary: 262.1 30% 15%;
+  --secondary-foreground: 0 0% 98%;
 
-    --muted: 262.1 30% 10%;
-    --muted-foreground: 262.1 15% 75%;
+  --muted: 262.1 30% 10%;
+  --muted-foreground: 262.1 15% 75%;
 
-    --accent: 262.1 83.3% 75%;
-    --accent-foreground: 0 0% 10%;
+  --accent: 262.1 83.3% 75%;
+  --accent-foreground: 0 0% 10%;
 
-    --destructive: 0 62.8% 50.6%;
-    --destructive-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 50.6%;
+  --destructive-foreground: 0 0% 98%;
 
-    --border: 262.1 30% 20%;
-    --input: 262.1 30% 20%;
-    --ring: 262.1 83.3% 67.8%;
-    --glow-purple: 262.1 83.3% 80%;
-    --sidebar: hsl(240 5.9% 10%);
-    --sidebar-foreground: hsl(240 4.8% 95.9%);
-    --sidebar-primary: hsl(224.3 76.3% 48%);
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(240 3.7% 15.9%);
-    --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-    --sidebar-border: hsl(240 3.7% 15.9%);
-    --sidebar-ring: hsl(217.2 91.2% 59.8%);
-  }
+  --border: 262.1 30% 20%;
+  --input: 262.1 30% 20%;
+  --ring: 262.1 83.3% 67.8%;
+  --glow-purple: 262.1 83.3% 80%;
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5 {
-    font-family: var(--font-montserrat);
-  }
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: var(--font-montserrat);
+}
 
-  * {
-    scroll-behavior: smooth;
-  }
+.dashboard-layout h1,
+.dashboard-layout h2,
+.dashboard-layout h3,
+.dashboard-layout h4,
+.dashboard-layout h5,
+.dashboard-layout h6 {
+  font-family: var(--font-inter);
+}
 
-  ::-webkit-scrollbar {
-    display: none;
-  }
+* {
+  scroll-behavior: smooth;
+}
 
-  * {
-    @apply border-border;
-  }
+::-webkit-scrollbar {
+  display: none;
+}
 
-  body {
-    @apply bg-background text-foreground;
-  }
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground;
+}
 
 @keyframes purpleGlow {
 
@@ -171,6 +180,7 @@
     from {
       height: 0;
     }
+
     to {
       height: var(--radix-accordion-content-height);
     }
@@ -180,30 +190,36 @@
     from {
       height: var(--radix-accordion-content-height);
     }
+
     to {
       height: 0;
     }
   }
+
   @keyframes aurora {
-  0% {
-    background-position: 0% 50%;
-    transform: rotate(-5deg) scale(0.9);
+    0% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
     }
-  25% {
-    background-position: 50% 100%;
-    transform: rotate(5deg) scale(1.1);
+
+    25% {
+      background-position: 50% 100%;
+      transform: rotate(5deg) scale(1.1);
     }
-  50% {
-    background-position: 100% 50%;
-    transform: rotate(-3deg) scale(0.95);
+
+    50% {
+      background-position: 100% 50%;
+      transform: rotate(-3deg) scale(0.95);
     }
-  75% {
-    background-position: 50% 0%;
-    transform: rotate(3deg) scale(1.05);
+
+    75% {
+      background-position: 50% 0%;
+      transform: rotate(3deg) scale(1.05);
     }
-  100% {
-    background-position: 0% 50%;
-    transform: rotate(-5deg) scale(0.9);
+
+    100% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
     }
   }
 }
@@ -212,6 +228,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

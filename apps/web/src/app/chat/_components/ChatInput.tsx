@@ -43,13 +43,14 @@ export function ChatInput({
   };
 
   return (
-    <div
-      className={cn(
-        "relative border border-border rounded-2xl dark:bg-[#1B1B1B] bg-[#DEDEDF] shadow-sm ring-2 ring-purple-700",
-        "p-4 transition-all duration-200",
-        className
-      )}
-    >
+      <div
+        className={cn(
+          "relative border border-border rounded-4xl bg-[#DEDEDF] dark:bg-[#1B1B1B]",
+          "p-4 px-6 py-4 transition-all duration-200",
+          "shadow-[0_0_20px_5px_#D9D9D9] dark:shadow-[0_0_20px_5px_rgba(123,57,255,0.3)]",
+          className
+        )}
+      >
       <div className="flex items-start gap-3 mb-3">
         <div className="flex-1">
           <textarea

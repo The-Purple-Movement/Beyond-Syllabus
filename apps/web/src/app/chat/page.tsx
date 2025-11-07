@@ -12,7 +12,7 @@ import Header from "@/app/chat/_components/ChatHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
-export default function ChatArea() {
+export default function Chat() {
   const [moduleTitle, setModuleTitle] = useState("Loading title...");
   const [moduleContent, setModuleContent] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -119,7 +119,7 @@ export default function ChatArea() {
                 bg-[radial-gradient(50%_335.34%_at_50%_50%,#B56DFC_0%,#7B39FF_100%)]
                 bg-clip-text text-transparent"
               >
-                BeyondSyllabus
+                Beyond Syllabus
               </h2>
 
               <div className="w-full max-w-3xl mb-4">
@@ -144,7 +144,7 @@ export default function ChatArea() {
                     className="rounded-full text-xs sm:text-sm px-3 py-1.5
                     max-w-[90%] sm:max-w-[400px]
                     whitespace-normal break-words text-center
-                    flex-1 sm:flex-none hover:text-white ring-2 ring-[#B56DFC]"
+                    flex-1 sm:flex-none hover:text-white ring-1 ring-[#F7F7F8]"
                     style={{ minWidth: "fit-content" }}
                   >
                     {s}
@@ -172,7 +172,7 @@ export default function ChatArea() {
                         onClick={() => handleSuggestionClick(s)}
                         className="rounded-full text-xs sm:text-sm px-3 py-1.5
                         max-w-full sm:max-w-[400px]
-                        whitespace-normal break-words hover:text-white h-auto text-left ring-2 ring-[#B56DFC]"
+                        whitespace-normal break-words text-[#969696] dark:text-[#BEBEBE] dark:hover:text-[#BEBEBE] h-auto text-left ring-1 ring-[#7B39FF] dark:ring-[rgba(236,236,236,0.16)]"
                         disabled={loading}
                       >
                         {s}
