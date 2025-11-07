@@ -48,7 +48,7 @@ export default function ChatMessage({
       </div>
 
       <div className="flex-1 max-w-[90%] sm:max-w-3xl space-y-2 sm:space-y-3">
-        <div className="text-foreground text-sm sm:text-base space-y-1 sm:space-y-2 break-words overflow-x-hidden">
+        <div className="text-foreground text-sm sm:text-base space-y-2 sm:space-y-2 break-words overflow-x-hidden">
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkMath]}
             rehypePlugins={[rehypeKatex]}
