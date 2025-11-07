@@ -1,5 +1,5 @@
 import "../globals.css";
-import Navbar from "@/app/chat/components/Sidebar";
+import Navbar from "@/app/chat/_components/Sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function RootLayout({

@@ -2,12 +2,12 @@
 
 import "katex/dist/katex.min.css";
 import { useState, useEffect, useRef } from "react";
-import ChatMessage from "@/app/chat/components/Message";
+import ChatMessage from "@/app/chat/_components/Message";
 import { Button } from "@/components/ui/button";
-import { ChatInput } from "@/app/chat/components/Input";
+import { ChatInput } from "@/app/chat/_components/Input";
 import { chatWithSyllabus, Message } from "@/ai/flows/chat-with-syllabus";
 import { generateModuleTasks } from "@/ai/flows/generate-module-tasks";
-import Header from "@/app/chat/components/Header";
+import Header from "@/app/chat/_components/Header";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
@@ -97,7 +97,7 @@ export default function ChatArea() {
   return (
     <div className="flex flex-col h-screen bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C]">
       {!isInitial && (
-        <div className="sticky top-0 z-50 px-6 py-2 bg-[#F7F7F8]/80 dark:bg-[#22283E]/80 backdrop-blur-md border-b border-border">
+        <div className="sticky top-0 z-50 bg-[#F7F7F8]/80 dark:bg-[#22283E]/80 backdrop-blur-md">
           <Header />
         </div>
       )}
