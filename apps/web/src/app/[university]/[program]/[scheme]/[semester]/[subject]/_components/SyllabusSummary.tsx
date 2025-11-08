@@ -1,15 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, BookText } from "lucide-react";
+import { BookText } from "lucide-react";
 import { summarizeSyllabus } from "@/ai/flows/summarize-syllabus";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-
-interface SyllabusSummaryProps {
-  fullSyllabus: string;
-}
+import { Spinner } from "@/components/ui/spinner";
+import { SyllabusSummaryProps } from "@/types";
 
 export function SyllabusSummary({ fullSyllabus }: SyllabusSummaryProps) {
   const [summary, setSummary] = useState<string | null>(null);
@@ -58,7 +56,7 @@ export function SyllabusSummary({ fullSyllabus }: SyllabusSummaryProps) {
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center justify-center space-x-2 text-muted-foreground py-4"
           >
-            <Loader2 className="h-5 w-5 animate-spin" />
+            <Spinner className="h-5 w-5" />
             <span>Generating summary...</span>
           </motion.div>
         )}

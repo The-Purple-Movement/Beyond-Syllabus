@@ -1,14 +1,5 @@
-import { Message } from "@/ai/flows/chat-with-syllabus";
+import { ChatSession } from "@/types";
 
-export interface ChatSession {
-  id: string;
-  title: string;
-  createdAt: Date;
-  lastModified: Date;
-  markdown: string;
-  messages: Message[];
-  suggestions: string[];
-}
 
 export const generateSessionId = (): string => {
   return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

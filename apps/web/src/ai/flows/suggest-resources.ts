@@ -1,24 +1,7 @@
 "use server";
 
-/**
- * @fileOverview A flow that suggests relevant online resources for a given syllabus section.
- */
-
 import { ai } from "@/ai/ai";
-
-export interface SuggestResourcesInput {
-  syllabusSection: string;
-}
-
-export interface Resource {
-  title: string;
-  url: string;
-  description: string;
-}
-
-export interface SuggestResourcesOutput {
-  resources: Resource[];
-}
+import { SuggestResourcesInput, SuggestResourcesOutput } from "@/types";
 
 // ---------------------- Flow Logic ----------------------
 const suggestResourcesFlow = async (

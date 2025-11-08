@@ -9,18 +9,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Sparkles, BrainCircuit, Loader2 } from "lucide-react";
+import { Sparkles, BrainCircuit } from "lucide-react";
 import { motion } from "framer-motion";
-
-interface Module {
-  title: string;
-  content: string;
-}
-
-interface CourseModulesProps {
-  subjectId: string;
-  modules: Module[];
-}
+import { Spinner } from "@/components/ui/spinner";
+import { Module, CourseModulesProps } from "@/types";
 
 export function CourseModules({ modules }: CourseModulesProps) {
   const router = useRouter();
@@ -107,7 +99,7 @@ export function CourseModules({ modules }: CourseModulesProps) {
                     }}
                   >
                     {loadingModuleIndex === index ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Spinner className="h-4 w-4" />
                     ) : (
                       <Sparkles className="h-4 w-4 text-amber-300 transition-transform group-hover:scale-125" />
                     )}

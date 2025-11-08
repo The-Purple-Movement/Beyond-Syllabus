@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, Suspense, lazy } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ScaleLoader} from 'react-spinners';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import {
   GraduationCap,
   BookOpenCheck,
@@ -11,141 +12,67 @@ import {
   ChevronRight,
   Sparkles,
 } from "lucide-react";
-import { useTheme } from "next-themes";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AuroraText } from "@/components/ui/aurora-text";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { FeatureCardProps } from "@/types";
 
-const Header = lazy(() => import("@/components/common/Header").then(module => ({ default: module.Header })));
-const Footer = lazy(() => import("@/components/common/Footer").then(module => ({ default: module.Footer })));
-const FooterDark = lazy(() => import("@/components/common/footerDark").then(module => ({ default: module.FooterDark })));
-
-function ModernLoader(): JSX.Element {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  return (
-    <div 
-      className={`fixed inset-0 flex flex-col items-center justify-center z-[9999] ${
-        mounted && resolvedTheme === "light" 
-          ? "bg-white" 
-          : "bg-[#030013]"
-      }`}
-    >
-      <ScaleLoader 
-        color={
-          mounted && resolvedTheme === "light" 
-            ? "rgb(133, 41, 255)" 
-            : "rgb(133, 41, 255)"
-        }
-      />
-    </div>
-  );
-}
-
-export default function Home(): JSX.Element {
+export default function Home() {
   const router = useRouter();
-  const { resolvedTheme } = useTheme();
   const [loadingRoute, setLoadingRoute] = useState<string | null>(null);
-  const [isLoadingAssets, setIsLoadingAssets] = useState<boolean>(true);
-  const [mounted, setMounted] = useState<boolean>(false);
 
-  const preloadImages = (urls: string[]): Promise<void[]> => {
-    return Promise.all(
-      urls.map(
-        (url: string) =>
-          new Promise<void>((resolve) => {
-            const img = new Image();
-            img.src = url;
-            img.onload = () => resolve();
-            img.onerror = () => resolve();
-          })
-      )
-    );
-  };
-
-  useEffect(() => {
-    setMounted(true);
-    const images: string[] = ["/hero-img.webp", "/img-mob.svg", "/white-bg.png"];
-
-    preloadImages(images).then(() => {
-      setTimeout(() => setIsLoadingAssets(false), 800);
-    });
-  }, []);
-
-  const navigateWithDelay = async (path: string, delay: number): Promise<void> => {
+  const navigateWithDelay = async (path: string, delay: number) => {
     setLoadingRoute(path);
-    await new Promise<void>((resolve) => setTimeout(resolve, delay));
+    await new Promise((resolve) => setTimeout(resolve, delay));
     router.push(path);
   };
 
-  if (isLoadingAssets) {
-    return <ModernLoader />;
-  }
-
   return (
-    <div className="flex flex-col min-h-screen bg-[#030013]">
-      <Suspense fallback={null}>
-        <Header />
-      </Suspense>
-
-      <main className="flex-grow flex flex-col">
+    <div className="flex flex-col min-h-screen transition-colors duration-300">
+      <Header />
+      <main className="flex-grow relative">
         <section
-          className={`w-full pt-16 pb-20 flex justify-center items-center h-screen ${
-            mounted && resolvedTheme === "dark"
-              ? "md:bg-[url('/hero-img.webp')] bg-[url('/img-mob.svg')] bg-no-repeat md:bg-cover bg-contain bg-bottom"
-              : "bg-[url('/white-bg.png')]"
-          }`}
+          className={`w-full h-screen flex flex-col justify-center items-center px-4 text-center relative z-10`}
         >
-          <div className="text-center space-y-6 px-4">
-            <h1
-              className={`text-4xl md:text-6xl font-bold tracking-tight ${
-                mounted && resolvedTheme === "dark"
-                  ? "text-transparent bg-clip-text bg-gradient-to-b from-[#8529ff] via-white to-[#ffffff]"
-                  : "text-black"
-              }`}
-            >
-              <span
-                className={`block text-[24px] font-light ${
-                  mounted && resolvedTheme === "dark"
-                    ? "text-white"
-                    : "text-black"
-                }`}
-              >
+          <div className="absolute inset-0">
+            <div
+              className="w-full h-full bg-no-repeat bg-contain bg-bottom"
+              style={{
+                backgroundImage: `url("/hero.png")`,
+                opacity: 0.5,
+              }}
+            />
+          </div>
+
+          <div className="relative z-20 text-center space-y-6">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+              <span className="block text-2xl font-light text-black dark:text-white mb-2">
                 Welcome to
               </span>
-              Beyond Syllabus
+              <AuroraText colors={["#8800ff", "#7928CA", "#0070F3", "#38bdf8"]}>
+                Beyond Syllabus
+              </AuroraText>
             </h1>
-            <p
-              className={`max-w-2xl mx-auto text-lg md:text-xl ${
-                mounted && resolvedTheme === "dark"
-                  ? "text-white"
-                  : "text-black"
-              }`}
-            >
+            <p className="max-w-2xl text-lg md:text-xl text-black dark:text-white mt-4">
               Your modern, AI-powered guide to the university curriculum.
               Explore subjects, understand modules, and unlock your potential.
             </p>
 
-            <div className="flex flex-col md:flex-row justify-center gap-4 mt-6">
+            <div className="flex flex-col md:flex-row justify-center gap-4 mt-8">
               <Button
                 size="lg"
                 variant="outline"
-                className="group shadow-lg w-full md:w-auto h-[44px] border-white hover:bg-black/20 hover:text-white"
+                className="w-full md:w-auto flex items-center justify-center gap-2 h-[44px]"
                 onClick={() => navigateWithDelay("/chat", 600)}
                 disabled={loadingRoute === "/chat"}
               >
                 {loadingRoute === "/chat" ? (
                   <>
-                    <div className="w-4 h-4 mr-2 border-2 border-amber-400 border-t-transparent rounded-full animate-spin"/>
-                    Loading AI Chat...
+                    <Spinner className="h-4 w-4" /> Loading AI Chat...
                   </>
                 ) : (
                   <>
-                    <Sparkles className="h-5 w-5 mr-2 text-amber-400" />
+                    <Sparkles className="h-5 w-5 text-amber-400" />
                     AI Chat
                   </>
                 )}
@@ -153,14 +80,13 @@ export default function Home(): JSX.Element {
 
               <Button
                 size="lg"
-                className="group shadow-lg w-full md:w-auto h-[44px] bg-[#8800ff]"
+                className="w-full md:w-auto flex items-center justify-center gap-2 h-[44px] bg-[#8800ff] text-white"
                 onClick={() => navigateWithDelay("/select", 800)}
                 disabled={loadingRoute === "/select"}
               >
                 {loadingRoute === "/select" ? (
                   <>
-                    <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"/>
-                    Loading Syllabus...
+                    <Spinner className="h-4 w-4" /> Loading Syllabus...
                   </>
                 ) : (
                   <>
@@ -173,75 +99,73 @@ export default function Home(): JSX.Element {
           </div>
         </section>
 
-        <section
-          className={`w-full py-20 md:py-28 lg:py-32 ${
-            mounted && resolvedTheme === "dark" ? "bg-[#030013]" : "bg-white"
-          }`}
-        >
-          <div className="container px-4 md:px-6 mx-auto">
-            <div className="flex flex-col items-center text-center mb-16">
-              <div className="space-y-4">
-                <div className="inline-block rounded-lg bg-slate-950/20 px-4 py-2 text-sm font-medium">
-                  Key Features
-                </div>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                  Learn Smarter, Not Harder
-                </h2>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl leading-relaxed">
-                  Our platform is designed to streamline your learning process,
-                  from understanding complex topics to finding the best study
-                  materials.
-                </p>
+        <section className="w-full py-20 md:py-28 lg:py-32 transition-colors duration-300">
+          <div className="container mx-auto px-4 md:px-6 text-center mb-16">
+            <div className="space-y-4">
+              <div className="inline-block rounded-lg bg-purple-900/20 px-4 py-2 text-sm font-medium text-purple-700">
+                Key Features
               </div>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-black dark:text-white">
+                Learn Smarter, Not Harder
+              </h2>
+              <p className="max-w-[900px] mx-auto text-gray-700 dark:text-gray-300 md:text-xl leading-relaxed">
+                Our platform is designed to streamline your learning process,
+                from understanding complex topics to finding the best study
+                materials.
+              </p>
             </div>
+          </div>
 
-            <div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              <FeatureCard
-                icon={<BookOpenCheck className="h-8 w-8 text-primary" />}
-                title="Structured Syllabus"
-                description="Access your complete university syllabus, broken down by program, semester, and subject."
-              />
-              <FeatureCard
-                icon={<GraduationCap className="h-8 w-8 text-primary" />}
-                title="AI-Powered Insights"
-                description="Get concise summaries of your syllabus modules and chat with an AI to grasp key concepts quickly."
-              />
-              <FeatureCard
-                icon={<BarChart3 className="h-8 w-8 text-primary" />}
-                title="Learning Tools"
-                description="Generate learning tasks and discover real-world applications for each module."
-              />
-            </div>
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto px-4 md:px-6">
+            <FeatureCard
+              icon={<BookOpenCheck className="h-8 w-8 text-purple-700" />}
+              title="Structured Syllabus"
+              description="Access your complete university syllabus, broken down by program, semester, and subject."
+            />
+            <FeatureCard
+              icon={<GraduationCap className="h-8 w-8 text-purple-700" />}
+              title="AI-Powered Insights"
+              description="Get concise summaries of your syllabus modules and chat with an AI to grasp key concepts quickly."
+            />
+            <FeatureCard
+              icon={<BarChart3 className="h-8 w-8 text-purple-700" />}
+              title="Learning Tools"
+              description="Generate learning tasks and discover real-world applications for each module."
+            />
+          </div>
+        </section>
+
+        <section className="relative w-full h-[400px] md:h-[600px] mt-16 md:mt-0">
+          <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
+            <div
+              className="w-full h-full bg-no-repeat bg-contain bg-bottom rotate-180"
+              style={{
+                backgroundImage: `url(${"/hero.png"})`,
+                opacity: 0.5,
+              }}
+            />
           </div>
         </section>
       </main>
-      <div className="some-wrapper-class">
-        <Suspense fallback={null}>
-          {mounted && resolvedTheme === "dark" ? <FooterDark /> : <Footer />}
-        </Suspense>
-      </div>
+      <Footer />
     </div>
   );
 }
 
-interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}
-
-function FeatureCard({ icon, title, description }: FeatureCardProps): JSX.Element {
+function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
-    <div>
-      <div className="bg-[#D9D9D9]/10 p-4 rounded-t-full flex justify-center w-[70px] mx-auto h-[50px] items-center">
+    <div className="flex flex-col items-center">
+      <div className="bg-purple-100 dark:bg-purple-800/30 p-4 rounded-full flex justify-center w-[70px] h-[70px] items-center mb-4">
         {icon}
       </div>
-      <Card className="border-transparent shadow-none text-center bg-[#D9D9D9]/10 rounded-2xl h-[200px]">
-        <CardHeader className="items-center pb-4">
-          <CardTitle className="text-xl font-semibold">{title}</CardTitle>
+      <Card className="text-center rounded-2xl bg-white dark:bg-gray-800 shadow-md p-4 h-full transition-colors duration-300">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-xl font-semibold text-black dark:text-white">
+            {title}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">{description}</p>
+          <p className="text-gray-700 dark:text-gray-300">{description}</p>
         </CardContent>
       </Card>
     </div>

@@ -2,11 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  Loader2,
   Sparkles,
-  Wand2,
   Send,
   BrainCircuit,
   User,
@@ -19,19 +16,19 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  generateModuleTasks,
-  GenerateModuleTasksOutput,
-} from "@/ai/flows/generate-module-tasks";
-import { chatWithSyllabus, Message } from "@/ai/flows/chat-with-syllabus";
-import { Header } from "@/components/common/Header";
+  ChatSession, 
+  Message
+} from "@/types";
+import { generateModuleTasks } from "@/ai/flows/generate-module-tasks";
+import { chatWithSyllabus } from "@/ai/flows/chat-with-syllabus";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ChatHistorySidebar } from "@/components/common/ChatHistorySidebar";
+import { ChatHistorySidebar } from "@/components/ChatHistorySidebar";
 import {
-  ChatSession,
   createNewChatSession,
   saveChatSession,
   getChatSessionsList,
@@ -39,6 +36,8 @@ import {
   extractTitleFromMarkdown,
   deleteChatSession,
 } from "@/lib/chat-history";
+import { Header } from "@/components/Header";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function ChatWithFilePage() {
   const [markdown, setMarkdown] = useState("");
@@ -514,6 +513,7 @@ export default function ChatWithFilePage() {
             <div className="md:hidden fixed inset-0 z-50 flex">
               {/* Backdrop */}
               <motion.div
+                // Build proper breadcrumb items with href for navigation
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -638,7 +638,7 @@ export default function ChatWithFilePage() {
                             size="sm"
                           >
                             {isAwaitingAi && loading ? (
-                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              <Spinner className="h-4 w-4 mr-2" />
                             ) : (
                               <Send className="h-4 w-4 mr-2" />
                             )}
@@ -772,11 +772,10 @@ export default function ChatWithFilePage() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.3 }}
-                                className={`flex items-start gap-2 md:gap-3 w-full ${
-                                  msg.role === "user"
+                                className={`flex items-start gap-2 md:gap-3 w-full ${msg.role === "user"
                                     ? "justify-end"
                                     : "justify-start"
-                                }`}
+                                  }`}
                               >
                                 {/* AI Avatar */}
                                 {msg.role === "assistant" && (
@@ -790,11 +789,10 @@ export default function ChatWithFilePage() {
                                 {/* Message Content */}
                                 <div className="relative group max-w-[90%] sm:max-w-[75%] md:max-w-[70%] lg:max-w-2xl">
                                   <div
-                                    className={`rounded-2xl px-3 py-2 md:px-4 md:py-3 text-sm md:text-base shadow-md ${
-                                      msg.role === "user"
+                                    className={`rounded-2xl px-3 py-2 md:px-4 md:py-3 text-sm md:text-base shadow-md ${msg.role === "user"
                                         ? "bg-primary text-primary-foreground rounded-br-md ml-auto"
                                         : "bg-muted/50 text-foreground rounded-bl-md border backdrop-blur-sm"
-                                    }`}
+                                      }`}
                                   >
                                     <div className="prose prose-sm dark:prose-invert prose-headings:font-semibold prose-p:my-2 prose-ul:my-2 prose-li:my-1 max-w-none">
                                       <ReactMarkdown
@@ -868,7 +866,7 @@ export default function ChatWithFilePage() {
                                     ease: "easeInOut",
                                   }}
                                 >
-                                  <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin text-primary" />
+                                  <Spinner className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                                 </motion.div>
                                 <motion.span
                                   key={thinkingText}

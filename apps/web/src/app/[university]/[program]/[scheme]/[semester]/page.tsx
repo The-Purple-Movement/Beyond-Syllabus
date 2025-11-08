@@ -3,8 +3,8 @@
 import { notFound } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState, use } from "react";
-import { Header } from "@/components/common/Header";
-import { Breadcrumbs } from "@/components/common/Breadcrumbs";
+
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import {
   Card,
   CardDescription,
@@ -20,26 +20,15 @@ import {
   Code,
   FlaskConical,
   Sigma,
-  Loader2,
 } from "lucide-react";
-import ErrorDisplay from "@/components/common/ErrorDisplay";
-import { AnimatedDiv } from "@/components/common/AnimatedDiv";
-import { Footer } from "@/components/common/Footer";
-// import { useGetDirectoryStructure } from "@/hooks/query";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import { AnimatedDiv } from "@/components/AnimatedDiv";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { useData } from "@/contexts";
+import { Spinner } from "@/components/ui/spinner";
+import { DirectoryStructure, SubjectsPageProps } from "@/types";
 
-interface SubjectsPageProps {
-  params: Promise<{
-    university: string;
-    program: string;
-    scheme: string;
-    semester: string;
-  }>;
-}
-
-interface DirectoryStructure {
-  [key: string]: any;
-}
 
 function findSemesterData(
   directoryStructure: DirectoryStructure,
@@ -124,10 +113,9 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
   if (isFetching) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-mint-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800">
-        <Header />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <Spinner className="h-8 w-8 mx-auto mb-4" />
             <p className="text-muted-foreground">Loading syllabus data...</p>
           </div>
         </div>
@@ -161,23 +149,22 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
 
   const { university, program, scheme, semester } = dataPath;
 
-  // Build proper breadcrumb items with href for navigation
   const breadcrumbItems = [
     { label: "Home", href: "/" },
     { label: "Select", href: "/select" },
-    { 
-      label: university.name, 
-      href: `/select?step=2&university=${resolvedParams.university}` 
+    {
+      label: university.name,
+      href: `/select?step=2&university=${resolvedParams.university}`,
     },
-    { 
-      label: program.name, 
-      href: `/select?step=3&university=${resolvedParams.university}&program=${resolvedParams.program}` 
+    {
+      label: program.name,
+      href: `/select?step=3&university=${resolvedParams.university}&program=${resolvedParams.program}`,
     },
-    { 
-      label: scheme.name, 
-      href: `/select?step=4&university=${resolvedParams.university}&program=${resolvedParams.program}&scheme=${resolvedParams.scheme}` 
+    {
+      label: scheme.name,
+      href: `/select?step=4&university=${resolvedParams.university}&program=${resolvedParams.program}&scheme=${resolvedParams.scheme}`,
     },
-    { label: semester.name }, // Current page - no href
+    { label: semester.name },
   ];
 
   return (
@@ -227,16 +214,15 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
                             handleViewSyllabus(subject.id, subject.name)
                           }
                           disabled={isLoading}
-                          variant="ghost"
-                          className={`flex items-center text-sm font-medium text-primary group p-0 h-auto w-full justify-start transition-all duration-200 hover:bg-transparent ${
-                            isLoading
-                              ? "opacity-70 cursor-not-allowed animate-pulse"
-                              : "hover:text-primary/80"
-                          }`}
+                          variant="link"
+                          className={`flex items-center text-sm font-medium text-primary group p-0 h-auto w-full justify-start transition-all duration-200 ${isLoading
+                              ? "opacity-70 cursor-not-allowed"
+                            : "hover:bg-transparent"
+                            }`}
                         >
                           {isLoading ? (
                             <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              <Spinner className="mr-2 h-4 w-4" />
                               Loading...
                             </>
                           ) : (
