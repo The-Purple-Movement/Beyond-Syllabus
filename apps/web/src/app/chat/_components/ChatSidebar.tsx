@@ -27,7 +27,7 @@ export default function ChatSidebar({
       <SidebarHeader className="px-4 py-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="!p-2 rounded-lg cursor-pointer transition-colors">
+            <SidebarMenuButton className="!p-1 rounded-lg cursor-pointer transition-colors hover:bg-transparent">
               <Link href="/" className="flex items-center gap-3">
                 <Image
                   src="/favicon.ico"
@@ -49,17 +49,17 @@ export default function ChatSidebar({
             <Input
               type="text"
               placeholder="Search chats..."
-              className="w-full pl-10 pr-3 py-2 rounded-lg dark:bg-[#181818] text-white placeholder-gray-400"
+              className="w-full pl-10 pr-3 py-2 rounded-lg bg-[#F7F7F8] dark:bg-[#222222] text-white placeholder-gray-400"
             />
           </div>
           <Link href="/select">
-          <Button variant={"default"} className="w-full text-white rounded-sm">
+            <Button variant={"default"} className="w-full text-white font-light bg-gradient-to-r from-[#8362F9] to-[#7B39FF] rounded-sm">
             Select another Syllabus
             </Button>
           </Link>
         </div>
 
-        <p className="pt-4 pb-2 text-xs text-[#C1C1C1] flex items-center gap-2">
+        <p className="pt-4 pb-2 text-xs text-[#969696] flex items-center gap-2">
            Chat History
         </p>
         <div className="p-4 text-center text-muted-foreground">
@@ -71,7 +71,7 @@ export default function ChatSidebar({
 
       <SidebarFooter className="mt-auto mb-6 px-4">
         <SidebarGroup>
-          <SidebarGroupContent className="flex items-center justify-between w-full py-3 rounded-xl transition-colors hover:bg-gray-700">
+          <SidebarGroupContent className="flex items-center justify-between w-full py-3 rounded-xl transition-colors">
             <div className="flex items-center gap-2">
               <CircleUserRound className="w-8 h-8" />
               <span className="text-lg font-semibold text-[#B56DFC]">User</span>

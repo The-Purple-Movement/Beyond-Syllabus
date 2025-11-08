@@ -39,7 +39,7 @@
 
   --glow-purple: 262.1 83.3% 70%;
   --radius: 1rem;
-  --sidebar: hsl(0 0% 98%);
+  --sidebar: #DEDEDF;
   --sidebar-foreground: hsl(240 5.3% 26.1%);
   --sidebar-primary: hsl(240 5.9% 10%);
   --sidebar-primary-foreground: hsl(0 0% 98%);
@@ -87,6 +87,14 @@
   --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
   --sidebar-border: hsl(240 3.7% 15.9%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+.dashboard-layout {
+  background-color: #DEDEDF !important;
+}
+
+.dark .dashboard-layout {
+  background-color: #1b1b1b !important;
 }
 
 h1,

@@ -45,7 +45,7 @@ export function ChatInput({
   return (
       <div
         className={cn(
-          "relative border border-border rounded-4xl bg-[#DEDEDF] dark:bg-[#1B1B1B]",
+          "relative border border-border rounded-3xl bg-[#DEDEDF] dark:bg-[#1B1B1B]",
           "p-4 px-6 py-4 transition-all duration-200",
           "shadow-[0_0_20px_5px_#D9D9D9] dark:shadow-[0_0_20px_5px_rgba(123,57,255,0.3)]",
           className
