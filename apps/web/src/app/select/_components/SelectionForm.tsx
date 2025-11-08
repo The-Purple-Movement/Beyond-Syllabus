@@ -351,7 +351,7 @@ export function SelectionForm() {
                               <SelectItem
                                 key={programId}
                                 value={programId}
-                                className="capitalize px-3 py-2 text-sm hover:bg-purple-100 dark:hover:bg-purple-800 rounded-lg cursor-pointer transition-colors"
+                                className="capitalize px-3 py-2 text-sm hover:bg-purple-100 dark:hover:bg-purple-500 rounded-lg cursor-pointer transition-colors"
                               >
                                 {capitalizeWords(programId)}
                               </SelectItem>
@@ -411,7 +411,7 @@ export function SelectionForm() {
                               <button
                                 type="button"
                                 className={cn(
-                                  "w-full cursor-pointer border-transparent bg-transparent border-2 border-purple-700 hover:border-purple-500 hover:shadow-md hover:shadow-purple-500/30 hover:bg-gradient-to-br hover:from-purple-900 hover:to-purple-700 dark:hover:from-purple-800 dark:hover:to-purple-600 transition-all rounded-lg p-4 text-center focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2",
+                                  "w-full cursor-pointer border-transparent bg-transparent border-2 border-purple-700 hover:border-purple-500 hover:shadow-md hover:shadow-purple-500/30 hover:bg-gradient-to-br hover:from-purple-500 hover:to-purple-500 dark:hover:from-purple-500 dark:hover:to-purple-500 transition-all rounded-lg p-4 text-center focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2",
                                   selectedSchemeId === schemeId &&
                                   "border-primary bg-primary/10"
                                 )}
@@ -428,7 +428,7 @@ export function SelectionForm() {
                                   " "
                                 )} scheme`}
                               >
-                                <BookOpen className="h-8 w-8 text-primary mx-auto mb-2" />
+                                <BookOpen className="h-8 w-8 mx-auto mb-2" />
                                 <p className="font-semibold capitalize text-sm">
                                   {schemeId.replace(/-/g, " ")}
                                 </p>
@@ -484,7 +484,7 @@ export function SelectionForm() {
                                 key={semesterId}
                                 type="button"
                                 className={cn(
-                                  "flex flex-col items-center justify-center hover:border-primary cursor-pointer border-2 border-purple-700 hover:border-purple-500 hover:shadow-md hover:shadow-purple-500/30 hover:bg-gradient-to-br hover:from-purple-900 hover:to-purple-700 dark:hover:from-purple-800 dark:hover:to-purple-600 transition-all rounded-lg p-4 text-center focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2",
+                                  "flex flex-col items-center justify-center hover:border-primary cursor-pointer border-2 border-purple-700 hover:border-purple-500 hover:shadow-md hover:shadow-purple-500/30 hover:bg-gradient-to-br hover:from-purple-500 hover:to-purple-500 dark:hover:from-purple-400 dark:hover:to-purple-600 transition-all rounded-lg p-4 text-center focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2",
                                   selectedSemesterId === semesterId &&
                                   "border-primary bg-primary/10"
                                 )}
@@ -500,7 +500,7 @@ export function SelectionForm() {
                                   id={semesterId}
                                   className="sr-only"
                                 />
-                                <BookOpen className="h-5 w-5 mb-1 text-primary" />
+                                <BookOpen className="h-5 w-5 mb-1" />
                                 <p className="font-semibold text-xs">
                                   {formatSemesterName(semesterId)}
                                 </p>
@@ -516,11 +516,12 @@ export function SelectionForm() {
           </AnimatePresence>
         </CardContent>
 
-        <CardFooter className="flex justify-between items-center bg-muted/50 p-3 rounded-b-2xl">
+        <CardFooter className="flex justify-between items-center p-3 rounded-b-2xl">
           <Button
             variant="ghost"
             type="button"
             size="sm"
+            className="bg-muted/50"
             onClick={() => {
               if (step === 1) {
                 router.push("/");

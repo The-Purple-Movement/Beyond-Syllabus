@@ -164,7 +164,7 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
       label: scheme.name,
       href: `/select?step=4&university=${resolvedParams.university}&program=${resolvedParams.program}&scheme=${resolvedParams.scheme}`,
     },
-    { label: semester.name }, // Current page - no href
+    { label: semester.name },
   ];
 
   return (
@@ -214,10 +214,10 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
                             handleViewSyllabus(subject.id, subject.name)
                           }
                           disabled={isLoading}
-                          variant="ghost"
-                          className={`flex items-center text-sm font-medium text-primary group p-0 h-auto w-full justify-start transition-all duration-200 hover:bg-transparent ${isLoading
-                              ? "opacity-70 cursor-not-allowed animate-pulse"
-                              : "hover:text-primary/80"
+                          variant="link"
+                          className={`flex items-center text-sm font-medium text-primary group p-0 h-auto w-full justify-start transition-all duration-200 ${isLoading
+                              ? "opacity-70 cursor-not-allowed"
+                            : "hover:bg-transparent"
                             }`}
                         >
                           {isLoading ? (
