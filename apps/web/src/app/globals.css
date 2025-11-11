@@ -4,6 +4,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@source "../node_modules/streamdown/dist/index.js";
+
 :root {
   --background: 240 10% 97%;
   /* Light gray */

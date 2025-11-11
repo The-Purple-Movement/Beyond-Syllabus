@@ -96,8 +96,10 @@ export default function Chat() {
   const isInitial = messages.length === 0;
 
   return (
-    <div className="flex flex-col h-screen md:h-[calc(100vh-1rem)] md:m-3 md:rounded-3xl bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C]">
-
+    <div
+      className="flex flex-col h-screen w-full md:h-[97vh] md:w-[98%] mx-auto md:my-4 md:rounded-3xl
+  bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C] overflow-hidden"
+    >
       {!isInitial && (
         <div className="sticky top-0 z-50 bg-[#F7F7F8]/80 dark:bg-[#22283E]/80 backdrop-blur-md">
           <Header />
