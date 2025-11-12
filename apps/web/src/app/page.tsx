@@ -38,7 +38,7 @@ export default function Home() {
             <div
               className="w-full h-full bg-no-repeat bg-contain bg-bottom"
               style={{
-                backgroundImage: `url("/hero.png")`,
+                backgroundImage: `url("/hero.webp")`,
                 opacity: 0.5,
               }}
             />
@@ -140,7 +140,7 @@ export default function Home() {
             <div
               className="w-full h-full bg-no-repeat bg-contain bg-bottom rotate-180"
               style={{
-                backgroundImage: `url(${"/hero.png"})`,
+                backgroundImage: `url(${"/hero.webp"})`,
                 opacity: 0.5,
               }}
             />
