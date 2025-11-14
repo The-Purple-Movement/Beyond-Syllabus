@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Montserrat, Poppins } from "next/font/google";
-import { Toaster } from "sonner";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { QueryProvider } from "@/lib/rQuery";
@@ -72,7 +72,7 @@ export default function RootLayout({
               </Suspense>
             </DataProvider>
           </QueryProvider>
-          <Toaster closeButton richColors position="top-center" />
+          <Toaster reverseOrder={true} position="top-center" />
         </ThemeProvider>
       </body>
     </html>

@@ -115,7 +115,6 @@ export default function Chat() {
                 <SidebarTrigger className="-ml-1" />
               </div>
               <div className="absolute flex top-0 right-0 gap-2">
-                <ShareButton />
                 <ThemeToggle />
               </div>
 
