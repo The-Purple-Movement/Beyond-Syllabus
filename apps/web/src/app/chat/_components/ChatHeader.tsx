@@ -1,5 +1,6 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { ShareButton } from "@/app/chat/_components/ShareButton";
 
 export default function ChatHeader() {
   return (
@@ -13,6 +14,7 @@ export default function ChatHeader() {
         </h2>
 
         <div className="ml-auto flex items-center gap-2 top-0 right-0">
+          <ShareButton />
           <ThemeToggle />
         </div>
       </div>

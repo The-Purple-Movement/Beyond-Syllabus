@@ -11,6 +11,7 @@ import { generateModuleTasks } from "@/ai/flows/generate-module-tasks";
 import Header from "@/app/chat/_components/ChatHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ShareButton } from "@/app/chat/_components/ShareButton";
 
 export default function Chat() {
   const [moduleTitle, setModuleTitle] = useState("Loading title...");
@@ -107,13 +108,14 @@ export default function Chat() {
       )}
 
       <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto px-6 py-4" id="chat-scroll-area">
+        <div className="h-full overflow-y-auto px-6 py-4">
           {isInitial ? (
             <div className="relative flex flex-col items-center justify-center text-center h-full">
               <div className="absolute top-0 left-0">
                 <SidebarTrigger className="-ml-1" />
               </div>
-              <div className="absolute top-0 right-0">
+              <div className="absolute flex top-0 right-0 gap-2">
+                <ShareButton />
                 <ThemeToggle />
               </div>
 
