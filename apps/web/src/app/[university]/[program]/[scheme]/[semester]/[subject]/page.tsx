@@ -1,4 +1,5 @@
 "use client";
+
 import { notFound } from "next/navigation";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -7,9 +8,6 @@ import { CourseModules } from "./_components/CourseModules";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { AnimatedDiv } from "@/components/AnimatedDiv";
 
-import { MindMap } from "@/app/mindMap/mindMap";
-import remarkGfm from "remark-gfm";
-import ReactMarkdown from "react-markdown";
 import { useData } from "@/contexts";
 import { use } from "react";
 import { SubjectPageProps, DirectoryStructure } from "@/types";

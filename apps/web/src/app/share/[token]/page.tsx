@@ -21,7 +21,6 @@ export default function ShareRedirectPage() {
             setLoading(false);
             return;
         }
-
         const fetchShare = async () => {
             try {
                 const { url } = await orpc.share.getShare.call({ token });
@@ -44,8 +43,6 @@ export default function ShareRedirectPage() {
             </div>
         );
     }
-
     if (error) return <ErrorDisplay errorMessage={error} />;
-
     return null;
 }

@@ -8,10 +8,11 @@ import ReactFlow, {
   useEdgesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { generateMindMap } from "@/ai/flows/generateMindMap";
 import { MindMapProps } from "@/types";
 
 
-export function MindMap({ subjectCode, subjectName, modules }: MindMapProps) {
+export default function MindMap({ subjectCode, subjectName, modules }: MindMapProps) {
   const [allNodes, setAllNodes] = useState<Node[]>([]);
   const [allEdges, setAllEdges] = useState<Edge[]>([]);
 

@@ -26,7 +26,6 @@ export function ShareButton() {
             const result = await orpc.share.createShare.call({
                 url: window.location.href,
             });
-
             setShareLink(result.url);
         } catch (err: any) {
             toast.error(err?.message || "Could not create share link");

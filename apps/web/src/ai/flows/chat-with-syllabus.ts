@@ -11,7 +11,7 @@ import { ChatWithSyllabusInput, ChatWithSyllabusOutput } from "@/types";
 const chatWithSyllabusFlow = async (
   input: ChatWithSyllabusInput
 ): Promise<ChatWithSyllabusOutput> => {
-  // Expanded filtering for entertainment, pop culture, and other non-educational content
+
   const isEntertainmentQuery = (message: string): boolean => {
     const nonEducationalKeywords = [
       "celebrity gossip",
@@ -71,31 +71,63 @@ const chatWithSyllabusFlow = async (
     );
   };
 
-  // Strict on-topic pre-gate using syllabus/subject keywords and off-topic tech/pop-culture
   const isOffTopicForSyllabus = (
     message: string,
     syllabusContext?: string,
     subjectArea?: string
   ): boolean => {
-    const text = (syllabusContext || "") + " " + (subjectArea || "");
-    const normalizedContext = text.toLowerCase();
-    const messageLower = message.toLowerCase();
+    if (!message) return false;
 
-    // quick allow if explicit context keywords appear in message
-    const contextTokens = normalizedContext
+    const normalizedMessage = message.toLowerCase();
+    const normalizedContext = (
+      (syllabusContext || "") +
+      " " +
+      (subjectArea || "")
+    ).toLowerCase();
+
+    const contextTokens = new Set(
+      normalizedContext.split(/[^a-z0-9+.#-]+/).filter((w) => w && w.length > 2)
+    );
+
+    const messageTokens = normalizedMessage
       .split(/[^a-z0-9+.#-]+/)
       .filter((w) => w && w.length > 2);
 
-    const messageTokens = messageLower
-      .split(/[^a-z0-9+.#-]+/)
-      .filter((w) => w && w.length > 2);
+    const connectingTokens = new Set([
+      "topic",
+      "concept",
+      "syllabus",
+      "section",
+      "example",
+      "application",
+      "relation",
+      "connect",
+      "connects",
+      "related",
+      "link",
+      "links",
+      "overview",
+    ]);
 
-    const contextSet = new Set(contextTokens);
-    const overlap = messageTokens.filter((w) => contextSet.has(w));
+    const overlap = messageTokens.filter(
+      (w) => contextTokens.has(w) || connectingTokens.has(w)
+    );
 
-    // Off-topic tech/pop-culture markers that often indicate topic shift
-    const offTopicTech = [
-      // web frameworks and stacks
+    if ((subjectArea || syllabusContext) && overlap.length === 0) {
+      return true;
+    }
+
+    const offTopicKeywords = [
+      "celebrity",
+      "messi",
+      "ronaldo",
+      "beyonce",
+      "k-pop",
+      "netflix",
+      "tiktok",
+      "instagram",
+      "hollywood",
+      "bollywood",
       "next.js",
       "nextjs",
       "next js",
@@ -134,33 +166,13 @@ const chatWithSyllabusFlow = async (
       "prettier",
     ];
 
-    // If syllabus/subject contains any of these, treat them as in-scope
-    const allowedFromContext = offTopicTech.filter((k) =>
-      normalizedContext.includes(k)
-    );
-    const messageHasOffTopicTech = offTopicTech.some((k) =>
-      messageLower.includes(k)
-    );
-    const offTopicTechButNotAllowed =
-      messageHasOffTopicTech &&
-      !allowedFromContext.some((k) => messageLower.includes(k));
-
-    // Heuristics:
-    // - If we have specific context and there's no token overlap and message triggers off-topic tech/pop, it's off-topic
-    // - If we have specific context and there is zero overlap at all, treat as off-topic
-    if ((subjectArea || syllabusContext) && overlap.length === 0) {
-      return true;
-    }
-
-    // Always block off-topic tech even if no context is provided
-    if (offTopicTechButNotAllowed) {
+    if (offTopicKeywords.some((k) => normalizedMessage.includes(k))) {
       return true;
     }
 
     return false;
   };
 
-  // Only block obvious entertainment queries
   if (isEntertainmentQuery(input.message)) {
     const refusal = input.subjectArea
       ? `This is outside our current topic. I cannot discuss that and will not switch topics. Let's stay focused on ${input.subjectArea}. Please ask about concepts covered in the syllabus.`
