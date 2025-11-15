@@ -111,7 +111,7 @@ The introductoryMessage should include:
 3. **Real-World Applications:** 2-3 relevant applications as markdown bullet points
 4. **Follow-Up Questions:** 3-4 discussion or reflection questions as markdown bullet points
 
-The suggestions should be 2-3 additional, unique teaching tips or extension activities that do not overlap with the items in the main sections. Dont add welcome text to welcomw titles. Just include the contents from the introductoryMessage.`,
+The suggestions should be 2-3 additional, unique teaching tips or extension activities that do not overlap with the items in the main sections. Dont add welcome text as well as welcome titles. Just include the contents from the introductoryMessage.`,
     });
 
     const chatCompletion = await ai.chat.completions.create({
@@ -149,7 +149,7 @@ The suggestions should be 2-3 additional, unique teaching tips or extension acti
     );
 
     return {
-      introductoryMessage: `Hello! I ran into some issues generating the module for "${input.moduleTitle}". You can try again or change the AI model if needed.`,
+      introductoryMessage: `Hello! I ran into some issues generating the module tasks for "${input.moduleTitle}". You can try again or change the AI model if needed.`,
       suggestions: [
         `Try using a different AI model for "${input.moduleTitle}"`,
         "Rephrase your module content and try again",
