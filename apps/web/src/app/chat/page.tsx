@@ -9,6 +9,7 @@ import { ChatInput } from "@/app/chat/_components/ChatInput";
 import { chatWithSyllabus } from "@/ai/flows/chat-with-syllabus";
 import { Message, ChatWithSyllabusOutput } from "@/types";
 import { generateModuleTasks } from "@/ai/flows/generate-module-tasks";
+import { suggestResources } from "@/ai/flows/suggest-resources";
 import Header from "@/app/chat/_components/ChatHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -21,6 +22,11 @@ export default function ChatHome() {
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedModel, setSelectedModel] = useState("openai/gpt-oss-120b");
+  const quickQuestions = [
+    "Why do I need to study this?",
+    "What is the purpose of this module?",
+    "How can I apply this in real life?",
+  ];
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -47,12 +53,22 @@ export default function ChatHome() {
           model: selectedModel,
         });
 
-        const tasksResult = await generateModuleTasks({ moduleContent, moduleTitle });
+        const tasksResult = await generateModuleTasks({ moduleContent, moduleTitle, model: selectedModel });
+        const resourcesResult = await suggestResources({ syllabusSection: moduleContent, model: selectedModel });
 
         const combinedContent = [
           syllabusResult.response,
-          tasksResult.introductoryMessage
+          tasksResult.introductoryMessage,
+          resourcesResult.resources.length > 0
+            ? `\n\n**Here are some recommended resources for further study:**\n${resourcesResult.resources
+              .map(
+                (res, idx) =>
+                  `- ${idx + 1}. **${res.title}** - ${res.url}\n   ${res.description}`
+              )
+              .join("\n")}`
+            : ""
         ]
+          
           .filter(Boolean)
           .join("\n\n");
 
@@ -94,7 +110,7 @@ export default function ChatHome() {
       });
 
       setMessages((prev) => [...prev, { role: "assistant", content: result.response }]);
-      setSuggestions(result.suggestions || []);
+      setSuggestions(quickQuestions || []);
     } catch (err) {
       console.error(err);
       setMessages((prev) => [

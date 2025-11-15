@@ -96,6 +96,7 @@ export interface GenerateModuleTasksOutput {
 
 export interface MindMapInput {
   syllabus: string;
+  model?: string;
 }
 
 export interface MindMapNode {
@@ -117,6 +118,7 @@ export interface MindMapOutput {
 
 export interface SuggestResourcesInput {
   syllabusSection: string;
+  model?: string;
 }
 
 export interface Resource {

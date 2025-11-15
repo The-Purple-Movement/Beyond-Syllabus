@@ -33,11 +33,13 @@ export function CourseModules({ modules }: CourseModulesProps) {
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     const title = module.title || "Selected Module";
+    const syllabusUrl = window.location.pathname;
     const content = module.content;
+    
     router.push(
       `/chat?title=${encodeURIComponent(title)}&content=${encodeURIComponent(
         content
-      )}`
+      )}&syllabus=${encodeURIComponent(syllabusUrl)}`
     );
   };
 

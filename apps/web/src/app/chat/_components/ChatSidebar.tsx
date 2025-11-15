@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { LogOut, MessageSquare, Search, CircleUserRound } from "lucide-react";
 import {
@@ -18,6 +21,8 @@ import { Input } from "@/components/ui/input";
 export default function ChatSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const searchParams = useSearchParams();
+  const syllabusUrl = searchParams.get("syllabus");
   return (
     <Sidebar
       collapsible="offcanvas"
@@ -52,11 +57,15 @@ export default function ChatSidebar({
               className="w-full pl-10 pr-3 py-2 rounded-lg bg-[#F7F7F8] dark:bg-[#222222] text-white placeholder-gray-400"
             />
           </div>
-          <Link href="/select">
-            <Button variant={"default"} className="w-full text-white font-light bg-gradient-to-r from-[#8362F9] to-[#7B39FF] rounded-sm">
-            Select another Syllabus
+          <Link href={syllabusUrl || ""}>
+            <Button
+              variant={"default"}
+              className="w-full text-white font-light bg-gradient-to-r from-[#8362F9] to-[#7B39FF] rounded-sm"
+            >
+              View Syllabus
             </Button>
           </Link>
+
         </div>
 
         <p className="pt-4 pb-2 text-xs text-[#969696] flex items-center gap-2">

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Bot } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { ChatMessageProps } from "@/types";
 import { Streamdown } from "streamdown";
 
