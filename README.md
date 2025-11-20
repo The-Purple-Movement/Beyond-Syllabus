@@ -1,12 +1,10 @@
-![Beyond Syllabus Logo](https://purple-movement.com/assets/logo_pm-Bx55hodj.png)
-
 # Beyond Syllabus
 
 ## AI-Powered Learning Beyond Boundaries 🌟
 
 ## Don’t just study the syllabus. Understand it. Question it. Go beyond it
 
-## [live](https://beyondsyllabus.in/)
+## [Hosted URL](https://beyondsyllabus.in/)
 
 ---
 
@@ -100,30 +98,29 @@ This is **not just an app** — it’s a **movement**. You can:
 
 ---
 
-# 🏃‍♂️ Run Locally
+## 🏃‍♂️ Run Locally
 
 You can set up **Beyond Syllabus** on your local machine for development or testing. Follow these steps:
 
-## 1. Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/The-Purple-Movement/Beyond-Syllabus.git
 cd Beyond-Syllabus
 ```
 
-## 2. Install Dependencies
+### 2. Install Dependencies
 
 Make sure you have **Node.js (v16+)** and **npm** or **yarn** installed.
 
 ```bash
-# Using bun
 bun install
 
 ```
 
-## 3. Configure Environment Variables
+### 3. Configure Environment Variables
 
-Create a `.env` file in the web directory and add the required keys, for example:
+Create a `.env` file in the web directory and add the required keys, for example(web):
 
 ```json
 NEXT_PUBLIC_SERVER_URL=http://localhost:3000
@@ -131,24 +128,21 @@ GROQ_API_KEY=your_groq_api_here
 ```
 
 > Replace `your_groq_api_here` with your own Groq API key if using the AI features.
-> Do the same for server directory. Follow `.env.example` for guidance
+> Do the same for server directory. Follow `.env.example` of web and server for guidance
 
-## 4. Start the Development Server
+### 4. Start the Development Server
 
 ```bash
-# Using bun
 bun dev
 
 ```
 
 The app should now be running at [http://localhost:3001](http://localhost:3001).
 
-## 5. Build for Production (Optional)
+### 5. Build for Production & Check for bugs and errors
 
 ```bash
-# Using turbo
-turbo build
-turbo dev
+bun run build
 
 ```
 
