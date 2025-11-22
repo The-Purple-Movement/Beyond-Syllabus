@@ -10,7 +10,7 @@ import { AnimatedDiv } from "@/components/AnimatedDiv";
 
 import { useData } from "@/contexts";
 import { use } from "react";
-import { SubjectPageProps, DirectoryStructure } from "@/types";
+import { SubjectPageProps, DirectoryStructure } from "@/lib/types";
 import { Header } from "@/components/Header";
 
 function findDataPath(

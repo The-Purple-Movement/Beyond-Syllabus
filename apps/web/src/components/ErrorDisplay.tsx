@@ -1,5 +1,5 @@
 import { Header } from "./Header";
-import { ErrorDisplayProps } from "@/types";
+import { ErrorDisplayProps } from "@/lib/types";
 import { Button } from "./ui/button";
 
 export default function ErrorDisplay({ errorMessage }: ErrorDisplayProps) {

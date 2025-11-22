@@ -7,9 +7,8 @@ import ChatMessage from "@/app/chat/_components/ChatMessage";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/app/chat/_components/ChatInput";
 import { chatWithSyllabus } from "@/ai/flows/chat-with-syllabus";
-import { Message, ChatWithSyllabusOutput } from "@/types";
+import { Message, ChatWithSyllabusOutput } from "@/lib/types";
 import { generateModuleTasks } from "@/ai/flows/generate-module-tasks";
-import { suggestResources } from "@/ai/flows/suggest-resources";
 import Header from "@/app/chat/_components/ChatHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -54,19 +53,10 @@ export default function ChatHome() {
         });
 
         const tasksResult = await generateModuleTasks({ moduleContent, moduleTitle, model: selectedModel });
-        const resourcesResult = await suggestResources({ syllabusSection: moduleContent, model: selectedModel });
 
         const combinedContent = [
           syllabusResult.response,
           tasksResult.introductoryMessage,
-          resourcesResult.resources.length > 0
-            ? `\n\n**Here are some recommended resources for further study:**\n${resourcesResult.resources
-              .map(
-                (res, idx) =>
-                  `- ${idx + 1}. **${res.title}** - ${res.url}\n   ${res.description}`
-              )
-              .join("\n")}`
-            : ""
         ]
 
           .filter(Boolean)

@@ -11,7 +11,7 @@ import {
 import { AuroraText } from "@/components/ui/aurora-text";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { FeatureCardProps } from "@/types";
+import { FeatureCardProps } from "@/lib/types";
 
 export default function Home() {
   return (

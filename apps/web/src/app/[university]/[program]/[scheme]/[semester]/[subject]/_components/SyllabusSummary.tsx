@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Spinner } from "@/components/ui/spinner";
-import { SyllabusSummaryProps } from "@/types";
+import { SyllabusSummaryProps } from "@/lib/types";
 
 export function SyllabusSummary({ fullSyllabus }: SyllabusSummaryProps) {
   const [summary, setSummary] = useState<string | null>(null);

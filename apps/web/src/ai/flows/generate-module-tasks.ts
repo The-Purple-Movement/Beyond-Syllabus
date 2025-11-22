@@ -5,10 +5,12 @@ import {
   createStandardizedPrompt,
   validateStandardizedFormat,
 } from "@/ai/utils/prompt-builder";
+import { PersonaTemplates } from "@/ai/utils/standardized-format";
 import {
-  PersonaTemplates,
-} from "@/ai/utils/standardized-format";
-import { GenerateModuleTasksInput, GenerateModuleTasksOutput, WikiSyllabusAIFormat } from "@/types";
+  GenerateModuleTasksInput,
+  GenerateModuleTasksOutput,
+  WikiSyllabusAIFormat,
+} from "@/lib/types";
 
 // Flow Logic
 const generateModuleTasksFlow = async (
@@ -137,7 +139,7 @@ The suggestions should be 2-3 additional, unique teaching tips or extension acti
       .trim()
       .replace(/^```json\s*/, "")
       .replace(/^```/, "")
-      .replace(/```$/, "")
+      .replace(/```$/, "");
 
     const output = JSON.parse(outputText);
 

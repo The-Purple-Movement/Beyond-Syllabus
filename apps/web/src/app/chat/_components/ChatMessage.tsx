@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Copy, Check, Bot } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { ChatMessageProps } from "@/types";
+import { ChatMessageProps } from "@/lib/types";
 import { Streamdown } from "streamdown";
 
 import remarkMath from "remark-math";

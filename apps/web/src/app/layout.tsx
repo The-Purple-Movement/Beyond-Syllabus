@@ -4,7 +4,6 @@ import { Montserrat, Poppins } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { QueryProvider } from "@/lib/rQuery";
 import { DataProvider } from "@/contexts";
 import { ScaleLoader } from "react-spinners"
 
@@ -59,7 +58,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <QueryProvider>
             <DataProvider>
               <Suspense
                 fallback={
@@ -71,7 +69,6 @@ export default function RootLayout({
                 {children}
               </Suspense>
             </DataProvider>
-          </QueryProvider>
           <Toaster reverseOrder={true} position="top-center" />
         </ThemeProvider>
       </body>

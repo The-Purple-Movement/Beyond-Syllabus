@@ -5,13 +5,12 @@ import {
   createStandardizedPrompt,
   validateStandardizedFormat,
 } from "@/ai/utils/prompt-builder";
-import { WikiSyllabusAIFormat } from "@/types";
-import { ChatWithSyllabusInput, ChatWithSyllabusOutput } from "@/types";
+import { WikiSyllabusAIFormat } from "@/lib/types";
+import { ChatWithSyllabusInput, ChatWithSyllabusOutput } from "@/lib/types";
 
 const chatWithSyllabusFlow = async (
   input: ChatWithSyllabusInput
 ): Promise<ChatWithSyllabusOutput> => {
-
   const isEntertainmentQuery = (message: string): boolean => {
     const nonEducationalKeywords = [
       "celebrity gossip",

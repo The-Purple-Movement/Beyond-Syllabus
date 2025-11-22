@@ -1,7 +1,7 @@
 "use server";
 
 import { ai } from "@/ai/ai";
-import { MindMapInput, MindMapOutput } from "@/types";
+import { MindMapInput, MindMapOutput } from "@/lib/types";
 
 const generateMindMapFlow = async (
   input: MindMapInput

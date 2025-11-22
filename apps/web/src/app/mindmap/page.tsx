@@ -9,7 +9,7 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { generateMindMap } from "@/ai/flows/generateMindMap";
-import { MindMapProps } from "@/types";
+import { MindMapProps } from "@/lib/types";
 
 
 export default function MindMap({ subjectCode, subjectName, modules }: MindMapProps) {

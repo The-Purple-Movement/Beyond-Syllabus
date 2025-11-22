@@ -1,7 +1,7 @@
 "use server";
 
 import { ai } from "@/ai/ai";
-import { SuggestResourcesInput, SuggestResourcesOutput } from "@/types";
+import { SuggestResourcesInput, SuggestResourcesOutput } from "@/lib/types";
 
 // ---------------------- Flow Logic ----------------------
 const suggestResourcesFlow = async (
@@ -14,11 +14,14 @@ Syllabus Section:
 "${input.syllabusSection}"
 
 Guidelines:
-1. Provide a mix of resource types (e.g., video, article, tutorial).
+1. Provide a mix of resource types (e.g. article, tutorial).
 2. Prioritize reputable sources like university websites, established educational platforms, and well-known technical blogs.
 3. Ensure all URLs are valid and directly accessible.
-4. The description should clearly explain the resource's relevance.
-5. You MUST return the data in the following JSON format:
+4. Make sure the URLs are not behind paywalls.
+5. Make sure the resources are up-to-date and relevant to the syllabus section.
+6. Avoid duplicating resources.
+7. The description should clearly explain the resource's relevance.
+8. You MUST return the data in the following JSON format:
 
 {
   "resources": [

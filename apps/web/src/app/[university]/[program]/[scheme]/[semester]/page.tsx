@@ -27,7 +27,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useData } from "@/contexts";
 import { Spinner } from "@/components/ui/spinner";
-import { DirectoryStructure, SubjectsPageProps } from "@/types";
+import { DirectoryStructure, SubjectsPageProps } from "@/lib/types";
 
 
 function findSemesterData(
@@ -216,7 +216,7 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
                           disabled={isLoading}
                           variant="link"
                           className={`flex items-center text-sm font-medium text-primary group p-0 h-auto w-full justify-start transition-all duration-200 ${isLoading
-                              ? "opacity-70 cursor-not-allowed"
+                            ? "opacity-70 cursor-not-allowed"
                             : "hover:bg-transparent"
                             }`}
                         >

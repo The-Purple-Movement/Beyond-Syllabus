@@ -5,7 +5,7 @@ import { Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import ModelSelector from "./Model-Selector";
-import { ChatInputProps } from "@/types";
+import { ChatInputProps } from "@/lib/types";
 
 export function ChatInput({
   placeholder = "Send a message...",
@@ -43,14 +43,14 @@ export function ChatInput({
   };
 
   return (
-      <div
-        className={cn(
-          "relative border border-border rounded-3xl bg-[#DEDEDF] dark:bg-[#1B1B1B]",
-          "p-4 px-6 py-4 transition-all duration-200",
-          "shadow-[0_0_20px_5px_#D9D9D9] dark:shadow-[0_0_20px_5px_rgba(123,57,255,0.3)]",
-          className
-        )}
-      >
+    <div
+      className={cn(
+        "relative border border-border rounded-3xl bg-[#DEDEDF] dark:bg-[#1B1B1B]",
+        "p-4 px-6 py-4 transition-all duration-200",
+        "shadow-[0_0_20px_5px_#D9D9D9] dark:shadow-[0_0_20px_5px_rgba(123,57,255,0.3)]",
+        className
+      )}
+    >
       <div className="flex items-start gap-3 mb-3">
         <div className="flex-1">
           <textarea

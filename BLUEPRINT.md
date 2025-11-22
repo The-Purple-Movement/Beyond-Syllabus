@@ -1,6 +1,6 @@
-# **App Name**: WikiSyllabus
+# **App Name**: BeyondSyllabus
 
-## Core Features:
+## Core Features
 
 - Landing Page: Landing page with university selection and brief introduction.
 - Academic Details Form: Interactive form to select University, Program (Branch), and Semester, pre-selecting KTU as default.
@@ -9,7 +9,7 @@
 - AI Syllabus Summary: Utilize LLM to summarize syllabus content into key learning objectives.
 - Breadcrumb Navigation: Breadcrumb navigation to easily track the current academic path.
 
-## Style Guidelines:
+## Style Guidelines
 
 - Primary color: Indigo (#4B0082) to represent intelligence, stability, and depth.
 - Background color: Light gray (#F0F0F0) to provide a neutral backdrop that ensures readability and reduces visual fatigue.
