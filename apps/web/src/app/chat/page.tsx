@@ -33,7 +33,7 @@ export default function ChatHome() {
   useEffect(() => scrollToBottom(), [messages, suggestions, loading]);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setModuleTitle(params.get("title") || "AI Chat");
+    setModuleTitle(params.get("title") || "");
     setModuleContent(params.get("content") || "");
   }, []);
 
@@ -68,7 +68,7 @@ export default function ChatHome() {
               .join("\n")}`
             : ""
         ]
-          
+
           .filter(Boolean)
           .join("\n\n");
 
@@ -127,6 +127,7 @@ export default function ChatHome() {
   const handleSuggestionClick = (text: string) => handleSend(text);
   const handleModelChange = (model: string) => setSelectedModel(model);
   const isInitial = messages.length === 0;
+  const isEmpty = !moduleTitle && !moduleContent;
 
   return (
     <div className="flex flex-col h-screen w-full md:h-[97vh] md:w-[98%] mx-auto md:my-4 md:rounded-3xl
@@ -161,7 +162,11 @@ export default function ChatHome() {
                 <ChatInput
                   onSend={handleSend}
                   onModelChange={handleModelChange}
-                  placeholder="Ask anything..."
+                  placeholder={
+                    isEmpty
+                      ? "Paste your syllabus or markdown here..."
+                      : "Ask anything..."
+                  }
                   disabled={loading}
                   className="w-full"
                 />
@@ -240,7 +245,11 @@ export default function ChatHome() {
           <ChatInput
             onSend={handleSend}
             onModelChange={handleModelChange}
-            placeholder="Ask anything..."
+            placeholder={
+              isEmpty
+                ? "Paste your syllabus or markdown here..."
+                : "Ask anything..."
+            }
             disabled={loading}
             className="w-full"
           />

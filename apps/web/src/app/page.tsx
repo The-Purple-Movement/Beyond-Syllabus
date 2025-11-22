@@ -52,7 +52,7 @@ export default function Home() {
                 variant="secondary"
                 className="w-full md:w-auto flex items-center justify-center gap-2 h-[44px]"
               >
-                <Link href="/chat-with-file" prefetch={true}>
+                <Link href="/chat" prefetch={true}>
                   <Sparkles className="h-5 w-5 text-amber-400" />
                   AI Chat
                 </Link>

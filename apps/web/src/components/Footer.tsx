@@ -51,7 +51,7 @@ export function Footer() {
               <nav className="flex flex-col gap-2">
                 <Link href="/">Home</Link>
                 <Link href="/select">Select Course</Link>
-                <Link href="/chat-with-file">AI Chat</Link>
+                <Link href="/chat">AI Chat</Link>
               </nav>
             </div>
             <div>
