@@ -89,7 +89,6 @@ export default function ChatHome() {
     initializeChat();
   }, [moduleContent, moduleTitle, selectedModel]);
 
-
   const handleSend = async (message: string) => {
     if (!message.trim() || loading) return;
 
