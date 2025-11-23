@@ -79,4 +79,6 @@ const app = new Elysia()
       path.join(process.cwd(), "src/routes/syllabus/generated/university.json")
     ).json();
   })
-export default app;
+  .listen(port, () => {
+    console.log("🦊 Beyond Syllabus API is running !!");
+  });
