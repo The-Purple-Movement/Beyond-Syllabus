@@ -66,7 +66,7 @@ export function ChatInput({
               "text-base leading-6 py-2",
               disabled && "opacity-50 cursor-not-allowed"
             )}
-            style={{ minHeight: "40px", maxHeight: "120px", height: "auto" }}
+            style={{ minHeight: "60px", maxHeight: "120px", height: "auto" }}
             onInput={(e) => {
               const target = e.target as HTMLTextAreaElement;
               target.style.height = "auto";
