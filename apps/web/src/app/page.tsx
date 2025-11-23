@@ -1,3 +1,7 @@
+"use client"
+
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +18,14 @@ import { Footer } from "@/components/Footer";
 import { FeatureCardProps } from "@/lib/types";
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleClick = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+  };
   return (
     <div className="flex flex-col min-h-screen transition-colors duration-300">
       <Header />
@@ -62,10 +74,19 @@ export default function Home() {
                 asChild
                 size="lg"
                 className="w-full md:w-auto flex items-center justify-center gap-2 h-[44px] bg-[#8800ff] text-white"
+                onClick={handleClick}
               >
                 <Link href="/select" prefetch={true}>
-                  Explore Your Syllabus
-                  <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  {isLoading ? (
+                    <>
+                      <Spinner className="w-5 h-5" /> Loading your syllabus...
+                    </>
+                  ) : (
+                    <>
+                      Explore Your Syllabus
+                      <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
                 </Link>
               </Button>
             </div>
