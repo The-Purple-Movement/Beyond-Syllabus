@@ -35,7 +35,8 @@ const apiHandler = new OpenAPIHandler(appRouter, {
 });
 
 const port = Number(process.env.PORT) || 3000;
-const allowedOrigins = env.CORS_ORIGIN.split(",").map((url) => url.trim());
+
+const allowedOrigins = env.CORS_ORIGIN;
 
 const app = new Elysia()
   .use(

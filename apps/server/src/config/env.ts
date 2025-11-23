@@ -5,7 +5,10 @@ console.log("🔐 Loading environment variables...");
 
 const serverSchema = z.object({
   NODE_ENV: z.string(),
-  CORS_ORIGIN: z.string().optional(),
+  CORS_ORIGIN: z
+    .string()
+    .optional()
+    .transform((val) => (val ? val.split(",") : [])),
   PORT: z.coerce.number().default(3000),
   UPSTASH_REDIS_URL: z.string(),
   UPSTASH_REDIS_TOKEN: z.string(),

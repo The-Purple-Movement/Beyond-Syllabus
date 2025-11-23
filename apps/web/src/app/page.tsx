@@ -1,33 +1,38 @@
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  GraduationCap,
-  BookOpenCheck,
-  BarChart3,
-  ChevronRight,
-  Sparkles,
-} from "lucide-react";
+import { GraduationCap, BookOpenCheck, BarChart3, ChevronRight, Sparkles } from "lucide-react";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { FeatureCardProps } from "@/lib/types";
+import Link from "next/link";
 
 export default function Home() {
+  const router = useRouter();
+  const [loadingRoute, setLoadingRoute] = useState<string | null>(null);
+
+  const navigateWithDelay = async (path: string, delay: number): Promise<void> => {
+    setLoadingRoute(path);
+    await new Promise<void>((resolve) => setTimeout(resolve, delay));
+    router.push(path);
+  };
+
+  const isLoading = (path: string) => loadingRoute === path;
+
   return (
     <div className="flex flex-col min-h-screen transition-colors duration-300">
       <Header />
       <main className="flex-grow relative">
-        <section
-          className={`w-full h-screen flex flex-col justify-center items-center px-4 text-center relative z-10`}
-        >
+        <section className="w-full h-screen flex flex-col justify-center items-center px-4 text-center relative z-10">
           <div className="absolute inset-0">
             <div
               className="w-full h-full bg-no-repeat bg-contain bg-bottom"
-              style={{
-                backgroundImage: `url("/hero.webp")`,
-                opacity: 0.5,
-              }}
+              style={{ backgroundImage: `url("/hero.webp")`, opacity: 0.5 }}
             />
           </div>
 
@@ -59,14 +64,20 @@ export default function Home() {
               </Button>
 
               <Button
-                asChild
                 size="lg"
                 className="w-full md:w-auto flex items-center justify-center gap-2 h-[44px] bg-[#8800ff] text-white"
+                onClick={() => navigateWithDelay("/select", 800)}
               >
-                <Link href="/select" prefetch={true}>
-                  Explore Your Syllabus
-                  <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                {isLoading("/select") ? (
+                  <>
+                    <Spinner className="w-5 h-5" /> Loading your syllabus...
+                  </>
+                ) : (
+                  <>
+                    Explore Your Syllabus
+                    <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
               </Button>
             </div>
           </div>
@@ -108,14 +119,12 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Bottom Hero Image */}
         <section className="relative w-full h-[400px] md:h-[600px] mt-16 md:mt-0">
           <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
             <div
               className="w-full h-full bg-no-repeat bg-contain bg-bottom rotate-180"
-              style={{
-                backgroundImage: `url(${"/hero.webp"})`,
-                opacity: 0.5,
-              }}
+              style={{ backgroundImage: `url("/hero.webp")`, opacity: 0.5 }}
             />
           </div>
         </section>
