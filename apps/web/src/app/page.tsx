@@ -49,7 +49,7 @@ export default function Home() {
               Explore subjects, understand modules, and unlock your potential.
             </p>
 
-            <div className="flex flex-col md:flex-row justify-center gap-4 mt-8">
+            <div className="flex flex-col md:flex-row justify-center gap-4 mt-8 ">
               <Button
                 asChild
                 size="lg"
@@ -68,7 +68,7 @@ export default function Home() {
                 asChild
                 disabled={loadingRoute === "/select"}
               >
-                <Link href="/select" prefetch={true} onClick={() => navigateWithDelay("/select", 800)}>
+                <Link href="/select" onClick={() => navigateWithDelay("/select", 800)}>
                   {loadingRoute ? (
                     <>
                       <Spinner className="h-5 w-5 mr-2" />
