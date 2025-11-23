@@ -6,12 +6,7 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { ChatMessageProps } from "@/lib/types";
 import { Streamdown } from "streamdown";
-
-import remarkMath from "remark-math";
-import remarkGfm from "remark-gfm";
-import rehypeKatex from "rehype-katex";
-
-import "katex/dist/katex.min.css";
+import { responseHelper } from "@/lib/chat-response";
 
 export default function ChatMessage({
   role,
@@ -29,6 +24,8 @@ export default function ChatMessage({
       setTimeout(() => setCopied(false), 2000);
     });
   };
+
+  const ChatResponse = responseHelper(content);
 
   if (role === "user") {
     return (
@@ -48,11 +45,8 @@ export default function ChatMessage({
 
       <div className="flex-1 max-w-[90%] sm:max-w-3xl space-y-2 sm:space-y-3">
         <div className="text-foreground text-sm sm:text-base space-y-2 sm:space-y-2 break-words overflow-x-hidden">
-          <Streamdown
-            remarkPlugins={[remarkGfm, remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-          >
-            {content}
+          <Streamdown>
+            {ChatResponse}
           </Streamdown>
         </div>
 

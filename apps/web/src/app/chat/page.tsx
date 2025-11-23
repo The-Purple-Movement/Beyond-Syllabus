@@ -1,6 +1,5 @@
 "use client";
 
-import "katex/dist/katex.min.css";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ChatMessage from "@/app/chat/_components/ChatMessage";
@@ -21,11 +20,6 @@ export default function ChatHome() {
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedModel, setSelectedModel] = useState("openai/gpt-oss-120b");
-  const quickQuestions = [
-    "Why do I need to study this?",
-    "What is the purpose of this module?",
-    "How can I apply this in real life?",
-  ];
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -99,7 +93,7 @@ export default function ChatHome() {
       });
 
       setMessages((prev) => [...prev, { role: "assistant", content: result.response }]);
-      setSuggestions(quickQuestions || []);
+      setSuggestions(suggestions || []);
     } catch (err) {
       console.error(err);
       setMessages((prev) => [
