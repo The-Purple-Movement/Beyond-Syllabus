@@ -57,14 +57,19 @@ export default function ChatSidebar({
               className="w-full pl-10 pr-3 py-2 rounded-lg bg-[#F7F7F8] dark:bg-[#222222] text-white placeholder-gray-400"
             />
           </div>
-          <Link href={syllabusUrl || ""}>
+          <Link href={syllabusUrl || "#"} passHref>
             <Button
-              variant={"default"}
-              className="w-full text-white font-light bg-gradient-to-r from-[#8362F9] to-[#7B39FF] rounded-sm"
+              variant="default"
+              className={`w-full text-white font-light rounded-sm ${syllabusUrl
+                  ? "bg-gradient-to-r from-[#8362F9] to-[#7B39FF]"
+                  : "opacity-50 cursor-not-allowed"
+                }`}
+              disabled={!syllabusUrl}
             >
               View Syllabus
             </Button>
           </Link>
+
 
         </div>
 
