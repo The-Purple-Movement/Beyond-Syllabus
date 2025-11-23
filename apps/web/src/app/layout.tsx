@@ -5,7 +5,7 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { DataProvider } from "@/contexts";
-import { ScaleLoader } from "react-spinners"
+import Loader from "@/components/Loader";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -60,12 +60,8 @@ export default function RootLayout({
         >
             <DataProvider>
               <Suspense
-                fallback={
-                  <div className="flex items-center justify-center w-screen h-screen">
-                    <ScaleLoader color="#D900FF" />
-                  </div>
-                }
-              >
+              fallback={<Loader />}
+            >
                 {children}
               </Suspense>
             </DataProvider>

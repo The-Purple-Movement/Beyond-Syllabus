@@ -193,8 +193,12 @@ const chatWithSyllabusFlow = async (
     };
   }
 
-  // Hard on-topic gate before invoking the model
+  const hasSpecificontext =
+    (!!input.subjectArea && input.subjectArea.trim() !== "") ||
+    (!!input.syllabusContext && input.syllabusContext.trim().length > 30);
+
   if (
+    hasSpecificontext &&
     isOffTopicForSyllabus(
       input.message,
       input.syllabusContext,
