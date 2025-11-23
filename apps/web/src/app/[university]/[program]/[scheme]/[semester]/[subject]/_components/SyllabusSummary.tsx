@@ -4,10 +4,9 @@ import { useState, useEffect } from "react";
 import { BookText } from "lucide-react";
 import { summarizeSyllabus } from "@/ai/flows/summarize-syllabus";
 import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { Streamdown } from "streamdown";
 import { Spinner } from "@/components/ui/spinner";
-import { SyllabusSummaryProps } from "@/types";
+import { SyllabusSummaryProps } from "@/lib/types";
 
 export function SyllabusSummary({ fullSyllabus }: SyllabusSummaryProps) {
   const [summary, setSummary] = useState<string | null>(null);
@@ -78,7 +77,7 @@ export function SyllabusSummary({ fullSyllabus }: SyllabusSummaryProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
+            <Streamdown>{summary}</Streamdown>
           </motion.div>
         )}
       </AnimatePresence>

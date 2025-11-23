@@ -5,10 +5,12 @@ import {
   createStandardizedPrompt,
   validateStandardizedFormat,
 } from "@/ai/utils/prompt-builder";
+import { PersonaTemplates } from "@/ai/utils/standardized-format";
 import {
-  PersonaTemplates,
-} from "@/ai/utils/standardized-format";
-import { SummarizeSyllabusInput, SummarizeSyllabusOutput, WikiSyllabusAIFormat } from "@/types";
+  SummarizeSyllabusInput,
+  SummarizeSyllabusOutput,
+  WikiSyllabusAIFormat,
+} from "@/lib/types";
 
 export async function summarizeSyllabus(
   input: SummarizeSyllabusInput

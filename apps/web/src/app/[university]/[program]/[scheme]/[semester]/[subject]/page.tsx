@@ -1,4 +1,5 @@
 "use client";
+
 import { notFound } from "next/navigation";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -7,12 +8,10 @@ import { CourseModules } from "./_components/CourseModules";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { AnimatedDiv } from "@/components/AnimatedDiv";
 
-import { MindMap } from "@/app/mindMap/mindMap";
-import remarkGfm from "remark-gfm";
-import ReactMarkdown from "react-markdown";
 import { useData } from "@/contexts";
 import { use } from "react";
-import { SubjectPageProps, DirectoryStructure } from "@/types";
+import { SubjectPageProps, DirectoryStructure } from "@/lib/types";
+import { Header } from "@/components/Header";
 
 function findDataPath(
   directoryStructure: DirectoryStructure,
@@ -120,6 +119,7 @@ export default function SubjectPage({ params }: SubjectPageProps) {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <Header />
       <main className="flex-1 container mx-auto px-4 py-8 md:py-12 mt-[10vh]">
         <AnimatedDiv>
           <div className="max-w-6xl mx-auto">

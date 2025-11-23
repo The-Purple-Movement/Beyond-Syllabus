@@ -1,21 +1,18 @@
 "use client";
 
-import "katex/dist/katex.min.css";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Bot } from "lucide-react";
-import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { toast } from "sonner";
 import { useState } from "react";
-import { ChatMessageProps } from "@/types";
+import { toast } from "react-hot-toast";
+import { ChatMessageProps } from "@/lib/types";
+import { Streamdown } from "streamdown";
+import { responseHelper } from "@/lib/chat-response";
 
 export default function ChatMessage({
   role,
   content,
   onCopy,
-}: ChatMessageProps) {
+}: ChatMessageProps & { status?: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -28,15 +25,14 @@ export default function ChatMessage({
     });
   };
 
+  const ChatResponse = responseHelper(content);
+
   if (role === "user") {
     return (
       <div className="flex justify-end px-2 sm:px-4">
-        <div
-          className="w-auto max-w-[90%] sm:max-w-2xl bg-[#B56DFC] text-white rounded-lg rounded-br-none px-4 py-3 break-words text-sm sm:text-base"
-        >
+        <div className="w-auto max-w-[90%] sm:max-w-2xl bg-[#B56DFC] text-white rounded-lg rounded-br-none px-4 py-3 break-words text-sm sm:text-base">
           {content}
         </div>
-
       </div>
     );
   }
@@ -49,12 +45,9 @@ export default function ChatMessage({
 
       <div className="flex-1 max-w-[90%] sm:max-w-3xl space-y-2 sm:space-y-3">
         <div className="text-foreground text-sm sm:text-base space-y-2 sm:space-y-2 break-words overflow-x-hidden">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm, remarkMath]}
-            rehypePlugins={[rehypeKatex]}
-          >
-            {content}
-          </ReactMarkdown>
+          <Streamdown>
+            {ChatResponse}
+          </Streamdown>
         </div>
 
         <div className="flex items-center gap-2 mt-2 sm:mt-3">

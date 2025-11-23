@@ -27,7 +27,7 @@ Before you start contributing, please take a moment to read the following guidel
 - Clone your forked repository locally: `git clone https://github.com/The-Purple-Movement/Beyond-Syllabus.git`
 - Change your directory to the project: `cd Beyond-Syllabus`
 - Install project dependencies: `bun install`
-- Run in server: `bun run dev`
+- Run in server: `bun dev`
 
 ## How Can I Contribute?
 

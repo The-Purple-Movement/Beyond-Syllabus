@@ -4,6 +4,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@source "../node_modules/streamdown/dist/index.js";
+
 :root {
   --background: 240 10% 97%;
   /* Light gray */
@@ -89,11 +91,11 @@
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
-.dashboard-layout {
+.chat-layout {
   background-color: #DEDEDF !important;
 }
 
-.dark .dashboard-layout {
+.dark .chat-layout {
   background-color: #1b1b1b !important;
 }
 
@@ -105,12 +107,12 @@ h5 {
   font-family: var(--font-montserrat);
 }
 
-.dashboard-layout h1,
-.dashboard-layout h2,
-.dashboard-layout h3,
-.dashboard-layout h4,
-.dashboard-layout h5,
-.dashboard-layout h6 {
+.chat-layout h1,
+.chat-layout h2,
+.chat-layout h3,
+.chat-layout h4,
+.chat-layout h5,
+.chat-layout h6 {
   font-family: var(--font-inter);
 }
 

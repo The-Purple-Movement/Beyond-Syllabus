@@ -1,60 +1,81 @@
 "use client";
 
-import "katex/dist/katex.min.css";
 import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import ChatMessage from "@/app/chat/_components/ChatMessage";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/app/chat/_components/ChatInput";
 import { chatWithSyllabus } from "@/ai/flows/chat-with-syllabus";
-import { Message } from "@/types";
+import { Message, ChatWithSyllabusOutput } from "@/lib/types";
 import { generateModuleTasks } from "@/ai/flows/generate-module-tasks";
 import Header from "@/app/chat/_components/ChatHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
-export default function Chat() {
+export default function ChatHome() {
   const [moduleTitle, setModuleTitle] = useState("Loading title...");
   const [moduleContent, setModuleContent] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [suggestions, setSuggestions] = useState<string[]>([
-    "Why do I need to study this?",
-    "What is the purpose of this module?",
-    "How can I apply this in real life?",
-  ]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [selectedModel, setSelectedModel] = useState("openai/gpt-oss-120b");
 
   const chatEndRef = useRef<HTMLDivElement>(null);
-
   const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  useEffect(() => scrollToBottom(), [messages, loading]);
-
+  useEffect(() => scrollToBottom(), [messages, suggestions, loading]);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const title = params.get("title") || "AI Chat";
-    const content = params.get("content") || "";
-    setModuleTitle(title);
-    setModuleContent(content);
+    setModuleTitle(params.get("title") || "");
+    setModuleContent(params.get("content") || "");
   }, []);
 
   useEffect(() => {
     if (!moduleContent || moduleTitle === "Loading title...") return;
-    setLoading(true);
-    setError(null);
-    generateModuleTasks({ moduleContent, moduleTitle })
-      .then((result) => {
-        if (result.introductoryMessage) {
-          setMessages([{ role: "assistant", content: result.introductoryMessage }]);
-        }
-        setSuggestions(result.suggestions || []);
-      })
-      .catch(() => setError("Failed to generate initial tasks and related topics."))
-      .finally(() => setLoading(false));
-  }, [moduleContent, moduleTitle]);
+
+    const initializeChat = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const syllabusResult: ChatWithSyllabusOutput = await chatWithSyllabus({
+          message: `You are a professional tutor. Provide an introductory message for the module "${moduleTitle}". Module content: ${moduleContent}`,
+          subjectArea: moduleTitle,
+          syllabusContext: moduleContent,
+          history: [],
+          model: selectedModel,
+        });
+
+        const tasksResult = await generateModuleTasks({ moduleContent, moduleTitle, model: selectedModel });
+
+        const combinedContent = [
+          syllabusResult.response,
+          tasksResult.introductoryMessage,
+        ]
+
+          .filter(Boolean)
+          .join("\n\n");
+
+        const suggestions = [
+          ...(syllabusResult.suggestions || []),
+        ];
+
+        setMessages([{ role: "assistant", content: combinedContent }]);
+        setSuggestions(suggestions);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to initialize chat with module content.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeChat();
+  }, [moduleContent, moduleTitle, selectedModel]);
 
   const handleSend = async (message: string) => {
     if (!message.trim() || loading) return;
+
     const userMessage: Message = { role: "user", content: message };
     setMessages((prev) => [...prev, userMessage]);
     setSuggestions([]);
@@ -62,29 +83,25 @@ export default function Chat() {
     setError(null);
 
     try {
-      const systemMessage: Message = {
-        role: "system",
-        content: `You are an expert assistant for the course module: ${moduleTitle}.\nModule Content:\n${moduleContent}`,
-      };
-
-      const chatHistoryForApi = [systemMessage, ...messages.filter((m) => m.role !== "system")];
-      const result = await chatWithSyllabus({
-        history: chatHistoryForApi,
+      const chatHistoryForApi: Message[] = [...messages, userMessage];
+      const result: ChatWithSyllabusOutput = await chatWithSyllabus({
         message,
+        history: chatHistoryForApi,
+        subjectArea: moduleTitle,
+        syllabusContext: moduleContent,
         model: selectedModel,
       });
 
-      const aiMessage: Message = { role: "assistant", content: result.response };
-      setMessages((prev) => [...prev, aiMessage]);
-      setSuggestions(result.suggestions || []);
+      setMessages((prev) => [...prev, { role: "assistant", content: result.response }]);
+      setSuggestions(suggestions || []);
     } catch (err) {
       console.error(err);
-      setError("Sorry, something went wrong. Please try again.");
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: "Sorry, something went wrong." },
       ]);
       setSuggestions([]);
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -92,11 +109,12 @@ export default function Chat() {
 
   const handleSuggestionClick = (text: string) => handleSend(text);
   const handleModelChange = (model: string) => setSelectedModel(model);
-
   const isInitial = messages.length === 0;
+  const isEmpty = !moduleTitle && !moduleContent;
 
   return (
-    <div className="flex flex-col h-screen md:h-[calc(100vh-1rem)] md:m-3 md:rounded-3xl bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C]">
+    <div className="flex flex-col h-screen w-full md:h-[97vh] md:w-[98%] mx-auto md:my-4 md:rounded-3xl
+      bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C] overflow-hidden">
 
       {!isInitial && (
         <div className="sticky top-0 z-50 bg-[#F7F7F8]/80 dark:bg-[#22283E]/80 backdrop-blur-md">
@@ -105,13 +123,13 @@ export default function Chat() {
       )}
 
       <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto px-6 py-4" id="chat-scroll-area">
+        <div className="h-full overflow-y-auto px-6 py-4">
           {isInitial ? (
             <div className="relative flex flex-col items-center justify-center text-center h-full">
               <div className="absolute top-0 left-0">
                 <SidebarTrigger className="-ml-1" />
               </div>
-              <div className="absolute top-0 right-0">
+              <div className="absolute flex top-0 right-0 gap-2">
                 <ThemeToggle />
               </div>
 
@@ -127,64 +145,80 @@ export default function Chat() {
                 <ChatInput
                   onSend={handleSend}
                   onModelChange={handleModelChange}
-                  placeholder="Ask anything..."
+                  placeholder={
+                    isEmpty
+                      ? "Paste your syllabus or markdown here..."
+                      : "Ask anything..."
+                  }
                   disabled={loading}
                   className="w-full"
                 />
               </div>
 
-              <p className="text-sm mb-3 font-medium">Suggestions:</p>
-              <div className="flex flex-wrap gap-2 mt-2 justify-center">
-                {suggestions.map((s, idx) => (
-                  <Button
-                    key={idx}
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleSuggestionClick(s)}
-                    disabled={loading}
-                    className="rounded-full text-xs sm:text-sm px-3 py-1.5
-                    max-w-[90%] sm:max-w-[400px]
-                    whitespace-normal break-words text-center
-                    flex-1 sm:flex-none hover:text-white ring-1 ring-[#F7F7F8]"
-                    style={{ minWidth: "fit-content" }}
+              <AnimatePresence>
+                {suggestions.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="flex flex-wrap gap-2 mt-2 justify-center"
                   >
-                    {s}
-                  </Button>
-                ))}
-              </div>
+                    {suggestions.map((s, idx) => (
+                      <Button
+                        key={idx}
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleSuggestionClick(s)}
+                        disabled={loading}
+                        className="rounded-full text-xs sm:text-sm px-3 py-1.5
+                          max-w-[90%] sm:max-w-[400px] whitespace-normal break-words text-center
+                          flex-1 sm:flex-none hover:text-white ring-1 ring-[#F7F7F8]"
+                        style={{ minWidth: "fit-content" }}
+                      >
+                        {s}
+                      </Button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ) : (
-            <>
-              <div className="flex flex-col space-y-4 mt-5">
-                {messages.map((msg, idx) => (
-                  <ChatMessage
-                    key={idx}
-                    role={msg.role as "user" | "assistant"}
-                    content={msg.content}
-                  />
-                ))}
+            <div className="flex flex-col space-y-4 mt-5">
+              {messages.map((msg, idx) => (
+                <ChatMessage
+                  key={idx}
+                  role={msg.role as "user" | "assistant"}
+                  content={msg.content}
+                />
+              ))}
 
+              <AnimatePresence>
                 {suggestions.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2 justify-start">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="flex flex-wrap gap-2 mt-2 justify-start"
+                  >
                     {suggestions.map((s, idx) => (
                       <Button
                         key={idx}
                         variant="outline"
                         onClick={() => handleSuggestionClick(s)}
                         className="rounded-full text-xs sm:text-sm px-3 py-1.5
-                        max-w-full sm:max-w-[400px]
-                        whitespace-normal break-words text-[#969696] dark:text-[#BEBEBE] dark:hover:text-[#BEBEBE] h-auto text-left ring-1 ring-[#7B39FF] dark:ring-[rgba(236,236,236,0.16)]"
+                          max-w-full sm:max-w-[400px]
+                          whitespace-normal break-words text-[#969696] dark:text-[#BEBEBE] dark:hover:text-[#BEBEBE] h-auto text-left ring-1 ring-[#7B39FF] dark:ring-[rgba(236,236,236,0.16)]"
                         disabled={loading}
                       >
                         {s}
                       </Button>
                     ))}
-                  </div>
+                  </motion.div>
                 )}
+              </AnimatePresence>
 
-                <div ref={chatEndRef} />
-              </div>
-            </>
+              <div ref={chatEndRef} />
+            </div>
           )}
         </div>
       </div>
@@ -194,7 +228,11 @@ export default function Chat() {
           <ChatInput
             onSend={handleSend}
             onModelChange={handleModelChange}
-            placeholder="Ask anything..."
+            placeholder={
+              isEmpty
+                ? "Paste your syllabus or markdown here..."
+                : "Ask anything..."
+            }
             disabled={loading}
             className="w-full"
           />

@@ -34,15 +34,18 @@ export const shareRoutes = {
   }),
 
   getShare: publicProcedure.handler(async ({ input }) => {
-    const { token } = input as { token: string };
-
+    const { token } = input as { token?: string };
+    if (!token) {
+      throw new ORPCError("Invalid Input", {
+        message: "Token is required",
+      });
+    }
     const url = await redis.get<string>(token);
     if (!url) {
       throw new ORPCError("Not Found", {
         message: "Share not found or has expired",
       });
     }
-
     return { url };
   }),
 };

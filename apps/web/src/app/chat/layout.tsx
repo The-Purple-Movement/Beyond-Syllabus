@@ -11,7 +11,7 @@ export default function ChatRootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <section className={`antialiased ${inter.variable} dashboard-layout`}>
+    <section className={`antialiased ${inter.variable} chat-layout`}>
       <SidebarProvider>
         <ChatSidebar variant="sidebar" />
         <SidebarInset>

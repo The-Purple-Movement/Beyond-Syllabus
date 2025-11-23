@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, BrainCircuit } from "lucide-react";
 import { motion } from "framer-motion";
 import { Spinner } from "@/components/ui/spinner";
-import { Module, CourseModulesProps } from "@/types";
+import { Module, CourseModulesProps } from "@/lib/types";
 
 export function CourseModules({ modules }: CourseModulesProps) {
   const router = useRouter();
@@ -33,11 +33,13 @@ export function CourseModules({ modules }: CourseModulesProps) {
     await new Promise((resolve) => setTimeout(resolve, 600));
 
     const title = module.title || "Selected Module";
+    const syllabusUrl = window.location.pathname;
     const content = module.content;
+
     router.push(
       `/chat?title=${encodeURIComponent(title)}&content=${encodeURIComponent(
         content
-      )}`
+      )}&syllabus=${encodeURIComponent(syllabusUrl)}`
     );
   };
 

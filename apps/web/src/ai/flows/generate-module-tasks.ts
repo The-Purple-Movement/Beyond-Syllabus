@@ -5,10 +5,12 @@ import {
   createStandardizedPrompt,
   validateStandardizedFormat,
 } from "@/ai/utils/prompt-builder";
+import { PersonaTemplates } from "@/ai/utils/standardized-format";
 import {
-  PersonaTemplates,
-} from "@/ai/utils/standardized-format";
-import { GenerateModuleTasksInput, GenerateModuleTasksOutput, WikiSyllabusAIFormat } from "@/types";
+  GenerateModuleTasksInput,
+  GenerateModuleTasksOutput,
+  WikiSyllabusAIFormat,
+} from "@/lib/types";
 
 // Flow Logic
 const generateModuleTasksFlow = async (
@@ -102,17 +104,16 @@ const generateModuleTasksFlow = async (
 
 Return a JSON object structured as follows:
 {
-  "introductoryMessage": "<Intro text>\n\n**Learning Tasks:**\n- ...\n- ...\n\n**Real-World Applications:**\n- ...\n- ...\n\n**Follow-Up Questions:**\n- ...\n- ...\n...",
+  "introductoryMessage": "\n\n**Learning Tasks:**\n- ...\n- ...\n\n**Real-World Applications:**\n- ...\n- ...\n\n**Follow-Up Questions:**\n- ...\n- ...\n...",
   "suggestions": ["<Teaching tip 1>", "<Teaching tip 2>", ...]
 }
 
 The introductoryMessage should include:
-1. A friendly, welcoming introduction
 2. **Learning Tasks:** 2-4 curriculum-specific tasks as markdown bullet points
 3. **Real-World Applications:** 2-3 relevant applications as markdown bullet points
 4. **Follow-Up Questions:** 3-4 discussion or reflection questions as markdown bullet points
 
-The suggestions should be 2-3 additional, unique teaching tips or extension activities that do not overlap with the items in the main sections.`,
+The suggestions should be 2-3 additional, unique teaching tips or extension activities that do not overlap with the items in the main sections. Dont add welcome text as well as welcome titles. Just include the contents from the introductoryMessage.`,
     });
 
     const chatCompletion = await ai.chat.completions.create({
@@ -134,7 +135,6 @@ The suggestions should be 2-3 additional, unique teaching tips or extension acti
 
     let outputText = chatCompletion.choices?.[0]?.message?.content || "";
 
-    // clean the AI output: remove ```json or ``` wrappers
     outputText = outputText
       .trim()
       .replace(/^```json\s*/, "")
@@ -142,6 +142,7 @@ The suggestions should be 2-3 additional, unique teaching tips or extension acti
       .replace(/```$/, "");
 
     const output = JSON.parse(outputText);
+
     return output as GenerateModuleTasksOutput;
   } catch (e) {
     console.error(
@@ -150,7 +151,7 @@ The suggestions should be 2-3 additional, unique teaching tips or extension acti
     );
 
     return {
-      introductoryMessage: `Hello! I ran into some issues generating the introduction for "${input.moduleTitle}". You can try again or change the AI model if needed.`,
+      introductoryMessage: `Hello! I ran into some issues generating the module tasks for "${input.moduleTitle}". You can try again or change the AI model if needed.`,
       suggestions: [
         `Try using a different AI model for "${input.moduleTitle}"`,
         "Rephrase your module content and try again",

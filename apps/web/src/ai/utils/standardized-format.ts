@@ -1,4 +1,4 @@
-import { WikiSyllabusAIFormat } from "@/types";
+import { WikiSyllabusAIFormat } from "@/lib/types";
 
 export const PersonaTemplates = {
   PROFESSOR: {

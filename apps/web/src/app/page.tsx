@@ -1,10 +1,6 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
 import {
   GraduationCap,
   BookOpenCheck,
@@ -15,18 +11,9 @@ import {
 import { AuroraText } from "@/components/ui/aurora-text";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { FeatureCardProps } from "@/types";
+import { FeatureCardProps } from "@/lib/types";
 
 export default function Home() {
-  const router = useRouter();
-  const [loadingRoute, setLoadingRoute] = useState<string | null>(null);
-
-  const navigateWithDelay = async (path: string, delay: number) => {
-    setLoadingRoute(path);
-    await new Promise((resolve) => setTimeout(resolve, delay));
-    router.push(path);
-  };
-
   return (
     <div className="flex flex-col min-h-screen transition-colors duration-300">
       <Header />
@@ -38,7 +25,7 @@ export default function Home() {
             <div
               className="w-full h-full bg-no-repeat bg-contain bg-bottom"
               style={{
-                backgroundImage: `url("/hero.png")`,
+                backgroundImage: `url("/hero.webp")`,
                 opacity: 0.5,
               }}
             />
@@ -60,40 +47,26 @@ export default function Home() {
 
             <div className="flex flex-col md:flex-row justify-center gap-4 mt-8">
               <Button
+                asChild
                 size="lg"
-                variant="outline"
+                variant="secondary"
                 className="w-full md:w-auto flex items-center justify-center gap-2 h-[44px]"
-                onClick={() => navigateWithDelay("/chat", 600)}
-                disabled={loadingRoute === "/chat"}
               >
-                {loadingRoute === "/chat" ? (
-                  <>
-                    <Spinner className="h-4 w-4" /> Loading AI Chat...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-5 w-5 text-amber-400" />
-                    AI Chat
-                  </>
-                )}
+                <Link href="/chat">
+                  <Sparkles className="h-5 w-5 text-amber-400" />
+                  AI Chat
+                </Link>
               </Button>
 
               <Button
+                asChild
                 size="lg"
                 className="w-full md:w-auto flex items-center justify-center gap-2 h-[44px] bg-[#8800ff] text-white"
-                onClick={() => navigateWithDelay("/select", 800)}
-                disabled={loadingRoute === "/select"}
               >
-                {loadingRoute === "/select" ? (
-                  <>
-                    <Spinner className="h-4 w-4" /> Loading Syllabus...
-                  </>
-                ) : (
-                  <>
-                    Explore Your Syllabus
-                    <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
+                <Link href="/select" prefetch={true}>
+                  Explore Your Syllabus
+                  <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Link>
               </Button>
             </div>
           </div>
@@ -140,7 +113,7 @@ export default function Home() {
             <div
               className="w-full h-full bg-no-repeat bg-contain bg-bottom rotate-180"
               style={{
-                backgroundImage: `url(${"/hero.png"})`,
+                backgroundImage: `url(${"/hero.webp"})`,
                 opacity: 0.5,
               }}
             />

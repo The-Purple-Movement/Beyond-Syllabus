@@ -17,7 +17,7 @@ export function Footer() {
             Your AI-powered guide to the university curriculum.
           </p>
           <Link
-            href="https://github.com/The-Purple-Movement/WikiSyllabus"
+            href="https://github.com/The-Purple-Movement/Beyond-Syllabus"
             target="_blank"
             className="w-fit p-2 rounded-full flex hover:shadow-md"
           >
@@ -37,7 +37,7 @@ export function Footer() {
               Your AI-powered guide to the university curriculum.
             </p>
             <Link
-              href="https://github.com/The-Purple-Movement/WikiSyllabus"
+              href="https://github.com/The-Purple-Movement/Beyond-Syllabus"
               target="_blank"
               className="w-fit rounded-full flex p-3 hover:shadow-md"
             >
@@ -51,15 +51,15 @@ export function Footer() {
               <nav className="flex flex-col gap-2">
                 <Link href="/">Home</Link>
                 <Link href="/select">Select Course</Link>
-                <Link href="/chat-with-file">AI Chat</Link>
+                <Link href="/chat">AI Chat</Link>
               </nav>
             </div>
             <div>
               <h3 className="text-sm font-semibold mb-3">Resources</h3>
               <nav className="flex flex-col gap-2">
-                <Link href="https://github.com/The-Purple-Movement/Beyond-Syllabus">Contribution Guide</Link>
-                <Link href="https://github.com/The-Purple-Movement/Beyond-Syllabus">Code of Conduct</Link>
-                <Link href="https://github.com/The-Purple-Movement/Beyond-Syllabus">License</Link>
+                <Link href="https://github.com/The-Purple-Movement/Beyond-Syllabus/blob/main/CONTRIBUTION.md">Contribution Guide</Link>
+                <Link href="https://github.com/The-Purple-Movement/Beyond-Syllabus/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</Link>
+                <Link href="https://github.com/The-Purple-Movement/Beyond-Syllabus/blob/main/LICENSE">License</Link>
               </nav>
             </div>
             <div>

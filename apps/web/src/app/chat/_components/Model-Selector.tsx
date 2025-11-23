@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, ChevronUp, Cpu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Model, ModelSelectorProps } from "@/types";
+import { Model, ModelSelectorProps } from "@/lib/types";
 
 const models: Model[] = [
   { id: "openai/gpt-oss-120b", name: "GPT 5" },

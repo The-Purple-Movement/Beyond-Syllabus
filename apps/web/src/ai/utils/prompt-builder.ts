@@ -7,8 +7,7 @@ import {
   AIFormat,
   AIContext,
   AIReferences,
-} from "@/types";
-
+} from "@/lib/types";
 
 function buildSystemPrompt(persona: AIPersona, format: AIFormat): string {
   const sections: string[] = [];
