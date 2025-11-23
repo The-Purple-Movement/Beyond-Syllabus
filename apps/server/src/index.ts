@@ -35,11 +35,12 @@ const apiHandler = new OpenAPIHandler(appRouter, {
 });
 
 const port = Number(process.env.PORT) || 3000;
+const allowedOrigins = env.CORS_ORIGIN.split(",").map((url) => url.trim());
 
 const app = new Elysia()
   .use(
     cors({
-      origin: env.CORS_ORIGIN,
+      origin: allowedOrigins,
       methods: ["GET", "POST", "OPTIONS"],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization"],
@@ -78,7 +79,5 @@ const app = new Elysia()
     ).json();
   })
   .listen(port, () => {
-    console.log(
-      "🦊 Beyond Syllabus API is running !!"
-    );
+    console.log("🦊 Beyond Syllabus API is running !!");
   });
