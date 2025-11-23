@@ -36,12 +36,10 @@ const apiHandler = new OpenAPIHandler(appRouter, {
 
 const port = Number(process.env.PORT) || 3000;
 
-const allowedOrigins = env.CORS_ORIGIN;
-
 const app = new Elysia()
   .use(
     cors({
-      origin: allowedOrigins,
+      origin: env.CORS_ORIGIN,
       methods: ["GET", "POST", "OPTIONS"],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization"],

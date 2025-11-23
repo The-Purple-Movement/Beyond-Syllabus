@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GraduationCap, BookOpenCheck, BarChart3, ChevronRight, Sparkles } from "lucide-react";
@@ -11,6 +10,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { FeatureCardProps } from "@/lib/types";
 import Link from "next/link";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Home() {
   const router = useRouter();
@@ -20,9 +20,8 @@ export default function Home() {
     setLoadingRoute(path);
     await new Promise<void>((resolve) => setTimeout(resolve, delay));
     router.push(path);
+    setLoadingRoute(null);
   };
-
-  const isLoading = (path: string) => loadingRoute === path;
 
   return (
     <div className="flex flex-col min-h-screen transition-colors duration-300">
@@ -65,19 +64,23 @@ export default function Home() {
 
               <Button
                 size="lg"
-                className="w-full md:w-auto flex items-center justify-center gap-2 h-[44px] bg-[#8800ff] text-white"
-                onClick={() => navigateWithDelay("/select", 800)}
+                className="group shadow-lg w-full md:w-auto h-[44px] bg-[#8800ff]"
+                asChild
+                disabled={loadingRoute === "/select"}
               >
-                {isLoading("/select") ? (
-                  <>
-                    <Spinner className="w-5 h-5" /> Loading your syllabus...
-                  </>
-                ) : (
-                  <>
-                    Explore Your Syllabus
-                    <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
+                <Link href="/select" prefetch={true} onClick={() => navigateWithDelay("/select", 800)}>
+                  {loadingRoute ? (
+                    <>
+                      <Spinner className="h-5 w-5 mr-2" />
+                      Loading Syllabus...
+                    </>
+                  ) : (
+                    <>
+                      Explore Your Syllabus
+                      <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </Link>
               </Button>
             </div>
           </div>
@@ -119,7 +122,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Bottom Hero Image */}
         <section className="relative w-full h-[400px] md:h-[600px] mt-16 md:mt-0">
           <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
             <div
