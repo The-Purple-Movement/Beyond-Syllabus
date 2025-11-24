@@ -27,6 +27,7 @@ export default function ChatHome() {
   const isUserScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Track user scrolling to prevent auto-scroll when user is reading
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
     if (!scrollContainer) return;
@@ -52,12 +53,15 @@ export default function ChatHome() {
     };
   }, []);
 
+  // Smooth scroll to bottom only when messages change
   useEffect(() => {
     if (messages.length === 0) return;
 
+    // Only scroll if a new message was added
     if (messages.length > prevMessagesLengthRef.current) {
       prevMessagesLengthRef.current = messages.length;
 
+      // Small delay to ensure DOM has updated
       const timeoutId = setTimeout(() => {
         if (chatEndRef.current && !isUserScrollingRef.current) {
           chatEndRef.current.scrollIntoView({
@@ -151,8 +155,8 @@ export default function ChatHome() {
   const isEmpty = !moduleTitle && !moduleContent;
 
   return (
-    <div className="md:rounded-3xl overflow-hidden mx-auto md:my-4 md:w-[98%]">
-      <div className="flex flex-col md:h-[97vh] h-[100dvh] w-full bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C]">
+    <div className="md:rounded-3xl md:overflow-hidden mx-auto md:my-4 md:w-[98%] overflow-hidden">
+      <div className="flex flex-col md:h-[97vh] h-[100dvh] w-full bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C] overflow-hidden">
 
         {!isInitial && (
           <div className="sticky top-0 z-50 bg-[#F7F7F8]/80 dark:bg-[#22283E]/80 backdrop-blur-md">
@@ -222,13 +226,14 @@ export default function ChatHome() {
               </AnimatePresence>
             </div>
           ) : (
-            <div className="flex flex-col space-y-4 mt-5">
+            <div className="flex flex-col space-y-4 mt-5 max-w-full">
               {messages.map((msg, idx) => (
-                <ChatMessage
-                  key={idx}
-                  role={msg.role as "user" | "assistant"}
-                  content={msg.content}
-                />
+                <div key={idx} className="max-w-full overflow-x-auto">
+                  <ChatMessage
+                    role={msg.role as "user" | "assistant"}
+                    content={msg.content}
+                  />
+                </div>
               ))}
 
               <div className="min-h-[2rem]">
