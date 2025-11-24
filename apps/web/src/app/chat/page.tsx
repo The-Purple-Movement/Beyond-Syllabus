@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import ChatMessage from "@/app/chat/_components/ChatMessage";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/app/chat/_components/ChatInput";
@@ -158,33 +157,23 @@ export default function ChatHome() {
                   />
                 ))}
 
-                  <AnimatePresence mode="wait">
-                    {suggestions.length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="flex flex-wrap gap-2 mt-2 justify-center"
+                {suggestions.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2 justify-start">
+                    {suggestions.map((s, idx) => (
+                      <Button
+                        key={idx}
+                        variant="outline"
+                        onClick={() => handleSuggestionClick(s)}
+                        className="rounded-full text-xs sm:text-sm px-3 py-1.5
+                        max-w-full sm:max-w-[400px]
+                        whitespace-normal break-words text-[#969696] dark:text-[#BEBEBE] dark:hover:text-[#BEBEBE] h-auto text-left ring-1 ring-[#7B39FF] dark:ring-[rgba(236,236,236,0.16)]"
+                        disabled={loading}
                       >
-                        {suggestions.map((s, idx) => (
-                          <Button
-                            key={idx}
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleSuggestionClick(s)}
-                            disabled={loading}
-                            className="rounded-full text-xs sm:text-sm px-3 py-1.5
-                      max-w-[90%] sm:max-w-[400px] whitespace-normal break-words text-center
-                      flex-1 sm:flex-none hover:text-white ring-1 ring-[#F7F7F8]"
-                            style={{ minWidth: "fit-content" }}
-                          >
-                            {s}
-                          </Button>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        {s}
+                      </Button>
+                    ))}
+                  </div>
+                )}
 
                 <div ref={chatEndRef} />
               </div>
