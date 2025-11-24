@@ -22,12 +22,53 @@ export default function ChatHome() {
   const [selectedModel, setSelectedModel] = useState("openai/gpt-oss-120b");
 
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const prevMessagesLengthRef = useRef(0);
+  const isUserScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    const handleScroll = () => {
+      isUserScrollingRef.current = true;
+
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      scrollTimeoutRef.current = setTimeout(() => {
+        isUserScrollingRef.current = false;
+      }, 150);
+    };
+
+    scrollContainer.addEventListener('scroll', handleScroll);
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (messages.length === 0) return;
-    requestAnimationFrame(() => {
-      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    });
+
+    if (messages.length > prevMessagesLengthRef.current) {
+      prevMessagesLengthRef.current = messages.length;
+
+      const timeoutId = setTimeout(() => {
+        if (chatEndRef.current && !isUserScrollingRef.current) {
+          chatEndRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "end"
+          });
+        }
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -69,8 +110,6 @@ export default function ChatHome() {
     };
 
     initializeChat();
-
-
   }, [moduleContent, moduleTitle, selectedModel]);
 
   const handleSend = async (message: string) => {
@@ -104,8 +143,6 @@ export default function ChatHome() {
     } finally {
       setLoading(false);
     }
-
-
   };
 
   const handleSuggestionClick = (text: string) => handleSend(text);
@@ -113,32 +150,129 @@ export default function ChatHome() {
   const isInitial = messages.length === 0;
   const isEmpty = !moduleTitle && !moduleContent;
 
-  return (<div className="md:rounded-3xl md:overflow-hidden mx-auto md:my-4 md:w-[98%]"> <div className="flex flex-col md:h-[97vh] h-[100dvh] w-full
-   bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C]">
+  return (
+    <div className="md:rounded-3xl md:overflow-hidden mx-auto md:my-4 md:w-[98%]">
+      <div className="flex flex-col md:h-[97vh] h-[100dvh] w-full bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C]">
 
-    {!isInitial && (
-      <div className="sticky top-0 z-50 bg-[#F7F7F8]/80 dark:bg-[#22283E]/80 backdrop-blur-md">
-        <Header />
-      </div>
-    )}
-
-    <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
-      {isInitial ? (
-        <div className="relative flex flex-col items-center justify-center text-center h-full">
-          <div className="absolute top-0 left-0">
-            <SidebarTrigger className="-ml-1" />
+        {!isInitial && (
+          <div className="sticky top-0 z-50 bg-[#F7F7F8]/80 dark:bg-[#22283E]/80 backdrop-blur-md">
+            <Header />
           </div>
-          <div className="absolute flex top-0 right-0 gap-2">
-            <ThemeToggle />
-          </div>
+        )}
 
-          <h2 className="text-3xl font-bold mb-6
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 min-h-0 overflow-y-auto px-6 py-4"
+        >
+          {isInitial ? (
+            <div className="relative flex flex-col items-center justify-center text-center h-full">
+              <div className="absolute top-0 left-0">
+                <SidebarTrigger className="-ml-1" />
+              </div>
+              <div className="absolute flex top-0 right-0 gap-2">
+                <ThemeToggle />
+              </div>
+
+              <h2 className="text-3xl font-bold mb-6
             bg-[radial-gradient(50%_335.34%_at_50%_50%,#B56DFC_0%,#7B39FF_100%)]
             bg-clip-text text-transparent">
-            Beyond Syllabus
-          </h2>
+                Beyond Syllabus
+              </h2>
 
-          <div className="w-full max-w-3xl mb-4">
+              <div className="w-full max-w-3xl mb-4">
+                <ChatInput
+                  onSend={handleSend}
+                  onModelChange={handleModelChange}
+                  placeholder={
+                    isEmpty
+                      ? "Paste your syllabus or markdown here..."
+                      : "Ask anything..."
+                  }
+                  disabled={loading}
+                  className="w-full"
+                />
+              </div>
+
+              <AnimatePresence mode="wait">
+                {suggestions.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex flex-wrap gap-2 mt-2 justify-center"
+                  >
+                    {suggestions.map((s, idx) => (
+                      <Button
+                        key={idx}
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleSuggestionClick(s)}
+                        disabled={loading}
+                        className="rounded-full text-xs sm:text-sm px-3 py-1.5
+                      max-w-[90%] sm:max-w-[400px] whitespace-normal break-words text-center
+                      flex-1 sm:flex-none hover:text-white ring-1 ring-[#F7F7F8]"
+                        style={{ minWidth: "fit-content" }}
+                      >
+                        {s}
+                      </Button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <div className="flex flex-col space-y-4 mt-5">
+              {messages.map((msg, idx) => (
+                <ChatMessage
+                  key={idx}
+                  role={msg.role as "user" | "assistant"}
+                  content={msg.content}
+                />
+              ))}
+
+              <div className="min-h-[2rem]">
+                <AnimatePresence mode="wait">
+                  {suggestions.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2, ease: "easeInOut" }}
+                      className="flex flex-wrap gap-2 justify-start overflow-hidden"
+                    >
+                      {suggestions.map((s, idx) => (
+                        <motion.div
+                          key={idx}
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.9 }}
+                          transition={{ delay: idx * 0.05, duration: 0.15 }}
+                        >
+                          <Button
+                            variant="outline"
+                            onClick={() => handleSuggestionClick(s)}
+                            className="rounded-full text-xs sm:text-sm px-3 py-1.5
+                          max-w-full sm:max-w-[400px]
+                          whitespace-normal break-words text-[#969696] dark:text-[#BEBEBE] dark:hover:text-[#BEBEBE] h-auto text-left ring-1 ring-[#7B39FF] dark:ring-[rgba(236,236,236,0.16)]"
+                            disabled={loading}
+                          >
+                            {s}
+                          </Button>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <div ref={chatEndRef} className="h-1" />
+            </div>
+          )}
+        </div>
+
+        {!isInitial && (
+          <div className="flex-none px-6 py-4 sticky bottom-0 backdrop-blur-md">
             <ChatInput
               onSend={handleSend}
               onModelChange={handleModelChange}
@@ -151,92 +285,8 @@ export default function ChatHome() {
               className="w-full"
             />
           </div>
-
-          <AnimatePresence>
-            {suggestions.length > 0 && (
-              <motion.div
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="flex flex-wrap gap-2 mt-2 justify-center"
-              >
-                {suggestions.map((s, idx) => (
-                  <Button
-                    key={idx}
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleSuggestionClick(s)}
-                    disabled={loading}
-                    className="rounded-full text-xs sm:text-sm px-3 py-1.5
-                      max-w-[90%] sm:max-w-[400px] whitespace-normal break-words text-center
-                      flex-1 sm:flex-none hover:text-white ring-1 ring-[#F7F7F8]"
-                    style={{ minWidth: "fit-content" }}
-                  >
-                    {s}
-                  </Button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      ) : (
-        <div className="flex flex-col space-y-4 mt-5">
-          {messages.map((msg, idx) => (
-            <ChatMessage
-              key={idx}
-              role={msg.role as "user" | "assistant"}
-              content={msg.content}
-            />
-          ))}
-
-          <AnimatePresence>
-            {suggestions.length > 0 && (
-              <motion.div
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="flex flex-wrap gap-2 mt-2 justify-start"
-              >
-                {suggestions.map((s, idx) => (
-                  <Button
-                    key={idx}
-                    variant="outline"
-                    onClick={() => handleSuggestionClick(s)}
-                    className="rounded-full text-xs sm:text-sm px-3 py-1.5
-                      max-w-full sm:max-w-[400px]
-                      whitespace-normal break-words text-[#969696] dark:text-[#BEBEBE] dark:hover:text-[#BEBEBE] h-auto text-left ring-1 ring-[#7B39FF] dark:ring-[rgba(236,236,236,0.16)]"
-                    disabled={loading}
-                  >
-                    {s}
-                  </Button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div ref={chatEndRef} />
-        </div>
-      )}
-    </div>
-
-    {!isInitial && (
-      <div className="flex-none px-6 py-4 sticky bottom-0 backdrop-blur-md">
-        <ChatInput
-          onSend={handleSend}
-          onModelChange={handleModelChange}
-          placeholder={
-            isEmpty
-              ? "Paste your syllabus or markdown here..."
-              : "Ask anything..."
-          }
-          disabled={loading}
-          className="w-full"
-        />
+        )}
       </div>
-    )}
-  </div>
-  </div>
+    </div>
   );
 }
