@@ -5,8 +5,9 @@ import { Copy, Check, Bot } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { ChatMessageProps } from "@/lib/types";
-import { Streamdown } from "streamdown";
+import { Streamdown, defaultRehypePlugins, defaultRemarkPlugins } from "streamdown";
 import { responseHelper } from "@/lib/chat-response";
+import remarkMath from "remark-math";
 
 export default function ChatMessage({
   role,

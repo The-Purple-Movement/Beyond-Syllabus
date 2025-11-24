@@ -113,8 +113,10 @@ export default function ChatHome() {
   const isEmpty = !moduleTitle && !moduleContent;
 
   return (
-    <div className="flex flex-col h-screen w-full md:h-[97vh] md:w-[98%] mx-auto md:my-4 md:rounded-3xl
-      bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C] overflow-hidden">
+    <div className="md:rounded-3xl md:overflow-hidden mx-auto md:my-4 md:w-[98%]">
+      <div className="flex flex-col h-screen md:h-[97vh] w-full
+      bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C]">
+
 
       {!isInitial && (
         <div className="sticky top-0 z-50 bg-[#F7F7F8]/80 dark:bg-[#22283E]/80 backdrop-blur-md">
@@ -122,7 +124,7 @@ export default function ChatHome() {
         </div>
       )}
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 min-h-0">
         <div className="h-full overflow-y-auto px-6 py-4">
           {isInitial ? (
             <div className="relative flex flex-col items-center justify-center text-center h-full">
@@ -238,6 +240,7 @@ export default function ChatHome() {
           />
         </div>
       )}
+      </div>
     </div>
   );
 }
