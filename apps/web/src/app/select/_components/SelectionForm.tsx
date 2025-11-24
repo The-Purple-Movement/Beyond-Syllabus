@@ -90,7 +90,7 @@ export function SelectionForm() {
 
   return (
     <Card className="w-full max-w-2xl mx-auto shadow-2xl rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 mt-[5vh]">
-      <div className="flex items-center justify-center p-3 border-b border-muted">
+      <div className="flex items-center justify-center p-3 border-b border-muted md:gap-2">
         {steps.map((label, i) => {
           const num = i + 1;
           const active = step === num;

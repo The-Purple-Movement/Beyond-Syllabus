@@ -5,28 +5,28 @@ export const responseHelper = (markdown: string): string => {
 
   fixed = fixed.replace(
     /\\\(([\s\S]*?)\\\)/g,
-    (_: string, mathContent: string): string => {
-      return `$${mathContent}$`;
-    }
+    (_: string, mathContent: string) => `$${mathContent}$`
   );
 
   fixed = fixed.replace(
     /\\\[([\s\S]*?)\\\]/g,
-    (_: string, mathContent: string): string => {
-      return `$$${mathContent}$$`;
-    }
+    (_: string, mathContent: string) => `$$${mathContent}$$`
   );
 
   fixed = fixed.replace(
     /\$\$([\s\S]*?)\$\$/g,
-    (_: string, mathContent: string): string => {
+    (_: string, mathContent: string) => {
       const placeholder = "___KA_TEX_NEWLINE___";
       let processed = mathContent.replace(/\\\\/g, placeholder);
-      processed = processed.trim();
-      processed = processed.replace(/\n/g, "");
+      processed = processed.trim().replace(/\n+/g, "");
       processed = processed.replace(new RegExp(placeholder, "g"), "\\\\");
       return `$$\n${processed}\n$$`;
     }
+  );
+
+  fixed = fixed.replace(
+    /(?<!\$)\$([^\$]+?)\$(?!\$)/g,
+    (_: string, mathContent: string) => `$${mathContent.trim()}$`
   );
 
   return fixed;
