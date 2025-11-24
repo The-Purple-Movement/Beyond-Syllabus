@@ -151,7 +151,7 @@ export default function ChatHome() {
   const isEmpty = !moduleTitle && !moduleContent;
 
   return (
-    <div className="md:rounded-3xl md:overflow-hidden mx-auto md:my-4 md:w-[98%]">
+    <div className="md:rounded-3xl overflow-hidden mx-auto md:my-4 md:w-[98%]">
       <div className="flex flex-col md:h-[97vh] h-[100dvh] w-full bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C]">
 
         {!isInitial && (
