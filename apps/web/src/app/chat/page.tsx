@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/app/chat/_components/ChatInput";
 import { chatWithSyllabus } from "@/ai/flows/chat-with-syllabus";
 import { Message } from "@/lib/types";
+import { generateModuleTasks } from "@/ai/flows/generate-module-tasks";
 import Header from "@/app/chat/_components/ChatHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -29,7 +30,7 @@ export default function ChatHome() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const title = params.get("title") || "AI Chat";
+    const title = params.get("title") || "";
     const content = params.get("content") || "";
     setModuleTitle(title);
     setModuleContent(content);
@@ -39,28 +40,16 @@ export default function ChatHome() {
     if (!moduleContent || moduleTitle === "Loading title...") return;
     setLoading(true);
     setError(null);
-
-    const systemMessage: Message = {
-      role: "system",
-      content: `You are an expert tutor. Provide an introductory message for the course module: ${moduleTitle}.\nModule Content:\n${moduleContent}`,
-    };
-
-    chatWithSyllabus({
-      history: [systemMessage],
-      subjectArea: moduleTitle,
-      syllabusContext: moduleContent,
-      message: "",
-      model: selectedModel,
-    })
+    generateModuleTasks({ moduleContent, moduleTitle })
       .then((result) => {
-        if (result.response) {
-          setMessages([{ role: "assistant", content: result.response }]);
-          setSuggestions(result.suggestions || []);
+        if (result.introductoryMessage) {
+          setMessages([{ role: "assistant", content: result.introductoryMessage }]);
         }
+        setSuggestions(result.suggestions || []);
       })
-      .catch(() => setError("Failed to generate initial assistant message."))
+      .catch(() => setError("Failed to generate initial tasks and related topics."))
       .finally(() => setLoading(false));
-  }, [moduleContent, moduleTitle, selectedModel]);
+  }, [moduleContent, moduleTitle]);
 
   const handleSend = async (message: string) => {
     if (!message.trim() || loading) return;
@@ -73,14 +62,12 @@ export default function ChatHome() {
     try {
       const systemMessage: Message = {
         role: "system",
-        content: `You are an expert tutor. Provide an introductory message for the course module: ${moduleTitle}.\nModule Content:\n${moduleContent}`,
+        content: `You are an expert assistant for the course module: ${moduleTitle}.\nModule Content:\n${moduleContent}`,
       };
 
       const chatHistoryForApi = [systemMessage, ...messages.filter((m) => m.role !== "system")];
       const result = await chatWithSyllabus({
         history: chatHistoryForApi,
-        subjectArea: moduleTitle,
-        syllabusContext: moduleContent,
         message,
         model: selectedModel,
       });
@@ -90,12 +77,12 @@ export default function ChatHome() {
       setSuggestions(result.suggestions || []);
     } catch (err) {
       console.error(err);
+      setError("Sorry, something went wrong. Please try again.");
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: "Sorry, something went wrong." },
       ]);
       setSuggestions([]);
-      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -103,11 +90,13 @@ export default function ChatHome() {
 
   const handleSuggestionClick = (text: string) => handleSend(text);
   const handleModelChange = (model: string) => setSelectedModel(model);
+
   const isInitial = messages.length === 0;
   const isEmpty = !moduleTitle && !moduleContent;
 
   return (
-    <div className="flex flex-col h-screen md:overflow-hidden md:h-[calc(99vh-1rem)] md:m-3 md:rounded-3xl bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C]">
+    <div className="flex flex-col h-screen md:h-[calc(100vh-1rem)] md:m-3 md:rounded-3xl bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C]">
+
       {!isInitial && (
         <div className="sticky top-0 z-50 bg-[#F7F7F8]/80 dark:bg-[#22283E]/80 backdrop-blur-md">
           <Header />
