@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import ChatMessage from "@/app/chat/_components/ChatMessage";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/app/chat/_components/ChatInput";
@@ -36,8 +36,8 @@ export default function ChatHome() {
     if (!moduleContent || moduleTitle === "Loading title...") return;
 
     const initializeChat = async () => {
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
       try {
         const syllabusResult: ChatWithSyllabusOutput = await chatWithSyllabus({
@@ -106,7 +106,7 @@ export default function ChatHome() {
   const isEmpty = !moduleTitle && !moduleContent;
 
   return (
-    <div className="flex flex-col h-screen md:h-[97vh] md:w-[98%] md:m-3 md:overflow-hidden md:rounded-3xl bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C]">
+    <div className="flex flex-col h-screen md:h-[calc(99vh-1rem)] md:m-3 md:rounded-3xl bg-[#F7F7F8] dark:bg-gradient-to-b from-[#22283E] to-[#26387C]">
 
       {!isInitial && (
         <div className="sticky top-0 z-50 bg-[#F7F7F8]/80 dark:bg-[#22283E]/80 backdrop-blur-md">
@@ -158,23 +158,33 @@ export default function ChatHome() {
                   />
                 ))}
 
-                {suggestions.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2 justify-start">
-                    {suggestions.map((s, idx) => (
-                      <Button
-                        key={idx}
-                        variant="outline"
-                        onClick={() => handleSuggestionClick(s)}
-                        className="rounded-full text-xs sm:text-sm px-3 py-1.5
-                        max-w-full sm:max-w-[400px]
-                        whitespace-normal break-words text-[#969696] dark:text-[#BEBEBE] dark:hover:text-[#BEBEBE] h-auto text-left ring-1 ring-[#7B39FF] dark:ring-[rgba(236,236,236,0.16)]"
-                        disabled={loading}
+                  <AnimatePresence mode="wait">
+                    {suggestions.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex flex-wrap gap-2 mt-2 justify-center"
                       >
-                        {s}
-                      </Button>
-                    ))}
-                  </div>
-                )}
+                        {suggestions.map((s, idx) => (
+                          <Button
+                            key={idx}
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleSuggestionClick(s)}
+                            disabled={loading}
+                            className="rounded-full text-xs sm:text-sm px-3 py-1.5
+                      max-w-[90%] sm:max-w-[400px] whitespace-normal break-words text-center
+                      flex-1 sm:flex-none hover:text-white ring-1 ring-[#F7F7F8]"
+                            style={{ minWidth: "fit-content" }}
+                          >
+                            {s}
+                          </Button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                 <div ref={chatEndRef} />
               </div>
