@@ -5,7 +5,6 @@ import ChatMessage from "@/app/chat/_components/ChatMessage";
 import { Button } from "@/components/ui/button";
 import { ChatInput } from "@/app/chat/_components/ChatInput";
 import { chatWithSyllabus } from "@/ai/flows/chat-with-syllabus";
-import { generateModuleTasks } from "@/ai/flows/generate-module-tasks";
 import { Message } from "@/lib/types";
 import Header from "@/app/chat/_components/ChatHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -30,51 +29,41 @@ export default function ChatHome() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setModuleTitle(params.get("title") || "");
-    setModuleContent(params.get("content") || "");
+    const title = params.get("title") || "AI Chat";
+    const content = params.get("content") || "";
+    setModuleTitle(title);
+    setModuleContent(content);
   }, []);
 
   useEffect(() => {
     if (!moduleContent || moduleTitle === "Loading title...") return;
+    setLoading(true);
+    setError(null);
 
-    const initializeChat = async () => {
-      setLoading(true);
-      setError(null);
-
-      const systemMessage: Message = {
-        role: "system",
-        content: `You are an expert tutor. Provide an introductory message for the course module: ${moduleTitle}.\nModule Content:\n${moduleContent}`,
-      };
-
-
-      try {
-        const chatResult = await chatWithSyllabus({
-          history: [systemMessage],
-          subjectArea: moduleTitle,
-          syllabusContext: moduleContent,
-          message: "",
-          model: selectedModel,
-        });
-
-        const taskResult = await generateModuleTasks({ moduleContent, moduleTitle });
-
-        let combinedContent = chatResult.response + taskResult.introductoryMessage;
-
-        setMessages([{ role: "assistant", content: combinedContent }]);
-        setSuggestions(chatResult.suggestions || suggestions);
-      } catch {
-        setError("Failed to generate initial combined message.");
-      } finally {
-        setLoading(false);
-      }
+    const systemMessage: Message = {
+      role: "system",
+      content: `You are an expert tutor. Provide an introductory message for the course module: ${moduleTitle}.\nModule Content:\n${moduleContent}`,
     };
 
-    initializeChat();
+    chatWithSyllabus({
+      history: [systemMessage],
+      subjectArea: moduleTitle,
+      syllabusContext: moduleContent,
+      message: "",
+      model: selectedModel,
+    })
+      .then((result) => {
+        if (result.response) {
+          setMessages([{ role: "assistant", content: result.response }]);
+          setSuggestions(result.suggestions || []);
+        }
+      })
+      .catch(() => setError("Failed to generate initial assistant message."))
+      .finally(() => setLoading(false));
   }, [moduleContent, moduleTitle, selectedModel]);
 
   const handleSend = async (message: string) => {
     if (!message.trim() || loading) return;
-
     const userMessage: Message = { role: "user", content: message };
     setMessages((prev) => [...prev, userMessage]);
     setSuggestions([]);
@@ -88,7 +77,6 @@ export default function ChatHome() {
       };
 
       const chatHistoryForApi = [systemMessage, ...messages.filter((m) => m.role !== "system")];
-
       const result = await chatWithSyllabus({
         history: chatHistoryForApi,
         subjectArea: moduleTitle,
@@ -115,7 +103,6 @@ export default function ChatHome() {
 
   const handleSuggestionClick = (text: string) => handleSend(text);
   const handleModelChange = (model: string) => setSelectedModel(model);
-
   const isInitial = messages.length === 0;
   const isEmpty = !moduleTitle && !moduleContent;
 
@@ -159,31 +146,33 @@ export default function ChatHome() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col space-y-4 mt-5">
-              {messages.map((msg, idx) => (
-                <ChatMessage key={idx} role={msg.role as "user" | "assistant"} content={msg.content} />
-              ))}
+            <>
+              <div className="flex flex-col space-y-4 mt-5">
+                {messages.map((msg, idx) => (
+                  <ChatMessage key={idx} role={msg.role as "user" | "assistant"} content={msg.content} />
+                ))}
 
-              {suggestions.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2 justify-start">
-                  {suggestions.map((s, idx) => (
-                    <Button
-                      key={idx}
-                      variant="outline"
-                      onClick={() => handleSuggestionClick(s)}
-                      className="rounded-full text-xs sm:text-sm px-3 py-1.5
+                {suggestions.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2 justify-start">
+                    {suggestions.map((s, idx) => (
+                      <Button
+                        key={idx}
+                        variant="outline"
+                        onClick={() => handleSuggestionClick(s)}
+                        className="rounded-full text-xs sm:text-sm px-3 py-1.5
                         max-w-full sm:max-w-[400px]
                         whitespace-normal break-words text-[#969696] dark:text-[#BEBEBE] dark:hover:text-[#BEBEBE] h-auto text-left ring-1 ring-[#7B39FF] dark:ring-[rgba(236,236,236,0.16)]"
-                      disabled={loading}
-                    >
-                      {s}
-                    </Button>
-                  ))}
-                </div>
-              )}
+                        disabled={loading}
+                      >
+                        {s}
+                      </Button>
+                    ))}
+                  </div>
+                )}
 
-              <div ref={chatEndRef} />
-            </div>
+                <div ref={chatEndRef} />
+              </div>
+            </>
           )}
         </div>
       </div>
