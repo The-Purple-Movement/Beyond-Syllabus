@@ -29,6 +29,9 @@ export default function ChatHome() {
     setModuleContent(params.get("content") || "");
   }, []);
 
+  const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => scrollToBottom(), [messages, loading]);
+
   useEffect(() => {
     if (!moduleContent || moduleTitle === "Loading title...") return;
 
