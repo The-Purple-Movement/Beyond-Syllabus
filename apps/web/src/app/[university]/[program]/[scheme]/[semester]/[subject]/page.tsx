@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SyllabusSummary } from "./_components/SyllabusSummary";
 import { CourseModules } from "./_components/CourseModules";
 import { ExamRunwayCard } from "./_components/ExamRunwayCard";
+import { PyqCard } from "./_components/PyqCard";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { AnimatedDiv } from "@/components/AnimatedDiv";
 
@@ -168,9 +169,10 @@ export default function SubjectPage({ params }: SubjectPageProps) {
                     content: m.content || "",
                   }))}
                 />
-                <div className="flex w-full justify-center gap-5 text-[25px]  dark:bg-black/50 items-center text-center rounded-xl h-[150px] shadow-lg">
-                  New feature <br /> Coming Soon
-                </div>
+                <PyqCard
+                  subjectName={capitalizeWords(subject.name)}
+                  pyqs={(subject as any).pyqs || []}
+                />
               </div>
             </div>
             <div className="flex w-full gap-5">

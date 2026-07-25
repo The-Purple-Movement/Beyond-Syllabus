@@ -51,6 +51,39 @@ async function readSyllabusData() {
               subjects: [],
             };
 
+            // Previous-year question papers: pyq/<subjectid>-<examyear>[-<session>].md
+            const pyqsBySubject: Record<
+              string,
+              { examYear: string; session: string | null; content: string }[]
+            > = {};
+            const pyqDir = path.join(semesterPath, "pyq");
+            if (
+              fs.existsSync(pyqDir) &&
+              (await fs.promises.lstat(pyqDir)).isDirectory()
+            ) {
+              const pyqFiles = await fs.promises.readdir(pyqDir);
+              for (const pyqFile of pyqFiles) {
+                const pyqMatch = pyqFile.match(
+                  /^([a-z0-9_]+)-(\d{4})(?:-([a-z]+))?\.md$/i
+                );
+                if (!pyqMatch) continue;
+                const [, subjectId, examYear, session] = pyqMatch;
+                const pyqContent = await fs.promises.readFile(
+                  path.join(pyqDir, pyqFile),
+                  "utf-8"
+                );
+                const { content: pyqBody } = matter(pyqContent);
+                (pyqsBySubject[subjectId] ??= []).push({
+                  examYear,
+                  session: session || null,
+                  content: pyqBody.trim(),
+                });
+              }
+              for (const list of Object.values(pyqsBySubject)) {
+                list.sort((a, b) => b.examYear.localeCompare(a.examYear));
+              }
+            }
+
             for (const subjectFile of subjectFiles) {
               if (subjectFile.endsWith(".md")) {
                 const subjectFilePath = path.join(semesterPath, subjectFile);
@@ -145,6 +178,7 @@ async function readSyllabusData() {
                   code: frontmatter.course_code || "N/A",
                   name: frontmatter.course_title || "N/A",
                   fullSyllabus: content.trim(),
+                  pyqs: pyqsBySubject[subjectFile.replace(".md", "")] || [],
                   modules: moduleItems,
                   university: frontmatter.university || "N/A",
                   program: frontmatter.branch || "N/A",
