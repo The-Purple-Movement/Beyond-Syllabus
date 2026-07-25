@@ -45,13 +45,16 @@ Our vision is a world where:
 
 ## 🟣 Part of the Purple Movement
 
-Beyond Syllabus is one of three core missions of the **Purple Movement**:
+The **Purple Movement** blends the **passion & curiosity of youth** (Red) with the **structure & wisdom of mentors** (Blue) — creating **Purple**, the colour of transformation. It stands on three missions — **Beyond Syllabus** (the syllabus is a starting point, not a cage), **Beyond Gatekeepers** (knowledge is shared, not held), and **Beyond Borders** (opportunity without geographic or social barriers) — carried by four connected open-source projects:
 
-- **Beyond Syllabus** – Free learning from outdated curriculum constraints.  
-- **Beyond Gatekeepers** – Open access to knowledge without institutional blockers.  
-- **Beyond Borders** – Connect learners globally, without geographic or social barriers.  
+| Project | Layer | Role |
+|---|---|---|
+| [WikiSyllabus](https://github.com/The-Purple-Movement/WikiSyllabus) | Data | The open Wikipedia of university syllabi — feeds this app |
+| **Beyond Syllabus** (this repo) | Understanding | Brainstorm with your syllabus, build foundations, flip the classroom |
+| [Beyond Borders](https://github.com/The-Purple-Movement/Beyond-Borders) | Launchpad | What to build, plus the global network and support system behind the builders |
+| [Beyond Gatekeepers](https://github.com/deepusnath/Beyond-Gatekeepers) | Community | The Evolve meetup network — successor to 12 years of FAYA:80 |
 
-The Purple Movement blends the **passion & curiosity of youth** (Red) with the **structure & wisdom of mentors** (Blue) — creating **Purple**, the colour of transformation.
+The flywheel: **WikiSyllabus** tells you what the syllabus *is* → **Beyond Syllabus** helps you understand it deeply and ask better questions in class → **Beyond Borders** shows you what to *build* with it and backs you with a global network once you do → the **Evolve** communities connect you with practitioners face-to-face → and what you learn flows back as contributions. [μLearn](https://mulearn.org/) — 48,000+ peer learners — is the movement's learning backbone and this project's home community.
 
 ---
 
