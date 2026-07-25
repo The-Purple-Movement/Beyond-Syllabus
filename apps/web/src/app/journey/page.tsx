@@ -14,13 +14,20 @@ import {
   importAllData,
   setModuleStatus,
   ModuleStatus,
+  buildRunwayPlan,
+  daysUntil,
+  removeExam,
+  RunwayItem,
 } from "@/lib/journey";
 import {
+  BrainCircuit,
+  CalendarClock,
   Download,
   Flame,
   ListChecks,
   Map,
   Sparkles,
+  Trash2,
   Upload,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -149,6 +156,106 @@ export default function JourneyPage() {
           Your journey lives on this device only. No account, no tracking.
           Export it anytime; it is yours.
         </p>
+
+        {/* Exam runway */}
+        {journey && journey.exams.length > 0 && (
+          <section className="rounded-2xl border border-border/60 bg-background/70 p-4 space-y-4">
+            <h2 className="font-semibold text-sm flex items-center gap-2">
+              <CalendarClock className="h-4 w-4 text-primary" /> Exam Runway
+            </h2>
+            {journey.exams
+              .slice()
+              .sort((a, b) => a.date.localeCompare(b.date))
+              .map((exam) => {
+                const days = daysUntil(exam.date);
+                const plan = buildRunwayPlan(exam);
+                return (
+                  <div
+                    key={exam.id}
+                    className="rounded-xl border border-border/50 p-3 space-y-2"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium text-sm flex-1 min-w-[10rem]">
+                        {exam.subject}
+                      </span>
+                      <span
+                        className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                          days <= 3
+                            ? "bg-red-500/10 text-red-600 dark:text-red-400"
+                            : days <= 10
+                              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                              : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        }`}
+                      >
+                        {days < 0
+                          ? "done"
+                          : days === 0
+                            ? "today"
+                            : `${days} day${days === 1 ? "" : "s"} left`}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          removeExam(exam.id);
+                          refresh();
+                        }}
+                        aria-label="Remove exam"
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-muted-foreground hover:text-destructive" />
+                      </button>
+                    </div>
+                    {days >= 0 && (
+                      <ol className="space-y-1.5">
+                        {plan.map((item: RunwayItem) => (
+                          <li
+                            key={item.module.title}
+                            className="flex flex-wrap items-center gap-2 text-sm"
+                          >
+                            <span className="text-xs text-muted-foreground w-20 shrink-0">
+                              {item.suggestedDate.slice(5)}
+                            </span>
+                            <span className="flex-1 min-w-[10rem]">
+                              {item.module.title}
+                            </span>
+                            <span
+                              className={`text-[11px] px-2 py-0.5 rounded-full border ${
+                                item.status
+                                  ? STATUS_META[item.status].cls
+                                  : "border-border/50 text-muted-foreground"
+                              }`}
+                            >
+                              {item.status
+                                ? STATUS_META[item.status].label
+                                : "Untouched"}
+                            </span>
+                            {item.action !== "light-review" ? (
+                              <Link
+                                href={`/brainstorm?title=${encodeURIComponent(item.module.title)}&content=${encodeURIComponent(item.module.content)}`}
+                                className="text-[11px] px-2 py-0.5 rounded-full border border-primary/40 text-primary hover:bg-primary/10 flex items-center gap-1"
+                              >
+                                <BrainCircuit className="h-3 w-3" />
+                                {item.action === "brainstorm"
+                                  ? "Brainstorm"
+                                  : "Revisit"}
+                              </Link>
+                            ) : (
+                              <span className="text-[11px] text-muted-foreground">
+                                light review
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                    <p className="text-[11px] text-muted-foreground">
+                      Weakest modules first; the eve of the exam stays free for
+                      one light pass over everything.
+                    </p>
+                  </div>
+                );
+              })}
+          </section>
+        )}
 
         {/* Delivery mode */}
         <section className="rounded-2xl border border-border/60 bg-background/70 p-4 space-y-3">

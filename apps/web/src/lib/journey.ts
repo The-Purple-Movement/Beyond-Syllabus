@@ -20,6 +20,19 @@ export interface ModuleProgress {
   lastActivity: string; // ISO date
 }
 
+export interface ExamModule {
+  title: string;
+  content: string;
+}
+
+export interface Exam {
+  id: string;
+  subject: string;
+  /** YYYY-MM-DD */
+  date: string;
+  modules: ExamModule[];
+}
+
 export interface Journey {
   version: 1;
   deliveryMode: DeliveryMode;
@@ -27,6 +40,8 @@ export interface Journey {
   modules: Record<string, ModuleProgress>;
   /** YYYY-MM-DD days with any learning activity, for streaks */
   activeDays: string[];
+  /** upcoming exams for the runway */
+  exams: Exam[];
 }
 
 const KEY = "journey:v1";
@@ -36,6 +51,7 @@ const EMPTY: Journey = {
   deliveryMode: "mentor",
   modules: {},
   activeDays: [],
+  exams: [],
 };
 
 function isBrowser(): boolean {
@@ -49,7 +65,12 @@ export function loadJourney(): Journey {
     if (!raw) return { ...EMPTY };
     const parsed = JSON.parse(raw);
     if (parsed?.version !== 1) return { ...EMPTY };
-    return { ...EMPTY, ...parsed, modules: parsed.modules ?? {} };
+    return {
+      ...EMPTY,
+      ...parsed,
+      modules: parsed.modules ?? {},
+      exams: parsed.exams ?? [],
+    };
   } catch {
     return { ...EMPTY };
   }
@@ -118,6 +139,91 @@ export function setDeliveryMode(mode: DeliveryMode): void {
 
 export function getDeliveryMode(): DeliveryMode {
   return loadJourney().deliveryMode;
+}
+
+export function addExam(subject: string, date: string, modules: ExamModule[]): Exam {
+  const j = loadJourney();
+  const exam: Exam = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    subject,
+    date,
+    modules,
+  };
+  // One exam per subject: replacing beats duplicating
+  j.exams = [...j.exams.filter((e) => e.subject !== subject), exam];
+  saveJourney(j);
+  return exam;
+}
+
+export function removeExam(id: string): void {
+  const j = loadJourney();
+  j.exams = j.exams.filter((e) => e.id !== id);
+  saveJourney(j);
+}
+
+export function getExamForSubject(subject: string): Exam | null {
+  return loadJourney().exams.find((e) => e.subject === subject) ?? null;
+}
+
+export function daysUntil(dateISO: string): number {
+  const target = new Date(`${dateISO}T00:00:00`);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return Math.round((target.getTime() - now.getTime()) / 86400000);
+}
+
+export interface RunwayItem {
+  module: ExamModule;
+  status: ModuleStatus | null;
+  /** YYYY-MM-DD suggested study date */
+  suggestedDate: string;
+  action: "brainstorm" | "revisit" | "light-review";
+}
+
+/**
+ * The revision plan: weakest modules first, spread across the days left,
+ * with the final day reserved for a light pass over everything.
+ */
+export function buildRunwayPlan(exam: Exam): RunwayItem[] {
+  const j = loadJourney();
+  const priority = (s: ModuleStatus | null): number =>
+    s === "shaky" ? 0 : s === null ? 1 : s === "explored" ? 2 : 3;
+
+  const ordered = [...exam.modules].sort(
+    (a, b) =>
+      priority(j.modules[a.title]?.status ?? null) -
+      priority(j.modules[b.title]?.status ?? null)
+  );
+
+  const totalDays = Math.max(daysUntil(exam.date), 1);
+  // Study days exclude the exam day itself and reserve the eve for review
+  const studyDays = Math.max(totalDays - 1, 1);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  return ordered.map((module, i) => {
+    const status = j.modules[module.title]?.status ?? null;
+    const offset =
+      ordered.length <= 1
+        ? 0
+        : Math.min(
+            Math.floor((i * studyDays) / ordered.length),
+            studyDays - 1
+          );
+    const d = new Date(start);
+    d.setDate(d.getDate() + offset);
+    return {
+      module,
+      status,
+      suggestedDate: d.toISOString().slice(0, 10),
+      action:
+        status === "solid"
+          ? "light-review"
+          : status === null
+            ? "brainstorm"
+            : "revisit",
+    };
+  });
 }
 
 /** Consecutive active days ending today or yesterday */
