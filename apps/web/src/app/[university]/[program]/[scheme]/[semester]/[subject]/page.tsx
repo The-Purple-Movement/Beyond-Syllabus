@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SyllabusSummary } from "./_components/SyllabusSummary";
 import { CourseModules } from "./_components/CourseModules";
+import { ExamRunwayCard } from "./_components/ExamRunwayCard";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { AnimatedDiv } from "@/components/AnimatedDiv";
 
@@ -160,9 +161,13 @@ export default function SubjectPage({ params }: SubjectPageProps) {
                 />
               </div>
               <div className=" flex gap-5 w-full flex-col">
-                <div className="flex w-full justify-center gap-5 text-[25px]  dark:bg-black/50 items-center text-center rounded-xl h-[150px] shadow-lg">
-                  New feature <br /> Coming Soon
-                </div>
+                <ExamRunwayCard
+                  subjectName={capitalizeWords(subject.name)}
+                  modules={(subject.modules || []).map((m: any) => ({
+                    title: m.title || "",
+                    content: m.content || "",
+                  }))}
+                />
                 <div className="flex w-full justify-center gap-5 text-[25px]  dark:bg-black/50 items-center text-center rounded-xl h-[150px] shadow-lg">
                   New feature <br /> Coming Soon
                 </div>
