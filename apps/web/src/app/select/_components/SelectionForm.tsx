@@ -42,7 +42,14 @@ const MotionDiv = motion.div;
 
 export function SelectionForm() {
   const router = useRouter();
-  const { data: directory, isFetching, isError, error } = useData();
+  const {
+    data: directory,
+    universities,
+    isFetching,
+    isError,
+    error,
+    ensureUniversity,
+  } = useData();
 
   const [step, setStep] = useState(1);
   const [u, setU] = useState<string | null>(null);
@@ -58,10 +65,15 @@ export function SelectionForm() {
   const progData = u && p ? directory[u][p] : null;
   const schemeData = u && p && sch ? directory[u][p][sch] : null;
 
-  const loadStep = async (message: string, nextStep: number, fn: () => void) => {
+  const loadStep = async (
+    message: string,
+    nextStep: number,
+    fn: () => void,
+    task?: () => Promise<unknown>
+  ) => {
     setIsLoading(true);
     setLoadingMessage(message);
-    await new Promise((r) => setTimeout(r, 600));
+    await Promise.all([task?.(), new Promise((r) => setTimeout(r, 600))]);
     fn();
     setIsLoading(false);
     setStep(nextStep);
@@ -85,7 +97,7 @@ export function SelectionForm() {
 
   if (isFetching) return null;
   if (isError) return <ErrorDisplay errorMessage={error?.message || "Error fetching data"} />;
-  if (!directory || !Object.keys(directory).length)
+  if (!universities || !universities.length)
     return <ErrorDisplay errorMessage="No directory data available." />;
 
   return (
@@ -156,12 +168,18 @@ export function SelectionForm() {
                 <MotionDiv key="step1" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="flex justify-center">
                   <div className="space-y-4 flex flex-col items-center">
                     <Label className="text-lg font-bold">1. Select Your University</Label>
-                    <Select onValueChange={(v) => loadStep("Loading programs...", 2, () => setU(v))}>
+                    <Select
+                      onValueChange={(v) =>
+                        loadStep("Loading programs...", 2, () => setU(v), () =>
+                          ensureUniversity(v)
+                        )
+                      }
+                    >
                       <SelectTrigger className="w-[280px] py-3 px-3 rounded-xl border border-purple-300 bg-white dark:bg-gray-900 shadow-sm">
                         <SelectValue placeholder="Choose a university" />
                       </SelectTrigger>
                       <SelectContent className="w-[280px] rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg max-h-[200px] overflow-y-auto">
-                        {Object.keys(directory)
+                        {[...universities]
                           .sort((a, b) => cap(a).localeCompare(cap(b)))
                           .map((id) => (
                             <SelectItem key={id} value={id} className="capitalize px-3 py-2 text-sm hover:bg-purple-100 dark:hover:bg-purple-800 rounded-lg cursor-pointer">
