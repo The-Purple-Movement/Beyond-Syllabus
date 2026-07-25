@@ -25,7 +25,7 @@ import ErrorDisplay from "@/components/ErrorDisplay";
 import { AnimatedDiv } from "@/components/AnimatedDiv";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { useData } from "@/contexts";
+import { useUniversityData } from "@/contexts";
 import { Spinner } from "@/components/ui/spinner";
 import { DirectoryStructure, SubjectsPageProps } from "@/lib/types";
 
@@ -98,7 +98,9 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
   const router = useRouter();
   const resolvedParams = use(params);
   const [loadingSubject, setLoadingSubject] = useState<string | null>(null);
-  const { data, isFetching, isError, error } = useData();
+  const { data, isFetching, isError, error } = useUniversityData(
+    resolvedParams.university
+  );
 
   const handleViewSyllabus = async (subjectId: string, subjectName: string) => {
     setLoadingSubject(subjectId);
