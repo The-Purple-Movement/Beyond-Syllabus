@@ -8,7 +8,8 @@ import { CourseModules } from "./_components/CourseModules";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { AnimatedDiv } from "@/components/AnimatedDiv";
 
-import { useData } from "@/contexts";
+import { useUniversityData } from "@/contexts";
+import { Spinner } from "@/components/ui/spinner";
 import { use } from "react";
 import { SubjectPageProps, DirectoryStructure } from "@/lib/types";
 import { Header } from "@/components/Header";
@@ -81,7 +82,23 @@ function capitalizeWords(str: string | undefined): string {
 
 export default function SubjectPage({ params }: SubjectPageProps) {
   const resolvedParams = use(params);
-  const { error, isError, data: directoryStructure } = useData();
+  const {
+    error,
+    isError,
+    isFetching,
+    data: directoryStructure,
+  } = useUniversityData(resolvedParams.university);
+
+  if (isFetching) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <Spinner className="h-8 w-8 mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading syllabus data...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isError || !directoryStructure) {
     return (

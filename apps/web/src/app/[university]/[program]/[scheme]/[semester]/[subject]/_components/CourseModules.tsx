@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -13,12 +13,53 @@ import { Sparkles, BrainCircuit } from "lucide-react";
 import { motion } from "framer-motion";
 import { Spinner } from "@/components/ui/spinner";
 import { Module, CourseModulesProps } from "@/lib/types";
+import {
+  getModuleStatus,
+  setModuleStatus,
+  ModuleStatus,
+} from "@/lib/journey";
+
+const STATUS_OPTIONS: { id: ModuleStatus; label: string; active: string }[] = [
+  {
+    id: "shaky",
+    label: "Shaky",
+    active:
+      "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/40",
+  },
+  {
+    id: "explored",
+    label: "Getting there",
+    active: "bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/40",
+  },
+  {
+    id: "solid",
+    label: "Solid",
+    active:
+      "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/40",
+  },
+];
 
 export function CourseModules({ modules }: CourseModulesProps) {
   const router = useRouter();
   const [loadingModuleIndex, setLoadingModuleIndex] = useState<number | null>(
     null
   );
+  const [statuses, setStatuses] = useState<Record<string, ModuleStatus | null>>(
+    {}
+  );
+
+  useEffect(() => {
+    const initial: Record<string, ModuleStatus | null> = {};
+    for (const m of modules) {
+      if (m.title) initial[m.title] = getModuleStatus(m.title);
+    }
+    setStatuses(initial);
+  }, [modules]);
+
+  const updateStatus = (title: string, status: ModuleStatus) => {
+    setModuleStatus(title, status);
+    setStatuses((prev) => ({ ...prev, [title]: status }));
+  };
 
   const handleChatRedirect = async (module: Module, index: number) => {
     if (!module.content.trim()) {
@@ -121,6 +162,27 @@ export function CourseModules({ modules }: CourseModulesProps) {
                     <BrainCircuit className="h-4 w-4" />
                     Brainstorm before class
                   </Button>
+                  {module.title && (
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <span className="text-xs text-muted-foreground">
+                        Where do you stand on this module?
+                      </span>
+                      {STATUS_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => updateStatus(module.title!, opt.id)}
+                          className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
+                            statuses[module.title!] === opt.id
+                              ? opt.active
+                              : "border-border/60 text-muted-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </AccordionContent>
               </AccordionItem>
             </motion.div>

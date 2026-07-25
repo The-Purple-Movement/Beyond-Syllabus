@@ -12,6 +12,12 @@ import {
 } from "@/ai/flows/guided-brainstorm";
 import { Message } from "@/lib/types";
 import {
+  getDeliveryMode,
+  recordBrainstormSession,
+  recordQuestionCollected,
+} from "@/lib/journey";
+import { Map } from "lucide-react";
+import {
   ArrowRight,
   Download,
   Lightbulb,
@@ -85,6 +91,7 @@ export default function BrainstormPage() {
           history,
           message,
           model,
+          deliveryMode: getDeliveryMode(),
         });
         setMessages((prev) => [
           ...prev,
@@ -105,6 +112,7 @@ export default function BrainstormPage() {
     if (!moduleContent || !moduleTitle) return;
     if (startedStages.current.has(stage)) return;
     startedStages.current.add(stage);
+    if (stage === "prime") recordBrainstormSession(moduleTitle);
     runTurn("", stage, messages);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [moduleContent, moduleTitle, stage]);
@@ -127,6 +135,7 @@ export default function BrainstormPage() {
       ...prev,
       { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, text: trimmed, source },
     ]);
+    recordQuestionCollected(moduleTitle);
   };
 
   const exportSheet = () => {
@@ -181,6 +190,11 @@ export default function BrainstormPage() {
           <h1 className="font-semibold truncate max-w-[60vw]">{moduleTitle}</h1>
         </div>
         <div className="flex items-center gap-2">
+          <Button asChild variant="ghost" size="sm" title="My Journey">
+            <Link href="/journey">
+              <Map className="h-4 w-4" />
+            </Link>
+          </Button>
           <ThemeToggle />
         </div>
       </header>

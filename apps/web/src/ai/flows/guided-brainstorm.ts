@@ -13,6 +13,8 @@ export interface GuidedBrainstormInput {
   /** Empty string on stage entry: the flow produces the stage's opening move */
   message: string;
   model?: string;
+  /** Student's preferred voice, from their Journey settings */
+  deliveryMode?: "peer" | "mentor" | "example-first";
 }
 
 export interface GuidedBrainstormOutput {
@@ -41,8 +43,21 @@ Your job is to help the student leave with sharp questions to ask in class, NOT 
 - Keep every turn under 120 words.`,
 };
 
+const DELIVERY_VOICES: Record<
+  NonNullable<GuidedBrainstormInput["deliveryMode"]>,
+  string
+> = {
+  peer: "VOICE: talk like a sharp classmate. Casual, direct, zero jargon, humor welcome.",
+  mentor:
+    "VOICE: talk like a warm mentor. Encouraging, clear, guiding without lecturing.",
+  "example-first":
+    "VOICE: open every idea with a concrete, relatable example before naming the concept.",
+};
+
 function buildSystemPrompt(input: GuidedBrainstormInput): string {
   return `You are the Guided Brainstorm companion in Beyond Syllabus, an open-source tool of The Purple Movement. The student is preparing BEFORE class (flipped classroom). Success is NOT that you explained well; success is that the student leaves with better questions than they came with.
+
+${DELIVERY_VOICES[input.deliveryMode || "mentor"]}
 
 MODULE: ${input.moduleTitle}
 MODULE CONTENT (your only syllabus scope):
