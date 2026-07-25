@@ -3,6 +3,7 @@ import type { RouterClient } from "@orpc/server";
 import path from "node:path";
 import { file } from "bun";
 import { shareRoutes } from "./share";
+import { classroomRoutes } from "./classroom";
 
 // Parse the syllabus dataset once per process instead of on every request.
 let syllabusCache: Record<string, unknown> | null = null;
@@ -41,6 +42,7 @@ export const appRouter = {
     return { [university]: slice };
   }),
   share: shareRoutes,
+  classroom: classroomRoutes,
 };
 
 export type AppRouter = typeof appRouter;

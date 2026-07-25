@@ -23,10 +23,12 @@ import {
   Lightbulb,
   ListChecks,
   Plus,
+  Send,
   Sparkles,
   Trash2,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { orpc } from "@/lib/orpc";
 
 type SheetQuestion = {
   id: string;
@@ -50,6 +52,8 @@ export default function BrainstormPage() {
   const [sheet, setSheet] = useState<SheetQuestion[]>([]);
   const [ownQuestion, setOwnQuestion] = useState("");
   const [model, setModel] = useState("openai/gpt-oss-120b");
+  const [classCode, setClassCode] = useState("");
+  const [sending, setSending] = useState(false);
   const startedStages = useRef<Set<string>>(new Set());
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -136,6 +140,29 @@ export default function BrainstormPage() {
       { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, text: trimmed, source },
     ]);
     recordQuestionCollected(moduleTitle);
+  };
+
+  useEffect(() => {
+    setClassCode(localStorage.getItem("last-class-code") || "");
+  }, []);
+
+  const sendToClass = async () => {
+    const code = classCode.trim().toUpperCase();
+    if (!code || !sheet.length || sending) return;
+    setSending(true);
+    try {
+      await orpc.classroom.submit.call({
+        code,
+        module: moduleTitle,
+        questions: sheet.map((q) => q.text),
+      });
+      localStorage.setItem("last-class-code", code);
+      toast.success("Sent to your class, anonymously");
+    } catch (e: any) {
+      toast.error(e?.message || "Could not send to class");
+    } finally {
+      setSending(false);
+    }
   };
 
   const exportSheet = () => {
@@ -340,6 +367,29 @@ export default function BrainstormPage() {
                 </li>
               )}
             </ul>
+
+            {sheet.length > 0 && (
+              <div className="flex gap-2 items-center border-t border-border/50 pt-3">
+                <input
+                  value={classCode}
+                  onChange={(e) => setClassCode(e.target.value.toUpperCase())}
+                  placeholder="Class code"
+                  maxLength={6}
+                  className="w-24 text-xs font-mono tracking-widest rounded-lg border border-border/60 bg-background px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/40"
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 flex-1"
+                  disabled={classCode.trim().length < 6 || sending}
+                  onClick={sendToClass}
+                  title="Send your questions to your teacher, anonymously"
+                >
+                  <Send className="h-3.5 w-3.5 mr-1" />
+                  {sending ? "Sending…" : "Send to class"}
+                </Button>
+              </div>
+            )}
 
             <form
               className="flex gap-2"
