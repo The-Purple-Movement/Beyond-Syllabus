@@ -160,6 +160,7 @@ const chatWithSyllabusFlow = async (
           ? ["Multiple concrete examples"]
           : ["Relevant examples"]),
         "Natural, engaging communication style",
+        "End with one short Socratic follow-up question that invites the student to reason one step further on this topic",
       ],
     },
     format: {
