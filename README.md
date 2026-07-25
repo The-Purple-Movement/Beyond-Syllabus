@@ -51,10 +51,10 @@ The **Purple Movement** blends the **passion & curiosity of youth** (Red) with t
 |---|---|---|
 | [WikiSyllabus](https://github.com/The-Purple-Movement/WikiSyllabus) | Data | The open Wikipedia of university syllabi — feeds this app |
 | **Beyond Syllabus** (this repo) | Understanding | Brainstorm with your syllabus, build foundations, flip the classroom |
-| [Beyond Borders](https://github.com/The-Purple-Movement/Beyond-Borders) | Direction | Frontier technologies mapped to real problems worth building |
+| [Beyond Borders](https://github.com/The-Purple-Movement/Beyond-Borders) | Launchpad | What to build, plus the global network and support system behind the builders |
 | [Beyond Gatekeepers](https://github.com/deepusnath/Beyond-Gatekeepers) | Community | The Evolve meetup network — successor to 12 years of FAYA:80 |
 
-The flywheel: **WikiSyllabus** tells you what the syllabus *is* → **Beyond Syllabus** helps you understand it deeply and ask better questions in class → **Beyond Borders** shows you what to *build* with it → the **Evolve** communities connect you with practitioners face-to-face → and what you learn flows back as contributions. [μLearn](https://mulearn.org/) — 48,000+ peer learners — is the movement's learning backbone and this project's home community.
+The flywheel: **WikiSyllabus** tells you what the syllabus *is* → **Beyond Syllabus** helps you understand it deeply and ask better questions in class → **Beyond Borders** shows you what to *build* with it and backs you with a global network once you do → the **Evolve** communities connect you with practitioners face-to-face → and what you learn flows back as contributions. [μLearn](https://mulearn.org/) — 48,000+ peer learners — is the movement's learning backbone and this project's home community.
 
 ---
 
