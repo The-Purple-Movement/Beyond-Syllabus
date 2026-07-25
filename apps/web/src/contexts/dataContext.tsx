@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { orpc } from "@/lib/orpc";
+import { cacheGet, cachePut } from "@/lib/sliceCache";
 
 type DataContextType = {
   /** Merged per-university slices: { [universityId]: universityData } */
@@ -45,9 +46,16 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const list = await orpc.syllabusUniversities.call();
         setUniversities(list as string[]);
+        cachePut("universities", list);
       } catch (err: any) {
-        setIsError(true);
-        setError(err);
+        // Offline fallback: the last known university list
+        const cached = await cacheGet<string[]>("universities");
+        if (cached?.length) {
+          setUniversities(cached);
+        } else {
+          setIsError(true);
+          setError(err);
+        }
       } finally {
         setIsFetching(false);
       }
@@ -69,9 +77,16 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
             university: universityId,
           });
           setData((prev: any) => ({ ...prev, ...(slice as object) }));
+          cachePut(`slice:${universityId}`, slice);
         } catch (err: any) {
-          setIsError(true);
-          setError(err);
+          // Offline fallback: the last cached copy of this university
+          const cached = await cacheGet<object>(`slice:${universityId}`);
+          if (cached) {
+            setData((prev: any) => ({ ...prev, ...cached }));
+          } else {
+            setIsError(true);
+            setError(err);
+          }
           delete inflight.current[universityId];
         } finally {
           setLoading((prev) => ({ ...prev, [universityId]: false }));

@@ -5,6 +5,7 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { DataProvider } from "@/contexts";
+import { PwaRegister } from "@/components/PwaRegister";
 import Loader from "@/components/Loader";
 
 const poppins = Poppins({
@@ -38,7 +39,12 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+  manifest: "/manifest.webmanifest",
   metadataBase: new URL("https://beyondsyllabus.in/"),
+};
+
+export const viewport = {
+  themeColor: "#6d28d9",
 };
 
 
@@ -66,6 +72,7 @@ export default function RootLayout({
               </Suspense>
             </DataProvider>
           <Toaster reverseOrder={true} position="top-center" />
+          <PwaRegister />
         </ThemeProvider>
       </body>
     </html>
