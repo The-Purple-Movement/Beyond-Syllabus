@@ -42,6 +42,18 @@ const STAGES: { id: BrainstormStage; label: string; hint: string }[] = [
   { id: "question", label: "3 · Questions", hint: "What will you ask in class?" },
 ];
 
+// When there's no connection, the brainstorm degrades to structured
+// self-questioning: the sheet is local, so the session still produces
+// its artifact. The AI is a coach, not a dependency.
+const OFFLINE_COACH: Record<BrainstormStage, string> = {
+  prime:
+    "You're offline, so I'll hand you the wheel. **Prime yourself:** write down, in the chat box or on paper, everything you already know or have heard about this module. Even half-remembered things count. Then skim the module content and mark what looks completely new. Anything that surprises you is worth a question: add it to your sheet on the right.",
+  explore:
+    "Still offline, still workable. **Explore on your own:** read the module content and ask of each topic: who uses this in the real world, and what breaks if nobody knows it? Write one concrete situation where this knowledge would matter. Every topic where you can't answer that is a question for class: add it to your sheet.",
+  question:
+    "Offline is actually perfect for this stage. **Sharpen your questions:** look at your sheet and rewrite each question so it names the concept, says what you do understand, and points at exactly where it stops making sense. A sharp question sounds like: 'I understand X does Y, but I don't see why Z.' Your sheet saves on this device and is ready for class.",
+};
+
 export default function BrainstormPage() {
   const [moduleTitle, setModuleTitle] = useState("");
   const [moduleContent, setModuleContent] = useState("");
@@ -86,6 +98,13 @@ export default function BrainstormPage() {
 
   const runTurn = useCallback(
     async (message: string, forStage: BrainstormStage, history: Message[]) => {
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: OFFLINE_COACH[forStage] },
+        ]);
+        return;
+      }
       setLoading(true);
       try {
         const result = await guidedBrainstorm({
