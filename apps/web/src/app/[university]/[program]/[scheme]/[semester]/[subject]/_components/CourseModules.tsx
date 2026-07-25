@@ -107,6 +107,20 @@ export function CourseModules({ modules }: CourseModulesProps) {
                     )}
                     Chat with AI about this Module
                   </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      router.push(
+                        `/brainstorm?title=${encodeURIComponent(
+                          module.title || "Selected Module"
+                        )}&content=${encodeURIComponent(module.content)}`
+                      )
+                    }
+                    className="flex items-center gap-2 mt-2 border-primary/40 text-primary hover:bg-primary/10"
+                  >
+                    <BrainCircuit className="h-4 w-4" />
+                    Brainstorm before class
+                  </Button>
                 </AccordionContent>
               </AccordionItem>
             </motion.div>
