@@ -38,6 +38,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.ico",
+    apple: "/icons/apple-touch-icon.png",
   },
   manifest: "/manifest.webmanifest",
   metadataBase: new URL("https://beyondsyllabus.in/"),

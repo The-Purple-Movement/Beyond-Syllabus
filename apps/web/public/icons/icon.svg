@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#4c1d95"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <g transform="translate(40.96 40.96) scale(0.84)">
+    <!-- question mark rising beyond the book -->
+    <path d="M 186 150
+             a 70 70 0 1 1 98 71
+             c -18 12 -28 24 -28 48"
+          fill="none" stroke="#ffffff" stroke-width="44" stroke-linecap="round"/>
+    <circle cx="256" cy="330" r="26" fill="#ffffff"/>
+    <!-- open book -->
+    <path d="M 256 395
+             C 222 372 160 364 106 372
+             L 106 442
+             C 160 434 222 442 256 462
+             C 290 442 352 434 406 442
+             L 406 372
+             C 352 364 290 372 256 395 Z"
+          fill="#ffffff"/>
+    <path d="M 256 400 L 256 458" stroke="#6d28d9" stroke-width="10" stroke-linecap="round"/>
+  </g>
+</svg>
