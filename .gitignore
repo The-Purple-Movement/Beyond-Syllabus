@@ -4,3 +4,8 @@ node_modules/
 # Turborepo
 .turbo
 .vercel
+.gstack/
+.gstack/
+universities/
+.env.local
+.claude/
