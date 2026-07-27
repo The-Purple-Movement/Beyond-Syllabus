@@ -81,8 +81,19 @@ function saveJourney(j: Journey): void {
   localStorage.setItem(KEY, JSON.stringify(j));
 }
 
+/**
+ * Local-calendar date as YYYY-MM-DD. Never use toISOString() for day
+ * bookkeeping: it converts to UTC, which shifts any time before 05:30
+ * IST onto the previous day (wrong streaks, runway dates in the past).
+ */
+function localDate(d: Date = new Date()): string {
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+
 function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDate();
 }
 
 function touchModule(j: Journey, moduleTitle: string): ModuleProgress {
@@ -215,7 +226,7 @@ export function buildRunwayPlan(exam: Exam): RunwayItem[] {
     return {
       module,
       status,
-      suggestedDate: d.toISOString().slice(0, 10),
+      suggestedDate: localDate(d),
       action:
         status === "solid"
           ? "light-review"
@@ -232,12 +243,12 @@ export function getStreak(): number {
   if (!days.size) return 0;
   const d = new Date();
   // A streak survives if yesterday was active even when today isn't yet
-  if (!days.has(d.toISOString().slice(0, 10))) {
+  if (!days.has(localDate(d))) {
     d.setDate(d.getDate() - 1);
-    if (!days.has(d.toISOString().slice(0, 10))) return 0;
+    if (!days.has(localDate(d))) return 0;
   }
   let streak = 0;
-  while (days.has(d.toISOString().slice(0, 10))) {
+  while (days.has(localDate(d))) {
     streak += 1;
     d.setDate(d.getDate() - 1);
   }
