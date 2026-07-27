@@ -1,6 +1,6 @@
 # Contributing Guidelines
 
-Welcome to my portfolio website! We appreciate your interest in contributing to my project. By contributing, you help me create a better software for everyone.
+Welcome to Beyond Syllabus, the Purple Movement's flipped-classroom app built on WikiSyllabus, the open syllabus commons. By contributing you help every student who walks into class with questions worth asking.
 
 Before you start contributing, please take a moment to read the following guidelines to ensure a smooth and effective contribution process.
 
@@ -53,6 +53,19 @@ Feel free to pick any open issue from our [issue tracker](https://github.com/The
 6. Be willing to make any requested changes or improvements.
 
 ---
+
+## Contributing UX and design
+
+UI changes are reviewed against [DESIGN.md](./DESIGN.md), our written design
+principles. Read it before starting; it is short and it is the review bar.
+
+- Found a UX problem? Open an issue with the **UX finding** template:
+  say what you expected, what happened, and attach a screenshot.
+- Want to fix one? Comment on the issue, then send a PR that passes the
+  checklist at the bottom of DESIGN.md.
+- Syllabus content problems (wrong module, missing semester) belong in
+  [WikiSyllabus](https://github.com/The-Purple-Movement/WikiSyllabus), the
+  data source: every subject page links to its exact source folder.
 
 ## 🤝 Code of Conduct
 
