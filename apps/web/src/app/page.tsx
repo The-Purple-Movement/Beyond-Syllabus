@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { getLastSelection, LastSelection } from "@/lib/journey";
+import { titleCase } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GraduationCap, BookOpenCheck, BarChart3, ChevronRight, Sparkles } from "lucide-react";
@@ -15,6 +17,15 @@ import { Spinner } from "@/components/ui/spinner";
 export default function Home() {
   const router = useRouter();
   const [loadingRoute, setLoadingRoute] = useState<string | null>(null);
+  const [lastSel, setLastSel] = useState<LastSelection | null>(null);
+
+  useEffect(() => {
+    setLastSel(getLastSelection());
+  }, []);
+
+  const semesterPath = lastSel
+    ? `/${lastSel.university}/${lastSel.program}/${lastSel.scheme}/${lastSel.semester}`
+    : null;
 
   const navigateWithDelay = async (path: string, delay: number): Promise<void> => {
     setLoadingRoute(path);
@@ -51,26 +62,40 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col md:flex-row justify-center gap-4 mt-8 ">
-              <Button
-                size="lg"
-                className="group shadow-lg w-full md:w-auto h-[44px] bg-[#8800ff]"
-                asChild
-                disabled={loadingRoute === "/select"}
-              >
-                <Link href="/select" onClick={() => navigateWithDelay("/select", 300)}>
-                  {loadingRoute ? (
-                    <>
-                      <Spinner className="h-5 w-5 mr-2" />
-                      Loading...
-                    </>
-                  ) : (
-                    <>
-                      Find your syllabus
-                      <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </>
-                  )}
-                </Link>
-              </Button>
+              {semesterPath ? (
+                <Button
+                  size="lg"
+                  className="group shadow-lg w-full md:w-auto h-[44px] bg-[#8800ff]"
+                  asChild
+                >
+                  <Link href={semesterPath}>
+                    Continue: {titleCase(lastSel!.program)} · Sem{" "}
+                    {lastSel!.semester.replace(/\D/g, "")}
+                    <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </Button>
+              ) : (
+                <Button
+                  size="lg"
+                  className="group shadow-lg w-full md:w-auto h-[44px] bg-[#8800ff]"
+                  asChild
+                  disabled={loadingRoute === "/select"}
+                >
+                  <Link href="/select" onClick={() => navigateWithDelay("/select", 300)}>
+                    {loadingRoute ? (
+                      <>
+                        <Spinner className="h-5 w-5 mr-2" />
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        Find your syllabus
+                        <ChevronRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
+                  </Link>
+                </Button>
+              )}
 
               <Button
                 asChild
@@ -84,6 +109,15 @@ export default function Home() {
                 </Link>
               </Button>
             </div>
+
+            {semesterPath && (
+              <p className="text-sm text-muted-foreground mt-4">
+                Different course?{" "}
+                <Link href="/select" className="underline hover:text-primary">
+                  Find another syllabus
+                </Link>
+              </p>
+            )}
 
             <p className="text-sm text-muted-foreground mt-6">
               Free and open source. No account needed. Built on{" "}

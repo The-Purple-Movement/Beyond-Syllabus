@@ -3,7 +3,15 @@
 import { notFound } from "next/navigation";
 import { titleCase } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { useState, use } from "react";
+import { useState, use, useEffect } from "react";
+import Link from "next/link";
+import {
+  saveLastSelection,
+  loadJourney,
+  getStreak,
+  daysUntil,
+  Journey,
+} from "@/lib/journey";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import {
@@ -18,8 +26,11 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
   BookText,
+  CalendarClock,
   Code,
+  Flame,
   FlaskConical,
+  ListChecks,
   Sigma,
 } from "lucide-react";
 import ErrorDisplay from "@/components/ErrorDisplay";
@@ -95,18 +106,65 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
   const router = useRouter();
   const resolvedParams = use(params);
   const [loadingSubject, setLoadingSubject] = useState<string | null>(null);
+  const [journey, setJourney] = useState<Journey | null>(null);
+  const [streak, setStreak] = useState(0);
   const { data, isFetching, isError, error } = useUniversityData(
     resolvedParams.university
   );
 
-  const handleViewSyllabus = async (subjectId: string, subjectName: string) => {
+  // This page IS the returning student's home. Landing here (wizard or
+  // deep link alike) makes it the remembered semester, and the journey
+  // data enriches the subject cards.
+  useEffect(() => {
+    if (!data) return;
+    const ok =
+      data[resolvedParams.university]?.[resolvedParams.program]?.[
+        resolvedParams.scheme
+      ]?.[resolvedParams.semester];
+    if (!ok) return;
+    saveLastSelection({
+      university: resolvedParams.university,
+      program: resolvedParams.program,
+      scheme: resolvedParams.scheme,
+      semester: resolvedParams.semester,
+    });
+    setJourney(loadJourney());
+    setStreak(getStreak());
+    document.title = `${formatSemesterName(resolvedParams.semester)} · ${titleCase(
+      resolvedParams.program
+    )} | Beyond Syllabus`;
+  }, [data, resolvedParams]);
+
+  const handleViewSyllabus = (subjectId: string, subjectName: string) => {
     setLoadingSubject(subjectId);
-
-    await new Promise((resolve) => setTimeout(resolve, 700));
-
     router.push(
       `/${resolvedParams.university}/${resolvedParams.program}/${resolvedParams.scheme}/${resolvedParams.semester}/${subjectId}`
     );
+  };
+
+  // Cross-reference a subject's modules with the local journey
+  const subjectProgress = (subject: any) => {
+    if (!journey) return null;
+    const titles: string[] = (subject.modules || [])
+      .map((m: any) => m.title)
+      .filter(Boolean);
+    if (!titles.length) return null;
+    let touched = 0;
+    let solid = 0;
+    let shaky = 0;
+    for (const t of titles) {
+      const prog = journey.modules[t];
+      if (prog) {
+        touched += 1;
+        if (prog.status === "solid") solid += 1;
+        if (prog.status === "shaky") shaky += 1;
+      }
+    }
+    const exam = journey.exams.find(
+      (e) => e.subject === titleCase(subject.name)
+    );
+    const examDays = exam ? daysUntil(exam.date) : null;
+    return { total: titles.length, touched, solid, shaky, examDays };
   };
 
   if (isFetching) {
@@ -173,6 +231,23 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
               <p className="text-muted-foreground mt-2 text-lg">
                 {program.name} ({scheme.name}) &middot; {university.name}
               </p>
+              {journey && Object.keys(journey.modules).length > 0 && (
+                <div className="flex flex-wrap items-center gap-3 mt-4 text-sm">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400">
+                    <Flame className="h-4 w-4" /> {streak} day streak
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary">
+                    <ListChecks className="h-4 w-4" />{" "}
+                    {Object.keys(journey.modules).length} modules touched
+                  </span>
+                  <Link
+                    href="/journey"
+                    className="text-muted-foreground underline hover:text-primary"
+                  >
+                    Full journey
+                  </Link>
+                </div>
+              )}
             </div>
 
             {semester.subjects.length > 0 ? (
@@ -180,6 +255,7 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
                 {semester.subjects.map((subject: any) => {
                   const category = getSubjectCategory(subject.code);
                   const isLoading = loadingSubject === subject.id;
+                  const progress = subjectProgress(subject);
                   return (
                     <Card
                       key={subject.id}
@@ -199,6 +275,36 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
                           </Badge>
                         </div>
                         <CardDescription>{subject.code}</CardDescription>
+                        {progress && (
+                          <div className="pt-1 space-y-1.5">
+                            {progress.examDays !== null && progress.examDays >= 0 && (
+                              <span
+                                className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full ${
+                                  progress.examDays <= 3
+                                    ? "bg-red-500/10 text-red-600 dark:text-red-400"
+                                    : "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                                }`}
+                              >
+                                <CalendarClock className="h-3 w-3" /> exam{" "}
+                                {progress.examDays === 0
+                                  ? "today"
+                                  : `in ${progress.examDays}d`}
+                              </span>
+                            )}
+                            {progress.touched > 0 ? (
+                              <p className="text-[11px] text-muted-foreground">
+                                {progress.touched}/{progress.total} modules
+                                touched
+                                {progress.solid > 0 && ` · ${progress.solid} solid`}
+                                {progress.shaky > 0 && ` · ${progress.shaky} shaky`}
+                              </p>
+                            ) : (
+                              <p className="text-[11px] text-muted-foreground/70">
+                                Untouched. Brainstorm a module to start.
+                              </p>
+                            )}
+                          </div>
+                        )}
                       </CardHeader>
                       <CardFooter>
                         <Button

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
+import { MySemesterLink } from "./MySemesterLink";
 
 export function Header() {
   return (
@@ -11,7 +12,14 @@ export function Header() {
           </h6>
         </Link>
 
-        <div className="flex items-center gap-2 ">
+        <div className="flex items-center gap-4">
+          <MySemesterLink />
+          <Link
+            href="/journey"
+            className="hidden sm:inline text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+          >
+            Journey
+          </Link>
           <ThemeToggle />
         </div>
       </div>
