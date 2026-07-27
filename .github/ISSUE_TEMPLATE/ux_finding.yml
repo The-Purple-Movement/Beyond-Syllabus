@@ -1,0 +1,47 @@
+name: UX finding
+description: Something in the interface is confusing, misleading, inaccessible, or broken as an experience
+title: "[UX] "
+labels: ["ux"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for looking closely. UX findings are reviewed against [DESIGN.md](../blob/main/DESIGN.md);
+        if you can name the principle being violated, even better, but a plain description is enough.
+  - type: input
+    id: screen
+    attributes:
+      label: Where
+      description: URL or screen (e.g. /select step 4, subject page, brainstorm sheet)
+      placeholder: /brainstorm question sheet
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      placeholder: I typed a class code and expected the button to respond or tell me what was wrong.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead
+      placeholder: The button stayed grey with no explanation.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshot or recording
+      description: Drag an image here. On phones, include the device if you know it.
+  - type: dropdown
+    id: severity
+    attributes:
+      label: How much does it hurt?
+      options:
+        - Blocks the task entirely
+        - Confusing but there is a workaround
+        - Cosmetic or polish
+    validations:
+      required: true

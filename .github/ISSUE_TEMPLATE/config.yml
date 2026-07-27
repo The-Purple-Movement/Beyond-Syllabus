@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Syllabus content is wrong or missing
+    url: https://github.com/The-Purple-Movement/WikiSyllabus
+    about: Subjects, modules, semesters, and past papers live in WikiSyllabus. One markdown file there fixes it here for everyone.
+  - name: The Purple Movement
+    url: https://github.com/The-Purple-Movement
+    about: The wider ecosystem this app belongs to.
