@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -60,6 +60,39 @@ export function SelectionForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [lastSelection] = useState(() => getLastSelection());
+  const hydratedFromUrl = useRef(false);
+
+  // Breadcrumbs across the app link here with ?university=&program=&scheme=.
+  // Honor them: land the visitor on the right step with state restored,
+  // instead of silently resetting to step 1.
+  useEffect(() => {
+    if (hydratedFromUrl.current) return;
+    if (!universities || !universities.length) return;
+    const q = new URLSearchParams(window.location.search);
+    const qu = q.get("university");
+    if (!qu || !universities.includes(qu)) return;
+    hydratedFromUrl.current = true;
+    const qp = q.get("program");
+    const qsch = q.get("scheme");
+    (async () => {
+      setIsLoading(true);
+      setLoadingMessage("Restoring your place...");
+      await ensureUniversity(qu);
+      setU(qu);
+      if (qp && qsch) {
+        setP(qp);
+        setSch(qsch);
+        setStep(4);
+      } else if (qp) {
+        setP(qp);
+        setStep(3);
+      } else {
+        setStep(2);
+      }
+      setIsLoading(false);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [universities]);
 
   const steps = ["University", "Program", "Scheme", "Semester"];
 
