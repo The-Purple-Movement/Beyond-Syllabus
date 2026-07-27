@@ -325,7 +325,7 @@ export default function BrainstormPage() {
                     key={q}
                     type="button"
                     onClick={() => addToSheet(q, "ai")}
-                    className="text-left text-xs px-3 py-1.5 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/15 transition-colors"
+                    className="text-left text-xs px-3 py-1.5 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/15 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
                     <Plus className="h-3 w-3 inline mr-1" />
                     {q}
@@ -361,6 +361,7 @@ export default function BrainstormPage() {
                 disabled={!sheet.length}
                 onClick={exportSheet}
                 title="Download as markdown"
+                aria-label="Download question sheet as markdown"
               >
                 <Download className="h-4 w-4" />
               </Button>

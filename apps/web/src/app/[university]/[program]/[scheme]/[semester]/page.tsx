@@ -299,7 +299,7 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
                                 {progress.shaky > 0 && ` · ${progress.shaky} shaky`}
                               </p>
                             ) : (
-                              <p className="text-[11px] text-muted-foreground/70">
+                              <p className="text-[11px] text-muted-foreground">
                                 Untouched. Brainstorm a module to start.
                               </p>
                             )}

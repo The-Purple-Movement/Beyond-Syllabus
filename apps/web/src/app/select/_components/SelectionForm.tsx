@@ -19,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info, BookOpen } from "lucide-react";
@@ -174,7 +173,7 @@ export function SelectionForm() {
         </CardDescription>
       </CardHeader>
 
-        <CardContent className="space-y-4 flex items-center justify-center min-h-[300px] px-4">
+        <CardContent className="space-y-4 flex items-center justify-center min-h-[220px] md:min-h-[300px] px-4">
         <AnimatePresence mode="wait">
           {isLoading ? (
             <MotionDiv
@@ -212,7 +211,7 @@ export function SelectionForm() {
                             `/${lastSelection.university}/${lastSelection.program}/${lastSelection.scheme}/${lastSelection.semester}`
                           )
                         }
-                        className="w-[280px] text-left p-3 rounded-xl border border-primary/40 bg-primary/5 hover:bg-primary/10 transition-colors"
+                        className="w-full max-w-[320px] text-left p-3 rounded-xl border border-primary/40 bg-primary/5 hover:bg-primary/10 transition-colors"
                       >
                         <p className="text-xs text-muted-foreground">Continue where you left off</p>
                         <p className="text-sm font-semibold">
@@ -228,10 +227,10 @@ export function SelectionForm() {
                         )
                       }
                     >
-                      <SelectTrigger className="w-[280px] py-3 px-3 rounded-xl border border-purple-300 bg-white dark:bg-gray-900 shadow-sm">
+                      <SelectTrigger className="w-full max-w-[320px] py-3 px-3 rounded-xl border border-purple-300 bg-white dark:bg-gray-900 shadow-sm">
                         <SelectValue placeholder="Choose a university" />
                       </SelectTrigger>
-                      <SelectContent className="w-[280px] rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg max-h-[200px] overflow-y-auto">
+                      <SelectContent className="w-full max-w-[320px] rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg max-h-[200px] overflow-y-auto">
                         {[...universities]
                           .sort((a, b) => cap(a).localeCompare(cap(b)))
                           .map((id) => (
@@ -265,10 +264,10 @@ export function SelectionForm() {
                         }
                       }}
                     >
-                      <SelectTrigger className="w-[280px] py-3 px-3 rounded-xl border border-purple-300 bg-white dark:bg-gray-900 shadow-sm">
+                      <SelectTrigger className="w-full max-w-[320px] py-3 px-3 rounded-xl border border-purple-300 bg-white dark:bg-gray-900 shadow-sm">
                         <SelectValue placeholder="Select Program" />
                       </SelectTrigger>
-                      <SelectContent className="w-[280px] rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg max-h-[200px] overflow-y-auto">
+                      <SelectContent className="w-full max-w-[320px] rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg max-h-[200px] overflow-y-auto">
                         {Object.keys(uniData)
                           .sort((a, b) => cap(a).localeCompare(cap(b)))
                           .map((id) => (
@@ -305,7 +304,7 @@ export function SelectionForm() {
                           key={id}
                           type="button"
                           className={cn(
-                            "p-4 rounded-lg border-2 transition hover:shadow-lg hover:bg-purple-500 cursor-pointer",
+                            "p-4 rounded-lg border-2 transition hover:shadow-lg hover:bg-primary/15 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                             sch === id ? "border-primary bg-primary/10" : "border-purple-700"
                           )}
                           onClick={() => loadStep("Loading semesters...", 4, () => setSch(id))}
@@ -321,14 +320,17 @@ export function SelectionForm() {
               {step === 4 && schemeData && (
                 <MotionDiv key="step4" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="space-y-3 w-full">
                   <Label className="text-center block font-semibold">4. Pick Semester</Label>
-                    <RadioGroup value={sem ?? ""} className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {Object.keys(schemeData)
                         .sort((a, b) => semNum(a) - semNum(b))
                         .map((id) => (
-                          <div
+                          <button
                             key={id}
+                            type="button"
+                            aria-label={`Open ${semName(id)}`}
                             className={cn(
-                              "rounded-lg p-4 border-2 hover:shadow-lg hover:bg-purple-500 transition cursor-pointer",
+                              "rounded-lg p-4 border-2 transition cursor-pointer hover:shadow-lg hover:bg-primary/15",
+                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
                               sem === id ? "border-primary bg-primary/10" : "border-purple-700"
                             )}
                             onClick={() => {
@@ -336,12 +338,11 @@ export function SelectionForm() {
                               submit(id);
                             }}
                           >
-                            <RadioGroupItem value={id} className="sr-only" />
                             <BookOpen className="h-5 w-5 mb-1 mx-auto" />
                             <p className="text-xs font-semibold text-center">{semName(id)}</p>
-                          </div>
+                          </button>
                         ))}
-                    </RadioGroup>
+                    </div>
                     {(() => {
                       const nums = Object.keys(schemeData)
                         .map(semNum)
