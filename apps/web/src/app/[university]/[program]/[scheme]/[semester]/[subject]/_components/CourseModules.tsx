@@ -89,7 +89,7 @@ export function CourseModules({ modules }: CourseModulesProps) {
           <p className="mt-4 text-muted-foreground">
             No modules found for this syllabus.
           </p>
-          <p className="text-sm text-muted-foreground/80">
+          <p className="text-sm text-muted-foreground">
             The content might be under preparation.
           </p>
         </div>
@@ -163,7 +163,7 @@ export function CourseModules({ modules }: CourseModulesProps) {
                           type="button"
                           title="Saved on this device only. Feeds your Journey page and exam runway."
                           onClick={() => updateStatus(module.title!, opt.id)}
-                          className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
+                          className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                             statuses[module.title!] === opt.id
                               ? opt.active
                               : "border-border/60 text-muted-foreground hover:bg-muted"

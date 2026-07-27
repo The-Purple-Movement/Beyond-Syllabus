@@ -22,6 +22,9 @@ export function ThemeToggle() {
       variant="ghost"
       type="button"
       size="icon"
+      aria-label={
+        resolvedTheme === "dark" ? "Switch to light theme" : "Switch to dark theme"
+      }
       className="p-3 sm:p-4 rounded-full transition-transform duration-300 hover:scale-105"
       onClick={() => {
         setTheme(resolvedTheme === "light" ? "dark" : "light");
