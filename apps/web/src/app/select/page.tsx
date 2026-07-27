@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { SelectionForm } from "./_components/SelectionForm";
 import { AnimatedDiv } from "@/components/AnimatedDiv";
+
+export const metadata: Metadata = {
+  title: "Find your syllabus",
+  description:
+    "Pick your university, program, and semester to open your syllabus on Beyond Syllabus.",
+};
 
 export default async function SelectPage() {
   return (

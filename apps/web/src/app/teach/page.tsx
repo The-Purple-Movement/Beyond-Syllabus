@@ -60,6 +60,7 @@ export default function TeachPage() {
   const [loadingView, setLoadingView] = useState(false);
 
   useEffect(() => {
+    document.title = "For Teachers | Beyond Syllabus";
     try {
       setSaved(JSON.parse(localStorage.getItem(SAVED_KEY) || "[]"));
     } catch {

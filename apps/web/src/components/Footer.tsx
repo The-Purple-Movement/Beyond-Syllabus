@@ -50,12 +50,13 @@ export function Footer() {
               <h3 className="text-sm font-semibold mb-3">Navigation</h3>
               <nav className="flex flex-col gap-2">
                 <Link href="/">Home</Link>
-                <Link href="/select">Select Course</Link>
-                <Link href="/chat">AI Chat</Link>
+                <Link href="/select">Find a Syllabus</Link>
+                <Link href="/journey">My Journey</Link>
+                <Link href="/teach">For Teachers</Link>
               </nav>
             </div>
             <div>
-              <h3 className="text-sm font-semibold mb-3">Resources</h3>
+              <h3 className="text-sm font-semibold mb-3">Contribute</h3>
               <nav className="flex flex-col gap-2">
                 <Link href="https://github.com/The-Purple-Movement/Beyond-Syllabus/blob/main/CONTRIBUTION.md">Contribution Guide</Link>
                 <Link href="https://github.com/The-Purple-Movement/Beyond-Syllabus/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</Link>
@@ -63,10 +64,11 @@ export function Footer() {
               </nav>
             </div>
             <div>
-              <h3 className="text-sm font-semibold mb-3">Legal</h3>
+              <h3 className="text-sm font-semibold mb-3">Ecosystem</h3>
               <nav className="flex flex-col gap-2">
-                <Link href="https://github.com/The-Purple-Movement/Beyond-Syllabus">Terms of Service</Link>
-                <Link href="https://github.com/The-Purple-Movement/Beyond-Syllabus">Privacy Policy</Link>
+                <Link href="https://github.com/The-Purple-Movement/WikiSyllabus" target="_blank">WikiSyllabus (the data)</Link>
+                <Link href="https://mulearn.org" target="_blank">μLearn</Link>
+                <Link href="https://github.com/The-Purple-Movement" target="_blank">The Purple Movement</Link>
               </nav>
             </div>
           </div>
@@ -74,8 +76,9 @@ export function Footer() {
 
         <div className="mt-8 border-t pt-6 text-center text-xs text-muted-foreground">
           <p>
-            {new Date().getFullYear()} BeyondSyllabus. All rights reserved. An
-            open-source project.
+            {new Date().getFullYear()} Beyond Syllabus. Free and open source
+            (MIT). Syllabus data from WikiSyllabus, kept alive by its
+            contributors.
           </p>
         </div>
       </div>

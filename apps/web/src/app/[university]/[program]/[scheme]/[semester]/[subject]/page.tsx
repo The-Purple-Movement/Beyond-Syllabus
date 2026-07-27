@@ -1,6 +1,7 @@
 "use client";
 
 import { notFound } from "next/navigation";
+import { titleCase } from "@/lib/utils";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SyllabusSummary } from "./_components/SyllabusSummary";
@@ -12,7 +13,8 @@ import { AnimatedDiv } from "@/components/AnimatedDiv";
 
 import { useUniversityData } from "@/contexts";
 import { Spinner } from "@/components/ui/spinner";
-import { use } from "react";
+import { use, useEffect } from "react";
+import { Pencil } from "lucide-react";
 import { SubjectPageProps, DirectoryStructure } from "@/lib/types";
 import { Header } from "@/components/Header";
 
@@ -72,14 +74,7 @@ function formatSemesterName(semesterId: string): string {
   return `Semester ${semesterId.replace("s", "").replace(/^0+/, "")}`;
 }
 function capitalizeWords(str: string | undefined): string {
-  if (!str) return "";
-  return str
-    .replace(/-/g, " ") // replace all "-" with spaces
-    .split(" ")
-    .map((word) =>
-      word.length > 0 ? word.charAt(0).toUpperCase() + word.slice(1) : ""
-    )
-    .join(" ");
+  return titleCase(str);
 }
 
 export default function SubjectPage({ params }: SubjectPageProps) {
@@ -90,6 +85,19 @@ export default function SubjectPage({ params }: SubjectPageProps) {
     isFetching,
     data: directoryStructure,
   } = useUniversityData(resolvedParams.university);
+
+  // Browser-tab / history title. Students search and share by subject code;
+  // full crawler metadata needs the server-component refactor (M2).
+  const pageData = directoryStructure
+    ? findDataPath(directoryStructure, resolvedParams)
+    : null;
+  useEffect(() => {
+    if (pageData) {
+      document.title = `${capitalizeWords(pageData.subject.name)} (${
+        pageData.subject.code ?? pageData.subject.id
+      }) | Beyond Syllabus`;
+    }
+  }, [pageData]);
 
   if (isFetching) {
     return (
@@ -110,13 +118,15 @@ export default function SubjectPage({ params }: SubjectPageProps) {
     );
   }
 
-  const dataPath = findDataPath(directoryStructure, resolvedParams);
+  const dataPath = pageData;
 
   if (!dataPath) {
     notFound();
   }
 
   const { university, program, scheme, semester, subject } = dataPath;
+
+  const wikiSourceUrl = `https://github.com/The-Purple-Movement/WikiSyllabus/tree/main/universities/${university.id}/${program.id}/${scheme.id}/${semester.id}`;
 
   const breadcrumbItems = [
     { label: "Home", href: "/" },
@@ -133,7 +143,7 @@ export default function SubjectPage({ params }: SubjectPageProps) {
       label: semester.name,
       href: `/${university.id}/${program.id}/${scheme.id}/${semester.id}`,
     },
-    { label: subject.name },
+    { label: capitalizeWords(subject.name) },
   ];
 
   return (
@@ -151,6 +161,16 @@ export default function SubjectPage({ params }: SubjectPageProps) {
               <p className="text-muted-foreground mt-2 text-lg">
                 {subject.code}
               </p>
+              <a
+                href={wikiSourceUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 mt-3 text-xs text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Pencil className="h-3 w-3" />
+                Spotted an error? This syllabus is a markdown file on
+                WikiSyllabus. Fix it there and it updates here.
+              </a>
             </div>
 
             <div className="grid gap-12 lg:grid-cols-[1fr_350px] ">

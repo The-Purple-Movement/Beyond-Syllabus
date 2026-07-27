@@ -26,7 +26,7 @@ interface ClassroomMeta {
   createdAt: number;
 }
 
-interface Submission {
+export interface Submission {
   module: string;
   questions: string[];
   at: number;

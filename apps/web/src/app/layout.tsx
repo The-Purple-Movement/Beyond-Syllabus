@@ -23,9 +23,12 @@ const montserrat = Montserrat({
 
 
 export const metadata: Metadata = {
-  title: "BeyondSyllabus",
+  title: {
+    default: "Beyond Syllabus",
+    template: "%s | Beyond Syllabus",
+  },
   description:
-    "Your modern, AI-powered guide to the university curriculum. Explore subjects, understand modules, and unlock your potential.",
+    "Walk into class with questions worth asking. Brainstorm before class, build your question sheet, and track where you stand. Free, open source, built on WikiSyllabus.",
   authors: [{ name: "µLearn" }],
   openGraph: {
     title: "BeyondSyllabus",
