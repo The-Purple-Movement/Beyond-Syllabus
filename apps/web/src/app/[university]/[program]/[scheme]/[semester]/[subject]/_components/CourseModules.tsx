@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sparkles, BrainCircuit } from "lucide-react";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 import { Spinner } from "@/components/ui/spinner";
 import { Module, CourseModulesProps } from "@/lib/types";
 import {
@@ -61,17 +62,13 @@ export function CourseModules({ modules }: CourseModulesProps) {
     setStatuses((prev) => ({ ...prev, [title]: status }));
   };
 
-  const handleChatRedirect = async (module: Module, index: number) => {
+  const handleChatRedirect = (module: Module, index: number) => {
     if (!module.content.trim()) {
-      // Consider using a toast notification for a better UX
-      alert("No content available for this module.");
+      toast.error("No content available for this module yet.");
       return;
     }
 
     setLoadingModuleIndex(index);
-
-    // Add aesthetic delay for smooth UX
-    await new Promise((resolve) => setTimeout(resolve, 600));
 
     const title = module.title || "Selected Module";
     const syllabusUrl = window.location.pathname;
@@ -122,55 +119,49 @@ export function CourseModules({ modules }: CourseModulesProps) {
                         "No detailed content available."}
                     </p>
                   </div>
-                  <Button
-                    onClick={() => handleChatRedirect(module, index)}
-                    disabled={loadingModuleIndex === index}
-                    className="flex items-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
-                    style={{
-                      background:
-                        loadingModuleIndex === index
-                          ? "linear-gradient(90deg, rgba(120,119,198,0.3) 0%, rgba(255,255,255,0.3) 50%, rgba(120,119,198,0.3) 100%)"
-                          : undefined,
-                      backgroundSize:
-                        loadingModuleIndex === index
-                          ? "1000px 100%"
-                          : undefined,
-                      animation:
-                        loadingModuleIndex === index
-                          ? "shimmer 2s infinite linear"
-                          : undefined,
-                    }}
-                  >
-                    {loadingModuleIndex === index ? (
-                      <Spinner className="h-4 w-4" />
-                    ) : (
-                      <Sparkles className="h-4 w-4 text-amber-300 transition-transform group-hover:scale-125" />
-                    )}
-                    Chat with AI about this Module
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() =>
-                      router.push(
-                        `/brainstorm?title=${encodeURIComponent(
-                          module.title || "Selected Module"
-                        )}&content=${encodeURIComponent(module.content)}`
-                      )
-                    }
-                    className="flex items-center gap-2 mt-2 border-primary/40 text-primary hover:bg-primary/10"
-                  >
-                    <BrainCircuit className="h-4 w-4" />
-                    Brainstorm before class
-                  </Button>
+                  {/* Brainstorm is the product's primary verb; chat is the
+                      fallback. The hierarchy must say so. */}
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      onClick={() =>
+                        router.push(
+                          `/brainstorm?title=${encodeURIComponent(
+                            module.title || "Selected Module"
+                          )}&content=${encodeURIComponent(module.content)}`
+                        )
+                      }
+                      className="flex items-center gap-2"
+                    >
+                      <BrainCircuit className="h-4 w-4" />
+                      Brainstorm before class
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleChatRedirect(module, index)}
+                      disabled={loadingModuleIndex === index}
+                      className="flex items-center gap-2 group border-primary/40 text-primary hover:bg-primary/10 disabled:opacity-70 disabled:cursor-not-allowed"
+                    >
+                      {loadingModuleIndex === index ? (
+                        <Spinner className="h-4 w-4" />
+                      ) : (
+                        <Sparkles className="h-4 w-4 transition-transform group-hover:scale-125" />
+                      )}
+                      Ask the AI to explain
+                    </Button>
+                  </div>
                   {module.title && (
                     <div className="mt-4 flex flex-wrap items-center gap-2">
-                      <span className="text-xs text-muted-foreground">
+                      <span
+                        className="text-xs text-muted-foreground"
+                        title="Your private read on this module. Saved on this device only; drives your Journey and exam runway."
+                      >
                         Where do you stand on this module?
                       </span>
                       {STATUS_OPTIONS.map((opt) => (
                         <button
                           key={opt.id}
                           type="button"
+                          title="Saved on this device only. Feeds your Journey page and exam runway."
                           onClick={() => updateStatus(module.title!, opt.id)}
                           className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
                             statuses[module.title!] === opt.id

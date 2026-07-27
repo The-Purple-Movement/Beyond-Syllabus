@@ -13,6 +13,7 @@ export function ChatInput({
   className,
   disabled = false,
   onModelChange,
+  showModelSelector = true,
 }: ChatInputProps) {
   const [message, setMessage] = useState("");
 
@@ -79,6 +80,7 @@ export function ChatInput({
           variant={"outline"}
           onClick={handleSubmit}
           disabled={disabled || !message.trim()}
+          aria-label="Send message"
           className={cn(
             "flex items-center justify-center w-9 h-9 mt-1 rounded-full border border-border bg-purple-500 text-white",
             "transition-colors",
@@ -89,9 +91,11 @@ export function ChatInput({
         </Button>
       </div>
 
-      <div className="flex items-center gap-2">
-        <ModelSelector value={selectedModel} onChange={setSelectedModel} />
-      </div>
+      {showModelSelector && (
+        <div className="flex items-center gap-2">
+          <ModelSelector value={selectedModel} onChange={setSelectedModel} />
+        </div>
+      )}
     </div>
   );
 }

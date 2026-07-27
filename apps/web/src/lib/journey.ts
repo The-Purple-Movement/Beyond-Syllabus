@@ -283,3 +283,38 @@ export function importAllData(raw: string): { imported: number } {
   }
   return { imported };
 }
+
+/**
+ * Last course selection: remembered so returning students skip the wizard.
+ * Same local-first rules as the journey itself.
+ */
+export interface LastSelection {
+  university: string;
+  program: string;
+  scheme: string;
+  semester: string;
+}
+
+const SELECTION_KEY = "journey:last-selection";
+
+export function saveLastSelection(sel: LastSelection): void {
+  if (!isBrowser()) return;
+  try {
+    localStorage.setItem(SELECTION_KEY, JSON.stringify(sel));
+  } catch {
+    // storage full or blocked: losing the shortcut is acceptable
+  }
+}
+
+export function getLastSelection(): LastSelection | null {
+  if (!isBrowser()) return null;
+  try {
+    const raw = localStorage.getItem(SELECTION_KEY);
+    if (!raw) return null;
+    const sel = JSON.parse(raw) as LastSelection;
+    if (sel.university && sel.program && sel.scheme && sel.semester) return sel;
+    return null;
+  } catch {
+    return null;
+  }
+}

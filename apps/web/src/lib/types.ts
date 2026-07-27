@@ -324,4 +324,6 @@ export interface ChatInputProps {
   className?: string;
   disabled?: boolean;
   onModelChange?: (modelId: string) => void;
+  /** Hide the model dropdown (e.g. guided brainstorm: pedagogy, not knobs) */
+  showModelSelector?: boolean;
 }

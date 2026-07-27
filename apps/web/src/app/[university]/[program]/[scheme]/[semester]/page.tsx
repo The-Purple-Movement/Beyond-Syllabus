@@ -1,6 +1,7 @@
 "use client";
 
 import { notFound } from "next/navigation";
+import { titleCase } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useState, use } from "react";
 
@@ -71,11 +72,7 @@ function findSemesterData(
 }
 
 function capitalizeWords(str: string | undefined): string {
-  if (!str) return "";
-  return str
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  return titleCase(str);
 }
 
 function formatSemesterName(semesterId: string): string {
@@ -139,14 +136,7 @@ export default function SubjectsPage({ params }: SubjectsPageProps) {
   }
 
   function capitalizeWords(str: string | undefined): string {
-    if (!str) return "";
-    return str
-      .replace(/-/g, " ")
-      .split(" ")
-      .map((word) =>
-        word.length > 0 ? word.charAt(0).toUpperCase() + word.slice(1) : ""
-      )
-      .join(" ");
+    return titleCase(str);
   }
 
   const { university, program, scheme, semester } = dataPath;

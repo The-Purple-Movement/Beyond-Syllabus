@@ -77,6 +77,12 @@ export default function BrainstormPage() {
     setModuleContent(params.get("content") || "");
   }, []);
 
+  useEffect(() => {
+    document.title = moduleTitle
+      ? `Brainstorm: ${moduleTitle} | Beyond Syllabus`
+      : "Guided Brainstorm | Beyond Syllabus";
+  }, [moduleTitle]);
+
   // Restore a previously built sheet for this module
   useEffect(() => {
     if (!storageKey) return;
@@ -327,6 +333,7 @@ export default function BrainstormPage() {
             onSend={handleSend}
             disabled={loading}
             onModelChange={setModel}
+            showModelSelector={false}
           />
         </div>
 

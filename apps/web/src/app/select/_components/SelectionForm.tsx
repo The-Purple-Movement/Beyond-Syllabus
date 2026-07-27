@@ -23,12 +23,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info, BookOpen } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, titleCase } from "@/lib/utils";
 import { useData } from "@/contexts/dataContext";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { Spinner } from "@/components/ui/spinner";
+import { getLastSelection, saveLastSelection } from "@/lib/journey";
 
-const cap = (s?: string) => (s ? s.replace(/-/g, " ").toUpperCase() : "");
+const cap = (s?: string) => titleCase(s);
 const semName = (id: string) => `Semester ${id.replace("s", "").replace(/^0+/, "")}`;
 const semNum = (id: string) => Number(id.replace(/\D/g, "")) || 999;
 
@@ -58,6 +59,7 @@ export function SelectionForm() {
   const [sem, setSem] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
+  const [lastSelection] = useState(() => getLastSelection());
 
   const steps = ["University", "Program", "Scheme", "Semester"];
 
@@ -73,7 +75,7 @@ export function SelectionForm() {
   ) => {
     setIsLoading(true);
     setLoadingMessage(message);
-    await Promise.all([task?.(), new Promise((r) => setTimeout(r, 600))]);
+    await Promise.all([task?.(), new Promise((r) => setTimeout(r, 200))]);
     fn();
     setIsLoading(false);
     setStep(nextStep);
@@ -87,12 +89,14 @@ export function SelectionForm() {
     setStep(level);
   };
 
-  const submit = async () => {
-    if (!u || !p || !sch || !sem) return;
+  // Takes the semester id directly: reading `sem` state here would race the
+  // setState from the same click (the old first-tap-does-nothing bug).
+  const submit = (semId: string) => {
+    if (!u || !p || !sch) return;
+    saveLastSelection({ university: u, program: p, scheme: sch, semester: semId });
     setIsLoading(true);
-    setLoadingMessage("Loading syllabus modules...");
-    await new Promise((r) => setTimeout(r, 800));
-    router.push(`/${u}/${p}/${sch}/${sem}`);
+    setLoadingMessage("Loading your subjects...");
+    router.push(`/${u}/${p}/${sch}/${semId}`);
   };
 
   if (isFetching) return null;
@@ -167,6 +171,22 @@ export function SelectionForm() {
               {step === 1 && (
                 <MotionDiv key="step1" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="flex justify-center">
                   <div className="space-y-4 flex flex-col items-center">
+                    {lastSelection && universities.includes(lastSelection.university) && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          router.push(
+                            `/${lastSelection.university}/${lastSelection.program}/${lastSelection.scheme}/${lastSelection.semester}`
+                          )
+                        }
+                        className="w-[280px] text-left p-3 rounded-xl border border-primary/40 bg-primary/5 hover:bg-primary/10 transition-colors"
+                      >
+                        <p className="text-xs text-muted-foreground">Continue where you left off</p>
+                        <p className="text-sm font-semibold">
+                          {cap(lastSelection.program)} · {semName(lastSelection.semester)}
+                        </p>
+                      </button>
+                    )}
                     <Label className="text-lg font-bold">1. Select Your University</Label>
                     <Select
                       onValueChange={(v) =>
@@ -196,7 +216,22 @@ export function SelectionForm() {
                 <MotionDiv key="step2" variants={stepVariants} initial="hidden" animate="visible" exit="exit" className="flex justify-center">
                   <div className="space-y-4 flex flex-col items-center">
                     <Label className="text-lg font-bold">2. Choose Your Program</Label>
-                    <Select value={p ?? ""} onValueChange={(v) => loadStep("Loading schemes...", 3, () => setP(v))}>
+                    <Select
+                      value={p ?? ""}
+                      onValueChange={(v) => {
+                        // One scheme? Choosing from a single option is not a
+                        // decision: skip straight to semesters.
+                        const schemes = u ? Object.keys(directory[u]?.[v] ?? {}) : [];
+                        if (schemes.length === 1) {
+                          loadStep("Loading semesters...", 4, () => {
+                            setP(v);
+                            setSch(schemes[0]);
+                          });
+                        } else {
+                          loadStep("Loading schemes...", 3, () => setP(v));
+                        }
+                      }}
+                    >
                       <SelectTrigger className="w-[280px] py-3 px-3 rounded-xl border border-purple-300 bg-white dark:bg-gray-900 shadow-sm">
                         <SelectValue placeholder="Select Program" />
                       </SelectTrigger>
@@ -265,7 +300,7 @@ export function SelectionForm() {
                             )}
                             onClick={() => {
                               setSem(id);
-                              submit();
+                              submit(id);
                             }}
                           >
                             <RadioGroupItem value={id} className="sr-only" />
@@ -274,7 +309,28 @@ export function SelectionForm() {
                           </div>
                         ))}
                     </RadioGroup>
-
+                    {(() => {
+                      const nums = Object.keys(schemeData)
+                        .map(semNum)
+                        .sort((a, b) => a - b);
+                      const hasGaps =
+                        nums.length > 0 &&
+                        (nums[0] > 1 || nums[nums.length - 1] - nums[0] + 1 !== nums.length);
+                      return hasGaps ? (
+                        <p className="text-xs text-muted-foreground text-center pt-2">
+                          Not seeing your semester? It has not been contributed yet.{" "}
+                          <a
+                            href="https://github.com/The-Purple-Movement/WikiSyllabus"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="underline text-primary"
+                          >
+                            Add it on WikiSyllabus
+                          </a>{" "}
+                          and it appears here for everyone.
+                        </p>
+                      ) : null;
+                    })()}
                 </MotionDiv>
               )}
             </>

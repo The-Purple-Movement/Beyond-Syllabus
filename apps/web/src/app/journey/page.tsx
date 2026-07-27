@@ -88,6 +88,7 @@ export default function JourneyPage() {
 
   useEffect(() => {
     refresh();
+    document.title = "My Journey | Beyond Syllabus";
   }, []);
 
   const handleExport = () => {
