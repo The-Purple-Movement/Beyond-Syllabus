@@ -1,0 +1,24 @@
+# Render blueprint for the Beyond Syllabus API server.
+# One-click: Render dashboard -> New -> Blueprint -> select this repo.
+# After creation, paste the two Upstash secrets in the service's
+# Environment tab (they are intentionally not stored here).
+services:
+  - type: web
+    name: beyond-syllabus-api
+    runtime: node
+    plan: free
+    buildCommand: curl -fsSL https://bun.sh/install | bash && export PATH="$HOME/.bun/bin:$PATH" && bun install && bun run sync && bun run generate
+    startCommand: export PATH="$HOME/.bun/bin:$PATH" && cd apps/server && bun run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: CORS_ORIGIN
+        # add your new web URL here after the Vercel deploy, comma-separated
+        value: https://beyondsyllabus.in,https://beyond-syllabus.vercel.app
+      - key: UPSTASH_REDIS_URL
+        sync: false # paste in dashboard
+      - key: UPSTASH_REDIS_TOKEN
+        sync: false # paste in dashboard
