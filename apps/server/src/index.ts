@@ -36,7 +36,13 @@ const apiHandler = new OpenAPIHandler(appRouter, {
 
 const port = Number(process.env.PORT) || 3000;
 
-const allowedOrigins = env.CORS_ORIGIN;
+// Origins from CORS_ORIGIN env (stable domains), plus this project's
+// per-deployment Vercel URLs (beyond-syllabus-<hash>-deepusnaths-projects.vercel.app),
+// which change on every deploy and cannot be listed in the env var.
+const allowedOrigins: (string | RegExp)[] = [
+  ...env.CORS_ORIGIN,
+  /^https:\/\/beyond-syllabus-[a-z0-9]+-deepusnaths-projects\.vercel\.app$/,
+];
 
 const app = new Elysia()
   .use(
