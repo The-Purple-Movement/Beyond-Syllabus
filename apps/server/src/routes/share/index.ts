@@ -27,8 +27,11 @@ export const shareRoutes = {
 
     await redis.set(token, url, { ex: 60 * 60 * 24 * 7 });
 
+    // The client builds the absolute link from its own origin; the server
+    // must not hardcode a deployment's domain (shares minted on one
+    // deployment pointed at another where the token does not exist).
     return {
-      url: `https://beyondsyllabus.in/share/${token}`,
+      url: `/share/${token}`,
       token,
     };
   }),

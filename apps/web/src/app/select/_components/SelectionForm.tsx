@@ -234,7 +234,7 @@ export function SelectionForm() {
                         {[...universities]
                           .sort((a, b) => cap(a).localeCompare(cap(b)))
                           .map((id) => (
-                            <SelectItem key={id} value={id} className="capitalize px-3 py-2 text-sm hover:bg-purple-100 dark:hover:bg-purple-800 rounded-lg cursor-pointer">
+                            <SelectItem key={id} value={id} className="px-3 py-2 text-sm hover:bg-purple-100 dark:hover:bg-purple-800 rounded-lg cursor-pointer">
                               {cap(id)}
                             </SelectItem>
                           ))}
@@ -271,7 +271,7 @@ export function SelectionForm() {
                         {Object.keys(uniData)
                           .sort((a, b) => cap(a).localeCompare(cap(b)))
                           .map((id) => (
-                            <SelectItem key={id} value={id} className="capitalize px-3 py-2 text-sm hover:bg-purple-100 dark:hover:bg-purple-500 rounded-lg cursor-pointer">
+                            <SelectItem key={id} value={id} className="px-3 py-2 text-sm hover:bg-purple-100 dark:hover:bg-purple-500 rounded-lg cursor-pointer">
                               {cap(id)}
                             </SelectItem>
                           ))}
@@ -310,7 +310,7 @@ export function SelectionForm() {
                           onClick={() => loadStep("Loading semesters...", 4, () => setSch(id))}
                         >
                           <BookOpen className="h-7 w-7 mx-auto mb-2" />
-                          <p className="font-semibold capitalize text-sm">{id.replace(/-/g, " ")}</p>
+                          <p className="font-semibold text-sm">{cap(id)}</p>
                         </button>
                       ))}
                   </div>

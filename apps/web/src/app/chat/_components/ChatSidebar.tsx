@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { LogOut, MessageSquare, Search, CircleUserRound } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,12 +12,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarGroup,
-  SidebarGroupContent,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
+/**
+ * The sidebar only shows what actually exists. The old version rendered a
+ * fake search box, a hardcoded "No chat history yet", and a "User" avatar
+ * with a logout icon in an app that has no accounts (DESIGN.md principle 1:
+ * the surface tells the truth). Chat persistence is a tracked follow-up;
+ * until it ships, the sidebar says so honestly.
+ */
 export default function ChatSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
@@ -48,51 +52,39 @@ export default function ChatSidebar({
       </SidebarHeader>
 
       <SidebarContent className="mt-6 px-4 flex flex-col gap-4">
-        <div className="flex flex-col gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Search chats..."
-              className="w-full pl-10 pr-3 py-2 rounded-lg bg-[#F7F7F8] dark:bg-[#222222] text-white placeholder-gray-400"
-            />
-          </div>
-          <Link href={syllabusUrl || "#"} passHref>
-            <Button
-              variant="default"
-              className={`w-full text-white font-light rounded-sm ${syllabusUrl
-                  ? "bg-gradient-to-r from-[#8362F9] to-[#7B39FF]"
-                  : "opacity-50 cursor-not-allowed"
-                }`}
-              disabled={!syllabusUrl}
-            >
-              View Syllabus
-            </Button>
-          </Link>
+        <Link href={syllabusUrl || "#"} passHref>
+          <Button
+            variant="default"
+            className={`w-full text-white font-light rounded-sm ${
+              syllabusUrl
+                ? "bg-gradient-to-r from-[#8362F9] to-[#7B39FF]"
+                : "opacity-50 cursor-not-allowed"
+            }`}
+            disabled={!syllabusUrl}
+          >
+            View Syllabus
+          </Button>
+        </Link>
 
-
-        </div>
-
-        <p className="pt-4 pb-2 text-xs text-[#969696] flex items-center gap-2">
-           Chat History
-        </p>
         <div className="p-4 text-center text-muted-foreground">
           <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
-          <p className="text-sm">No chat history yet</p>
-          <p className="text-xs">Start a new chat to begin</p>
+          <p className="text-sm">Chats are not saved yet</p>
+          <p className="text-xs">
+            Use Share to keep a link to this conversation. Your Question
+            Sheets and Journey are saved on this device.
+          </p>
         </div>
       </SidebarContent>
 
       <SidebarFooter className="mt-auto mb-6 px-4">
-        <SidebarGroup>
-          <SidebarGroupContent className="flex items-center justify-between w-full py-3 rounded-xl transition-colors">
-            <div className="flex items-center gap-2">
-              <CircleUserRound className="w-8 h-8" />
-              <span className="text-lg font-semibold text-[#B56DFC]">User</span>
-            </div>
-              <LogOut className="w-6 h-6" />
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
+          <Link href="/journey" className="hover:text-primary transition-colors">
+            My Journey
+          </Link>
+          <Link href="/select" className="hover:text-primary transition-colors">
+            Find a syllabus
+          </Link>
+        </nav>
       </SidebarFooter>
     </Sidebar>
   );

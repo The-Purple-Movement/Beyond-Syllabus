@@ -23,10 +23,12 @@ export function ShareButton() {
 
     const createShare = async () => {
         try {
-            const result = await orpc.share.createShare.call({
+            const result = (await orpc.share.createShare.call({
                 url: window.location.href,
-            });
-            setShareLink(result.url);
+            })) as { url: string; token: string };
+            // Build from this deployment's own origin: the token only
+            // exists in the store this deployment writes to.
+            setShareLink(`${window.location.origin}/share/${result.token}`);
         } catch (err: any) {
             toast.error(err?.message || "Could not create share link");
         }
