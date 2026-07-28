@@ -17,7 +17,8 @@
     "dev:native": "turbo -F native dev",
     "dev:web": "turbo -F web dev",
     "dev:server": "turbo -F server dev",
-    "start:server": "turbo -F server start"
+    "start:server": "turbo -F server start",
+    "test": "turbo test"
   },
   "dependencies": {},
   "devDependencies": {

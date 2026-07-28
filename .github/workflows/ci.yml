@@ -24,6 +24,14 @@ jobs:
       - name: Type check
         run: bun run check-types
 
+      - name: Tests (vitest)
+        run: bun run test
+        env:
+          # Most of our students live at UTC+05:30. Running tests in that
+          # timezone is what lets the local-vs-UTC date regressions
+          # (ISSUE-005) actually fail on UTC runners.
+          TZ: Asia/Kolkata
+
       - name: Build
         run: bun run build
         env:
