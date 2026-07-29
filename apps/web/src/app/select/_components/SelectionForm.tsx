@@ -27,6 +27,7 @@ import { useData } from "@/contexts/dataContext";
 import ErrorDisplay from "@/components/ErrorDisplay";
 import { Spinner } from "@/components/ui/spinner";
 import { getLastSelection, saveLastSelection } from "@/lib/journey";
+import { findSharedYearPrograms } from "@/lib/semesters";
 
 const cap = (s?: string) => titleCase(s);
 const semName = (id: string) => `Semester ${id.replace("s", "").replace(/^0+/, "")}`;
@@ -344,13 +345,63 @@ export function SelectionForm() {
                         ))}
                     </div>
                     {(() => {
-                      const nums = Object.keys(schemeData)
-                        .map(semNum)
-                        .sort((a, b) => a - b);
+                      const semesterIds = Object.keys(schemeData);
+                      const nums = semesterIds.map(semNum).sort((a, b) => a - b);
                       const hasGaps =
                         nums.length > 0 &&
                         (nums[0] > 1 || nums[nums.length - 1] - nums[0] + 1 !== nums.length);
-                      return hasGaps ? (
+                      if (!hasGaps) return null;
+
+                      // Some universities publish the first year separately,
+                      // shared across branches (KTU 2024 does this). If a
+                      // sibling program covers the missing early semesters,
+                      // the syllabus is not missing, just filed elsewhere.
+                      const shared =
+                        u && sch
+                          ? findSharedYearPrograms({
+                              programs: directory[u],
+                              currentProgramId: p ?? "",
+                              schemeId: sch,
+                              currentSemesterIds: semesterIds,
+                            })
+                          : [];
+
+                      if (shared.length) {
+                        return (
+                          <div className="pt-2 space-y-2 text-center">
+                            <p className="text-xs text-muted-foreground">
+                              Looking for your first year? At this university it is
+                              shared across branches, so those semesters are
+                              published separately:
+                            </p>
+                            <div className="flex flex-wrap justify-center gap-2">
+                              {shared.map((sp) => (
+                                <button
+                                  key={sp.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setP(sp.id);
+                                    setStep(4);
+                                  }}
+                                  className="text-xs px-3 py-1.5 rounded-full border border-primary/40 text-primary hover:bg-primary/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                >
+                                  {cap(sp.id)}
+                                  <span className="text-muted-foreground">
+                                    {" "}
+                                    · Sem {sp.semesters.join(", ")}
+                                  </span>
+                                </button>
+                              ))}
+                            </div>
+                            <p className="text-[11px] text-muted-foreground">
+                              Not sure which one is yours? Your university&apos;s scheme
+                              document says which group your branch belongs to.
+                            </p>
+                          </div>
+                        );
+                      }
+
+                      return (
                         <p className="text-xs text-muted-foreground text-center pt-2">
                           Not seeing your semester? It has not been contributed yet.{" "}
                           <a
@@ -363,7 +414,7 @@ export function SelectionForm() {
                           </a>{" "}
                           and it appears here for everyone.
                         </p>
-                      ) : null;
+                      );
                     })()}
                 </MotionDiv>
               )}
