@@ -24,10 +24,13 @@ export function titleCase(input?: string): string {
     .replace(/-/g, " ")
     .split(/\s+/)
     .filter(Boolean)
-    .map((raw, i) => {
+    .map((raw, i, all) => {
       const word = raw.toLowerCase();
       if (ACRONYMS.has(word)) return word.toUpperCase();
-      if (i > 0 && MINOR_WORDS.has(word)) return word;
+      // First and last words are always capitalized, per standard title
+      // case. Without the last-word rule "group-a" renders as "Group a".
+      const isEdge = i === 0 || i === all.length - 1;
+      if (!isEdge && MINOR_WORDS.has(word)) return word;
       return word.charAt(0).toUpperCase() + word.slice(1);
     })
     .join(" ");

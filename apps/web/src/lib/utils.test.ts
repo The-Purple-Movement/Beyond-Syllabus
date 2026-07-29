@@ -21,6 +21,13 @@ describe("titleCase", () => {
     expect(titleCase("the-purple-movement")).toBe("The Purple Movement");
   });
 
+  it("capitalizes a trailing minor word (KTU's group-a would read 'Group a')", () => {
+    expect(titleCase("group-a")).toBe("Group A");
+    expect(titleCase("group-d")).toBe("Group D");
+    // and still lowercases minor words in the middle
+    expect(titleCase("bachelor-of-social-work")).toBe("Bachelor of Social Work");
+  });
+
   it("uppercases known acronyms anywhere", () => {
     expect(titleCase("ai-and-ml-fundamentals")).toBe("AI and ML Fundamentals");
     expect(titleCase("iot-systems")).toBe("IOT Systems");
