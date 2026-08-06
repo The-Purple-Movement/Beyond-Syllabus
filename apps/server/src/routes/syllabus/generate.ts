@@ -5,6 +5,12 @@ import matter from "gray-matter";
 
 const universitiesDir = path.join(process.cwd(), "universities");
 
+// Semesters where two files declare the same course code. Collected during
+// the walk and reported at the end, so the list is not buried in the middle
+// of the output. Never fatal: both records are kept and both stay reachable,
+// because subjects are keyed on file name rather than course code.
+const repeatedCodes: string[] = [];
+
 async function readSyllabusData() {
   const data: any = {};
 
@@ -190,6 +196,31 @@ async function readSyllabusData() {
                 ].subjects.push(subjectData);
               }
             }
+
+            // A course code should identify one course within a semester.
+            // When it does not, the semester list shows the same code on two
+            // cards and any lookup by code is ambiguous. Both entries are
+            // still emitted; this only surfaces the clash.
+            const idsByCode = new Map<string, string[]>();
+            for (const subject of data[universityId][programId][schemeId][
+              semesterId
+            ].subjects) {
+              // "N/A" is the placeholder for a missing course_code, so it
+              // would otherwise collide with every other incomplete file.
+              if (!subject.code || subject.code === "N/A") continue;
+              const key = String(subject.code).toLowerCase();
+              const ids = idsByCode.get(key) ?? [];
+              ids.push(subject.id);
+              idsByCode.set(key, ids);
+            }
+            for (const [code, ids] of idsByCode) {
+              if (ids.length > 1) {
+                repeatedCodes.push(
+                  `${universityId}/${programId}/${schemeId}/${semesterId}: ` +
+                    `${code} on ${ids.sort().join(", ")}`
+                );
+              }
+            }
           }
         }
       }
@@ -202,6 +233,18 @@ async function readSyllabusData() {
 
     await Bun.write(outputPath, JSON.stringify(data, null, 2));
     console.log(`✅ Syllabus data generated at ${outputPath}`);
+
+    if (repeatedCodes.length > 0) {
+      console.warn(
+        `⚠️  ${repeatedCodes.length} semester(s) declare a course code twice:`
+      );
+      for (const line of repeatedCodes.sort()) console.warn(`   ${line}`);
+      console.warn(
+        "   Both courses are still generated and both remain reachable. " +
+          "The codes need correcting in WikiSyllabus, where scripts/audit.py " +
+          "reports the same clashes against the source."
+      );
+    }
   } catch (error) {
     console.error("❌ Error generating syllabus data:", error);
     process.exit(1);
